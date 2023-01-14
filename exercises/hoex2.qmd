@@ -1,0 +1,22 @@
+---
+title: "Hands-on Exercise 2: Geospatial Data Handling and Wrangling"
+description: "Post description"
+author: "Teo Ren Jie"
+date: "1/15/2023"
+categories: ["Hands-on Exercise"]
+title-block-banner: true
+---
+
+# 1. Sample Header 1
+
+------------------------------------------------------------------------
+
+Some Text Content
+
+## 1.1 Sub Section 1.1
+
+# 2. Sample Header 2
+
+------------------------------------------------------------------------
+
+Some Text content

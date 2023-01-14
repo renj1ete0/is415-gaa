@@ -1,11 +1,11 @@
 ---
-title: "IS415-GAA"
+title: "Ren Jie's IS415 Journey"
+listing:
+  contents: "exercises/*.qmd"
+  type: default
+  categories: cloud
+  sort-ui: [title, date]
+  filter-ui: true
+html:
+  page-layout: full
 ---
-
-This is a Quarto website.
-
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
-
-```{r}
-1 + 1
-```

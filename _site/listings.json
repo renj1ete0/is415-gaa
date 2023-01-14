@@ -1,0 +1,15 @@
+[
+  {
+    "listing": "/blog.html",
+    "items": [
+      "/exercises/hoex2.html",
+      "/exercises/test.html"
+    ]
+  },
+  {
+    "listing": "/index.html",
+    "items": [
+      "/exercises/hoex2.html"
+    ]
+  }
+]

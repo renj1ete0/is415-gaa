@@ -2,16 +2,38 @@ project:
   type: website
 
 website:
-  title: "IS415-GAA"
+  title: "Ren Jie's IS415 Journey"
+  search:
+    location: navbar
+    type: textbox
+  reader-mode: true
   navbar:
-    left:
+    search: true
+    background: primary
+    right:
       - href: index.qmd
         text: Home
-      - about.qmd
+      - href: about.qmd
+        text: About Me
+      - href: index.qmd#category=Hands-on Exercise
+        text: Hands-On Exercise
+      - icon: github
+        href: https://github.com/renjie-teo
+      - icon: linkedin
+        href: https://www.linkedin.com/in/renjieteo/
+        
+  page-footer:
+    background: light
+    left: "Ren Jie's IS415 Journey" 
+    right: 
+      - icon: github
+        href: https://github.com/renjie-teo
+      - icon: linkedin
+        href: https://www.linkedin.com/in/renjieteo/
 
 format:
   html:
-    theme: cosmo
+    theme: flatly
     css: styles.css
     toc: true
 
