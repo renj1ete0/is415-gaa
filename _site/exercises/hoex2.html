@@ -897,18 +897,15 @@ $ geometry                       &lt;POINT [m]&gt; POINT (2020290 15212633), POI
 </section>
 <section id="point-in-polygon-count" class="level2">
 <h2 class="anchored" data-anchor-id="point-in-polygon-count">6.2 Point-in-polygon Count</h2>
-<div class="callout-note callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple no-icon">
+<div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<div class="callout-body-container">
 <p>Scenario:</p>
 <p>A pre-school service group wants to find the number of pre-schools in each Planning Subzone.</p>
+</div>
 </div>
 </div>
 <p>Firstly, we utilise <em>st_intersects()</em> of <strong>sf</strong> package to find which pre-schools falls under which planning subzone. Then, using lengths, we calculate the number of pre-schools within each planning subzone.</p>
@@ -943,18 +940,15 @@ Projected CRS: SVY21 / Singapore TM
 </div>
 </div>
 <p>Here, we can see that the top planning subzone with the most preschools is Tampines East.</p>
-<div class="callout-note callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple no-icon">
+<div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<div class="callout-body-container">
 <p>Scenario:</p>
 <p>Calculate the density of pre-school by planning subzone</p>
+</div>
 </div>
 </div>
 <p>First, the formula for density is <code>density = count / area</code></p>
@@ -1047,7 +1041,7 @@ Units: [1/m^2]
 <p><img src="hoex2_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>hist plots a histogram quickly from the data provided in <code>PreSch Density</code>. However it lacks customisation capabilities. We can customise it further to add appropriate labelse using <strong>ggplot2</strong>.</p>
+<p>hist plots a histogram quickly from the data provided in <code>PreSch Density</code>. However it lacks customisation capabilities. We can customise it further to add appropriate labels using <strong>ggplot2</strong>.</p>
 </section>
 <section id="histogram-ggplot2-of-mpsz3414presch-density" class="level3">
 <h3 class="anchored" data-anchor-id="histogram-ggplot2-of-mpsz3414presch-density">7.1.2 Histogram (ggplot2) of mpsz3414$<code>PreSch Density</code></h3>
@@ -1065,18 +1059,15 @@ Units: [1/m^2]
 <p><img src="hoex2_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<div class="callout-note callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple no-icon">
+<div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<div class="callout-body-container">
 <p>Scenario:</p>
 <p>Using ggplot2, plot a scatterplot showing the relationship between Pre-school Density and Pre-school Count</p>
+</div>
 </div>
 </div>
 <div class="cell">

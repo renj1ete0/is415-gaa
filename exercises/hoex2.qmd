@@ -307,7 +307,7 @@ sum(buffer_cycling$AREA)
 
 ## 6.2 Point-in-polygon Count
 
-::: {.callout-note icon="false"}
+::: {.callout-note appearance="minimal" icon="false"}
 Scenario:
 
 A pre-school service group wants to find the number of pre-schools in each Planning Subzone.
@@ -337,7 +337,7 @@ top_n(mpsz3414, 1, `PreSch Count`)
 
 Here, we can see that the top planning subzone with the most preschools is Tampines East.
 
-::: {.callout-note icon="false"}
+::: {.callout-note appearance="minimal" icon="false"}
 Scenario:
 
 Calculate the density of pre-school by planning subzone
@@ -381,7 +381,7 @@ We can plot a histogram to investigate the distrubtion of `PreSch Density`.
 hist(mpsz3414$`PreSch Density`)
 ```
 
-hist plots a histogram quickly from the data provided in `PreSch Density`. However it lacks customisation capabilities. We can customise it further to add appropriate labelse using **ggplot2**.
+hist plots a histogram quickly from the data provided in `PreSch Density`. However it lacks customisation capabilities. We can customise it further to add appropriate labels using **ggplot2**.
 
 ### 7.1.2 Histogram (ggplot2) of mpsz3414\$`PreSch Density`
 
@@ -397,7 +397,7 @@ ggplot(data=mpsz3414,
        y = "Frequency")
 ```
 
-::: {.callout-note icon="false"}
+::: {.callout-note appearance="minimal" icon="false"}
 Scenario:
 
 Using ggplot2, plot a scatterplot showing the relationship between Pre-school Density and Pre-school Count
