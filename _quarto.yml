@@ -2,7 +2,7 @@ project:
   type: website
 
 website:
-  title: "Ren Jie's IS415 Journey"
+  title: "Ren Jie's IS415 Journal"
   search:
     location: navbar
     type: textbox
@@ -24,7 +24,7 @@ website:
         
   page-footer:
     background: light
-    left: "Ren Jie's IS415 Journey" 
+    left: "Ren Jie's IS415 Journal" 
     right: 
       - icon: github
         href: https://github.com/renjie-teo

@@ -1,22 +1,417 @@
 ---
 title: "Hands-on Exercise 2: Geospatial Data Handling and Wrangling"
-description: "Post description"
+description: "In this exercise, I learn how to handle, perform geoprocessing and EDA using sf, tidyverse, ggplot2 and other packages."
 author: "Teo Ren Jie"
 date: "1/15/2023"
-categories: ["Hands-on Exercise"]
+categories: ["Hands-on Exercise", "tidyverse", "sf", "ggplot2"]
 title-block-banner: true
+image: Hands-on_Ex02/preview.png
 ---
 
-# 1. Sample Header 1
+# 1. Getting Started
 
 ------------------------------------------------------------------------
 
-Some Text Content
+## 1.1 Installing and Loading Packages
 
-## 1.1 Sub Section 1.1
+Firstly, the code below will check if **pacman** has been installed. If it has not been installed, R will download and install it, before activating it for use during this session.
 
-# 2. Sample Header 2
+```{r}
+if (!require('pacman', character.only = T)){
+  install.packages('pacman')
+}
+library('pacman')
+```
+
+Next, pacman assists us by helping us load R packages that we require, `sf` and `tidyverse`.
+
+```{r}
+pacman::p_load(sf, tidyverse)
+```
+
+## 1.2 Data Acquisition
+
+For the purpose of this exercise, the following public datasets are used:
+
+| Dataset Name                                                        | Source                                                                                                         |
+|------------------------------------------------|-----------------------|
+| Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)* | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)                               |
+| Pre-Schools Location *(preschools-location.kml)*                    | [data.gov.sg](https://dataportal.asia/dataset/203030733_pre-schools-location)                                  |
+| Cycling Path *(CyclingPathGazette.shp)*                             | [LTA Datamall](https://datamall.lta.gov.sg/content/datamall/en/search_datasets.html?searchText=Cycling%20Path) |
+| Latest version of Singapore Airbnb listing data *(listings.csv)*    | [Inside Airbnb](http://insideairbnb.com/get-the-data/)                                                         |
+
+The data has been extracted to `Hands-on_Ex02/data/geospatial`.
+
+Master Plan and Cycling Path layers are provided in ESRI shapefile format, Pre-Schools Location provided in kml and Airbnb listings in csv format.
+
+## 1.3 Importing Geospatial Shapefile Datasets
+
+There are two shapefile (.shp) datasets, Master Plan 2014 Subzone Boundary (Web) and Cycling Path.
+
+### 1.3.1 Importing Master Plan 2014 Subzone Boundary (Web)
+
+Firstly, we will import Master Plan 2014 Subzone Boundary (Web). In the code below, `dsn` specifies the filepath where the dataset is located and `layer` provides the filename of the dataset excluding the file extension.
+
+```{r}
+mpsz = st_read(dsn = "Hands-on_Ex02/data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+```
+
+From the above message, it tells us that the dataset contains `multipolygon` features, containing 323 multipolygon features and 15 fields in the `mpsz` simple feature data frame and is in the `svy21` projected coordinates system. The bounding box provides us the x and y `extents` (x min, x max, y min, y max) of the data.
+
+### 1.3.2 Importing Cycling Path
+
+Next, we will import Cycling Path.
+
+```{r}
+cyclingpath = st_read(dsn = "Hands-on_Ex02/data/geospatial", layer = "CyclingPathGazette")
+```
+
+From the above message, it tells us that the dataset contains `mutlilinestring` features, containing **2248 multilinestring features** and **2 fields** in the `cyclingpath` simple feature data frame and is in the `svy21` projected coordinates system. Similarly, the bounding box provides us the x and y `extents` (x min, x max, y min, y max) of the data.
+
+## 1.4 Importing Geospatial GIS Datasets in kml format
+
+There is one kml dataset, Pre-Schools Location, that we have to import.
+
+### 1.4.1 Importing Pre-Schools Location
+
+In the code below, we do not specify `dsn` and `layer`. Just the filepath and filename will suffice.
+
+```{r}
+preschools = st_read("Hands-on_Ex02/data/geospatial/preschools-location.kml")
+```
+
+From the above message, it tells us that the dataset contains `point` features, containing **1359 features** and **2 fields** and is in the `wgs84` projected coordinates system. Similarly, the bounding box provides us the x and y `extents` (x min, x max, y min, y max) of the data.
+
+## 1.5 Additional Notes
+
+::: {.callout-note appearance="minimal"}
+Do recall that there are 2 different coordinate systems in use for the datasets here. Master Plan and Cycling Path utilises `svy21` and Pre-Schools utilises `wgs84`.
+:::
+
+# 2. Checking Content of a Simple Feature Data Frame
 
 ------------------------------------------------------------------------
 
-Some Text content
+There are some methods to obtain information about a data frame quickly.
+
+## 2.1 st_geometry()
+
+```{r}
+st_geometry(mpsz)
+```
+
+st_geometry() can help us obtain summarised details about a dataset about the geometry. In the case on The information provided is the same as what we have seen while importing the datasets earlier on.
+
+## 2.2 glimpse()
+
+```{r}
+glimpse(mpsz)
+```
+
+glimpse() can help us investigate what are the specific fields, its associated field data type and some sample data from the dataset to help us visualize the structure of the data.
+
+## 2.3 head()
+
+```{r}
+head(mpsz, n=5)
+```
+
+head() can also help us obtain summarised details about a dataset as with glimpse(). Using the `n=5` parameter inside function head, we are able to limit the amount of features to be shown to 5.
+
+# 3. Plotting Geospatial Data
+
+------------------------------------------------------------------------
+
+There are various methods to plot geospatial features into a graphical format, other than just looking at feature information.
+
+## 3.1 Multi-plot Attributes
+
+The following code will plot multiple attributes within the dataframe up to a reasonable limit.
+
+```{r}
+plot(mpsz)
+```
+
+## 3.2 Geometry Plot
+
+Recall st_geometry from `Checking Content of a Simple Data Frame` from earlier? st_geometry provides the geometry of the map, where we could use plot to plot just the geomtry of the data frame.
+
+```{r}
+plot(st_geometry(mpsz))
+```
+
+## 3.3 Specific Attributes
+
+We could also choose to plot a specific attribute of the data frame. The following code below will plot the `PLN_AREA_N` attribute.
+
+```{r}
+plot(mpsz["PLN_AREA_N"])
+```
+
+# 4. Working with Projection
+
+------------------------------------------------------------------------
+
+::: {.callout-note appearance="minimal"}
+Recall that our datasets are in two different coordinate systems, `wgs84` and `svy21`
+:::
+
+To perform geoprocessing with two or more geospatial datasets, we need to ensure the datasets ar eprojected using a similar coordinate system.
+
+Here, we will project a simple feature dataframe from one coordinate system to another.
+
+## 4.1 Assigning EPSG Code to a Simple Feature Data Frame
+
+The coordinate system in the dataset could be wrongly assigned during the importing process or missing (missing .proj file for ESRI shapefile) when importing geospatial data into R.
+
+### 4.1.1 Checking the Coordinate System of the Data Frame
+
+To check the coordinate system of a dataset, the *st_crs()* function of sf package could be used. Here, we check the coordinate system of `mpsz` simple feature data frame.
+
+```{r}
+st_crs(mpsz)
+```
+
+Although the data frame has been projected in `SVY21`, if we look at the end of the output, it indicates that the EPSG is 9001 which is incorrect. The correct EPSG code for `SVY21` should be [3414](https://epsg.io/3414).
+
+In the code chunk below, we will correct the crs to EPSG 3414.
+
+```{r}
+mpsz3414 <- st_set_crs(mpsz,3414)
+```
+
+Now, let us check the crs if it has been updated.
+
+```{r}
+st_crs(mpsz3414)
+```
+
+Now, the EPSG has been updated to 3414.
+
+### 4.1.2 Transforming from wgs84 to svy21 
+
+It is important in geospatial analytics to ensure that datasets are converted to projected coordinate system from the geographic coordinate system. Geographic coordinate system is not appropriate if analysis requires distance and/or area measurements.
+
+```{r}
+#| echo: false
+st_crs(preschools)
+```
+
+In the preschools data frame, it is in the `wgs84` coordinate system.
+
+Since reprojection is necessary from `wgs84` to `svy21` mathematically, *st_set_crs()* would not be appropriate. We will utilise *st_transform()*.
+
+In the example below, we reproject the `preschools` dataframe to `svy21` (EPSG 3414).
+
+```{r}
+preschools3414 <- st_transform(preschools, crs = 3414)
+```
+
+Let's see the content of the reprojected `preschools3414` dataframe.
+
+```{r}
+#| echo: false
+st_crs(preschools3414)
+```
+
+Now, the data frame is in `svy21` coordinate system.
+
+::: {.callout-note appearance="minimal"}
+If the bounding box values are greater than the 0-360 decimal degree used by most geographic coordinate system, it means it is likely to be in a projected coordinate system.
+:::
+
+# 5. Importing and Converting Aspatial Data
+
+------------------------------------------------------------------------
+
+Sometimes, data do not come in geospatial data format, such as `listing` of Inside Airbnb. These are called data aspatial data, where it is not geospatial data, but contains x and y coordinates within its fields.
+
+## 5.1 Importing Aspatial Data
+
+Since `listings` data set is in `csv` format, we will used read_csv() of **readr** package to import `listing.csv` and output it to an R object called `listings`, which is a tibble data frame.
+
+```{r}
+listings <- read_csv("Hands-on_Ex02/data/aspatial/listings.csv")
+```
+
+Instead of using *glimpse()* as shown earlier, *list()* could also do the job.
+
+```{r}
+list(listings)
+```
+
+Our output shows our `listing` tibble data frame consists of **4161 rows** and **18 columns**. The useful fields we would be paying attention to is the `latitude` and `longitude` columns, which are in the decimal degree format. By assumption, we assume the data is in `wgs84` Geographic Coordinate System.
+
+## 5.2 Creating a Simple Feature Data Frame from an Aspatial Data Frame
+
+The code below converts the `listings` tibble data fame into a simple feature data frame by using *st_as_sf()* from **sf** packages, which converts foreign data formats to an sf object.
+
+```{r}
+listings_sf <- st_as_sf(listings,
+                        coords = c("longitude", "latitude"),
+                        crs = 3426) %>%
+  st_transform(crs = 3414)
+```
+
+The arguments for
+
+-   *listings* could be any other foreign data frame to be converted
+
+-   *coords* requires to provide column name of x-coordinates followed by y-coordinates. The coordinates system also needs to be provided in terms of EPSG format. EPSG:4326 is the `wgs84` Geographic Coordinate System whereas EPSG:3414 is Singapore's `svy21` Projected Coordinate System.
+
+-   *%\>%* nest *st_transform()* into the *st_as_sf()* function to convert into `svy21` coordinates
+
+## 5.3 Examining Simple Feature Data Frame
+
+```{r}
+glimpse(listings_sf)
+```
+
+Previously, there were **18 columns** in the aspatial data, only **17 columns** exists now. `Longitude` and `Latitude` columns were dropped and a new column has been created for `geometry`.
+
+# 6. Geoprocessing with sf Package
+
+------------------------------------------------------------------------
+
+Besides providing functions to handle (import, export, projection, etc.) geospatial data, **sf** package can also perform geoprocessing (also known as GIS analysis functions).
+
+## 6.1 Buffering
+
+::: {.callout-note appearance="minimal" icon="false"}
+Scenario:
+
+The authority is planning to upgrade the existing cycling path. To do so, they need to acquire 5 metres of reserved land on both sides of the current cycling path. You are tasked to determine the extent of land needed to be acquired and their total area.
+:::
+
+Firstly, we utilise *st_buffer()* of **sf** package to compute the 5-metre buffers around cycling paths.
+
+```{r}
+buffer_cycling <- st_buffer(cyclingpath,
+                            dist = 5,
+                            nQuadSegs = 30)
+```
+
+What `nQuadSegs` alters is the generalisation of points to create the buffer. More segments means it is less generalised and less segments means more generalised buffers.
+
+Next, we calculate the area of the buffers.
+
+```{r}
+buffer_cycling$AREA <- st_area(buffer_cycling)
+```
+
+Now, we can sum the area to get total land required for the buffer.
+
+```{r}
+sum(buffer_cycling$AREA)
+```
+
+## 6.2 Point-in-polygon Count
+
+::: {.callout-note icon="false"}
+Scenario:
+
+A pre-school service group wants to find the number of pre-schools in each Planning Subzone.
+:::
+
+Firstly, we utilise *st_intersects()* of **sf** package to find which pre-schools falls under which planning subzone. Then, using lengths, we calculate the number of pre-schools within each planning subzone.
+
+```{r}
+mpsz3414$`PreSch Count` <- lengths(st_intersects(mpsz3414, preschools3414))
+```
+
+We could use *summary()* to viewsummary statistics of the newly derived *PreSch Count* field.
+
+```{r}
+summary(mpsz3414$`PreSch Count`)
+```
+
+Wow! Here, we can see that there is at least one planning subzone with 58 pre-schools, with a mean of 5.96 pre-schools in each subzone.
+
+Now, let's look at the top sub-zone with the most pre-schools.
+
+The code below utilises *top_n* of **dplyr** package to look in the mpsz3414 dataframe, under the field PreSch Count for the top record
+
+```{r}
+top_n(mpsz3414, 1, `PreSch Count`)
+```
+
+Here, we can see that the top planning subzone with the most preschools is Tampines East.
+
+::: {.callout-note icon="false"}
+Scenario:
+
+Calculate the density of pre-school by planning subzone
+:::
+
+First, the formula for density is `density = count / area`
+
+We will first calculate the area of each subzone below:
+
+```{r}
+mpsz3414$Area <- mpsz3414 %>%
+  st_area()
+```
+
+Next, we will use *mutate()* of **dplyr** package to compute density. We multiply it by 1000000 to reduce the amount of decimal points by converting it to km2 for easier handling.
+
+```{r}
+mpsz3414 <- mpsz3414 %>%
+  mutate(`PreSch Density` = `PreSch Count`/Area * 1000000)
+```
+
+Now, we can view the density of preschools.
+
+```{r}
+list(mpsz3414$`PreSch Density`)
+```
+
+# 7. Exploratory Data Analysis (EDA)
+
+------------------------------------------------------------------------
+
+Many geospatial analytics start with Exploratory Data Analysis. We will utilise *ggplot2* functions to create graphs for EDA purposes.
+
+## 7.1 Investigating Pre School Density
+
+We can plot a histogram to investigate the distrubtion of `PreSch Density`.
+
+### 7.1.1 Histogram (hist) of mpsz3414\$`PreSch Density`
+
+```{r}
+hist(mpsz3414$`PreSch Density`)
+```
+
+hist plots a histogram quickly from the data provided in `PreSch Density`. However it lacks customisation capabilities. We can customise it further to add appropriate labelse using **ggplot2**.
+
+### 7.1.2 Histogram (ggplot2) of mpsz3414\$`PreSch Density`
+
+```{r}
+ggplot(data=mpsz3414,
+       aes(x= as.numeric(`PreSch Density`))) +
+  geom_histogram(bins=20,
+                 color="black",
+                 fill="light blue") +
+  labs(title = "Are pre-schools even distributed in Singapore?",
+       subtitle = "There are many planning sub-zones with a single pre-school on the other hand, \n there are six planning-subzones with at least 20 pre-schools",
+       x = "Pre-school density (per km sq)",
+       y = "Frequency")
+```
+
+::: {.callout-note icon="false"}
+Scenario:
+
+Using ggplot2, plot a scatterplot showing the relationship between Pre-school Density and Pre-school Count
+:::
+
+```{r}
+ggplot(data=mpsz3414,
+       aes(x= as.numeric(`PreSch Density`), y = as.numeric(`PreSch Count`))) +
+  geom_point(color="black",
+            fill="light blue") +
+  xlim(0, 60) + 
+  ylim(0, 60) +
+  labs(x = "Pre-school density (per km sq)",
+       y = "Pre-school count")
+```
+
+Here, while the graph works without specifying xlim and ylim, we want to standardise the scales on x and y axes, hence, we specified the limits to be from 0 to 60 on both axes.

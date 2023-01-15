@@ -29,7 +29,7 @@ toc: false
 
 ------------------------------------------------------------------------
 
-This site documents my journey
+This site documents my journey on learning and applying Geospatial Analytics
 
 # Find Me
 

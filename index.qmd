@@ -1,11 +1,12 @@
 ---
-title: "Ren Jie's IS415 Journey"
+title: "Ren Jie's IS415 Journal"
 listing:
   contents: "exercises/*.qmd"
   type: default
   categories: cloud
   sort-ui: [title, date]
   filter-ui: true
+  fields: [image, date, title, description, author, reading-time]
 html:
   page-layout: full
 ---

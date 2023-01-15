@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Ren Jie’s IS415 Journey</title>
+<title>Ren Jie’s IS415 Journal</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -70,9 +70,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] }],
+      valueNames: ['listing-image','listing-date','listing-title','listing-description','listing-author','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] }],
       
-      searchColumns: ["listing-date","listing-title","listing-author","listing-description","listing-categories"],
+      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -103,7 +103,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">Ren Jie’s IS415 Journey</span>
+    <span class="navbar-title">Ren Jie’s IS415 Journal</span>
     </a>
   </div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -152,13 +152,13 @@ ul.task-list li input[type="checkbox"] {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-cloud"><div class="category" data-category="Hands-on Exercise"><span class="quarto-category-count category-cloud-10">Hands-on Exercise</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-cloud"><div class="category" data-category="Hands-on Exercise"><span class="quarto-category-count category-cloud-10">Hands-on Exercise</span></div><div class="category" data-category="ggplot2"><span class="quarto-category-count category-cloud-10">ggplot2</span></div><div class="category" data-category="sf"><span class="quarto-category-count category-cloud-10">sf</span></div><div class="category" data-category="tidyverse"><span class="quarto-category-count category-cloud-10">tidyverse</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Ren Jie’s IS415 Journey</h1>
+<h1 class="title">Ren Jie’s IS415 Journal</h1>
 </div>
 
 
@@ -201,7 +201,10 @@ ul.task-list li input[type="checkbox"] {
     </div>
 </div>
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="Hands-on Exercise" data-listing-date-sort="1673712000000" data-listing-file-modified-sort="1673718145364" data-listing-reading-time-sort="0.065">
+<div class="quarto-post image-right" data-index="0" data-categories="Hands-on Exercise,tidyverse,sf,ggplot2" data-listing-date-sort="1673712000000" data-listing-file-modified-sort="1673755013246" data-listing-reading-time-sort="11.945">
+<div class="thumbnail">
+<p><a href="./exercises/hoex2.html"> <img src="./exercises/Hands-on_Ex02/preview.png" class="thumnail-image"> </a></p>
+</div>
 <div class="body">
 <a href="./exercises/hoex2.html">
 <h3 class="no-anchor listing-title">
@@ -210,15 +213,8 @@ Hands-on Exercise 2: Geospatial Data Handling and Wrangling
 <div class="listing-subtitle">
 
 </div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('Hands-on Exercise'); return false;">
-Hands-on Exercise
-</div>
-</div>
-<a href="./exercises/hoex2.html">
 <div class="listing-description">
-<p>Post description</p>
+<p>In this exercise, I learn how to handle, perform geoprocessing and EDA using sf, tidyverse, ggplot2 and other packages.</p>
 </div>
 </a>
 </div>
@@ -229,6 +225,9 @@ Jan 15, 2023
 </div>
 <div class="listing-author">
 Teo Ren Jie
+</div>
+<div class="listing-reading-time">
+11 min
 </div>
 </a>
 </div>
@@ -374,7 +373,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
-    <div class="nav-footer-left">Ren Jie’s IS415 Journey</div>   
+    <div class="nav-footer-left">Ren Jie’s IS415 Journal</div>   
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
