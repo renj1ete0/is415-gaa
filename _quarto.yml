@@ -15,8 +15,14 @@ website:
         text: Home
       - href: about.qmd
         text: About Me
-      - href: index.qmd#category=Hands-on Exercise
-        text: Hands-On Exercise
+      - text: Hands-On Exercise
+        menu: 
+          - href: exercises/hoex1.qmd
+            text: Hands-On Exercise 1
+      - text: In-Class Exercise
+        menu: 
+          - href: exercises/icex02.qmd
+            text: In-Class Exercise 2
       - icon: github
         href: https://github.com/renjie-teo
       - icon: linkedin

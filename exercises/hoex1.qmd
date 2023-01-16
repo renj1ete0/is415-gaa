@@ -1,11 +1,11 @@
 ---
-title: "Hands-on Exercise 2: Geospatial Data Handling and Wrangling"
+title: "Hands-on Exercise 1: Geospatial Data Handling and Wrangling"
 description: "In this exercise, I learn how to handle, perform geoprocessing and EDA using sf, tidyverse, ggplot2 and other packages."
 author: "Teo Ren Jie"
 date: "1/15/2023"
 categories: ["Hands-on Exercise", "tidyverse", "sf", "ggplot2"]
 title-block-banner: true
-image: Hands-on_Ex02/preview.png
+image: Hands-on_Ex01/preview.png
 ---
 
 # 1. Getting Started
@@ -34,7 +34,7 @@ pacman::p_load(sf, tidyverse)
 For the purpose of this exercise, the following public datasets are used:
 
 | Dataset Name                                                        | Source                                                                                                         |
-|------------------------------------------------|-----------------------|
+|-----------------------------------------------|------------------------|
 | Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)* | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)                               |
 | Pre-Schools Location *(preschools-location.kml)*                    | [data.gov.sg](https://dataportal.asia/dataset/203030733_pre-schools-location)                                  |
 | Cycling Path *(CyclingPathGazette.shp)*                             | [LTA Datamall](https://datamall.lta.gov.sg/content/datamall/en/search_datasets.html?searchText=Cycling%20Path) |
@@ -53,7 +53,7 @@ There are two shapefile (.shp) datasets, Master Plan 2014 Subzone Boundary (Web)
 Firstly, we will import Master Plan 2014 Subzone Boundary (Web). In the code below, `dsn` specifies the filepath where the dataset is located and `layer` provides the filename of the dataset excluding the file extension.
 
 ```{r}
-mpsz = st_read(dsn = "Hands-on_Ex02/data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+mpsz = st_read(dsn = "Hands-on_Ex01/data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 ```
 
 From the above message, it tells us that the dataset contains `multipolygon` features, containing 323 multipolygon features and 15 fields in the `mpsz` simple feature data frame and is in the `svy21` projected coordinates system. The bounding box provides us the x and y `extents` (x min, x max, y min, y max) of the data.
@@ -63,7 +63,7 @@ From the above message, it tells us that the dataset contains `multipolygon` fea
 Next, we will import Cycling Path.
 
 ```{r}
-cyclingpath = st_read(dsn = "Hands-on_Ex02/data/geospatial", layer = "CyclingPathGazette")
+cyclingpath = st_read(dsn = "Hands-on_Ex01/data/geospatial", layer = "CyclingPathGazette")
 ```
 
 From the above message, it tells us that the dataset contains `mutlilinestring` features, containing **2248 multilinestring features** and **2 fields** in the `cyclingpath` simple feature data frame and is in the `svy21` projected coordinates system. Similarly, the bounding box provides us the x and y `extents` (x min, x max, y min, y max) of the data.
@@ -77,7 +77,7 @@ There is one kml dataset, Pre-Schools Location, that we have to import.
 In the code below, we do not specify `dsn` and `layer`. Just the filepath and filename will suffice.
 
 ```{r}
-preschools = st_read("Hands-on_Ex02/data/geospatial/preschools-location.kml")
+preschools = st_read("Hands-on_Ex01/data/geospatial/preschools-location.kml")
 ```
 
 From the above message, it tells us that the dataset contains `point` features, containing **1359 features** and **2 fields** and is in the `wgs84` projected coordinates system. Similarly, the bounding box provides us the x and y `extents` (x min, x max, y min, y max) of the data.
@@ -188,7 +188,7 @@ st_crs(mpsz3414)
 
 Now, the EPSG has been updated to 3414.
 
-### 4.1.2 Transforming from wgs84 to svy21 
+### 4.1.2 Transforming from wgs84 to svy21
 
 It is important in geospatial analytics to ensure that datasets are converted to projected coordinate system from the geographic coordinate system. Geographic coordinate system is not appropriate if analysis requires distance and/or area measurements.
 
@@ -231,7 +231,7 @@ Sometimes, data do not come in geospatial data format, such as `listing` of Insi
 Since `listings` data set is in `csv` format, we will used read_csv() of **readr** package to import `listing.csv` and output it to an R object called `listings`, which is a tibble data frame.
 
 ```{r}
-listings <- read_csv("Hands-on_Ex02/data/aspatial/listings.csv")
+listings <- read_csv("Hands-on_Ex01/data/aspatial/listings.csv")
 ```
 
 Instead of using *glimpse()* as shown earlier, *list()* could also do the job.
@@ -249,7 +249,7 @@ The code below converts the `listings` tibble data fame into a simple feature da
 ```{r}
 listings_sf <- st_as_sf(listings,
                         coords = c("longitude", "latitude"),
-                        crs = 3426) %>%
+                        crs = 4326) %>%
   st_transform(crs = 3414)
 ```
 
