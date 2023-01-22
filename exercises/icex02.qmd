@@ -1,14 +1,15 @@
 ---
 title: "In-Class Exercise 2: Geospatial Data Wrangling"
-description: "In this exercise, I learn how to handle, perform geoprocessing and EDA using sf, tidyverse, ggplot2 and other packages."
+description: "Visualising proportion of functional and non-functional water pumps in Nigeria at LGA level"
 author: "Teo Ren Jie"
-date: "`r Sys.Date()`"
+date: "1/16/2023"
+last-modified: "1/21/2023"
 categories: ["In-Class Exercise", "tidyverse", "sf", "ggplot2", "funModeling"]
 title-block-banner: true
 image: In-Class_Ex02/preview.png
 execute:
-  message: true
-  warning: true
+  message: false
+  warning: false
 ---
 
 # 1. Background
@@ -139,4 +140,126 @@ list(wpdx_sf)
 
 Previously, there were **70 columns** in the aspatial data, only **69 columns** exists now. `#lat` and `#lon` columns were dropped and a new column has been created for `geometry`.
 
-## 
+# 3. Derive Proportions
+
+------------------------------------------------------------------------
+
+## 3.1 Understanding Category Labels
+
+First, let us have a look at the `#status_clean` column which stores the information about `Functional` and `Non-Functional` data points. The code below returns all unique values that were used in the column.
+
+```{r}
+unique(wpdx["#status_clean"])
+```
+
+As we are interested in looking into the Proportions of `Functional` and `Non-functional` water points, we can safely disregard the `NA` values.
+
+Next, from our remaining 8 category labels, all except those marked strictly as `Functional` are `Non-functional`. These `Non-functional` labels could include categories marked as `Abadoned`, `Functional but not in use` (which means its non-functional at that point) and `Functional but needs repair`, should be classified
+
+## 3.2 Filtering Data
+
+With our previous knowledge, we can filter the data to obtain functional proportion counts in each LGA level. The functional proportion counts could be obtained through `Functional Proportion = Functional Count / Total Count`
+
+Hence, the code below will filter `Functional Count` (for functional water points) and `Total Count` (for water points that are not NA) into separate data frames.
+
+```{r}
+wpdx_func <- wpdx_sf %>% filter(`#status_clean` == "Functional")
+wpdx_nonna <- wpdx_sf %>% filter(`#status_clean` != "NA")
+```
+
+## 3.3 Point-in-polygon Count
+
+Utilising *st_intersects()* of **sf** package and lengths, we can find how many `Functional` water points and `Total` (non-NA) water points fall under which LGA.
+
+```{r}
+gbnigeria26391$`Functional Count` <- lengths(st_intersects(gbnigeria26391, wpdx_func))
+gbnigeria26391$`Total Count` <- lengths(st_intersects(gbnigeria26391, wpdx_nonna))
+```
+
+Using *summary()* , we can view summary statistics of the newly derived `Functional Count` and `Total Count` fields.
+
+```{r}
+summary(gbnigeria26391$`Functional Count`)
+```
+
+```{r}
+summary(gbnigeria26391$`Total Count`)
+```
+
+## 3.4 Calculating Proportion of Water Points
+
+Next, we will use *mutate()* of **dplyr** package to compute the proportion of `Functional` and `Non-` water points.
+
+This is given by `Functional Proportion = Functional Count / Total Count`.
+
+```{r}
+gbnigeria26391 <- gbnigeria26391 %>%
+  mutate(`Functional Proportion` = `Functional Count`/`Total Count`)
+            
+```
+
+Now, we can view the summary of all LGA.
+
+```{r}
+summary(gbnigeria26391$`Functional Proportion`)
+```
+
+Why do we see 21 NAs? In 3.2, we have already removed the NA values. Let us check the NA values that are recorded under the `Functional Proportion` column.
+
+```{r}
+list(gbnigeria26391 %>% filter(`Functional Proportion` == "NaN") )
+```
+
+Oh, so from the records above, it appears that the `Functional Proportion` column is `NA` as there were no *non-NA* records of any water pumps within that LGA. In short, there were no records of water pumps.
+
+# 4. Visualisation and Exploratory Data Analysis
+
+## 4.1 Geospatial Plot
+
+We can plot a simple geospatial visualisation of the map of Nigeria's LGA to the proportion of functional to total water pumps within the LGA.
+
+For white areas, these are areas where there was no data on any water pump (functional or non-functional) in the region.
+
+```{r}
+plot(gbnigeria26391['Functional Proportion'],main = "Proportion Functional to Non-Functional Water Points")
+```
+
+## 4.2 Exploratory Data Analysis (EDA)
+
+We will save the values to another variable to perform EDA.
+
+```{r}
+gbnigeria26391_analysis <- gbnigeria26391
+```
+
+In our EDA, let us calculate the area in `m^2` for some correlation analysis later. Let us save it as `int`.
+
+```{r}
+gbnigeria26391_analysis$AREA <- as.numeric(st_area(gbnigeria26391_analysis))
+```
+
+For our EDA, we need to drop the `geometry` values. We will set the geometry to `NULL` to remove all the geometry values.
+
+```{r}
+st_geometry(gbnigeria26391_analysis) <- NULL 
+```
+
+By using `profiling_num` of `funModeling` package, we will be able to get some descriptive statistics.
+
+```{r}
+profiling_num(gbnigeria26391_analysis)
+```
+
+Similarly, using the `plot_num` function of `funModeling` package, we can plot a histogram of the `numerical` columns.
+
+```{r}
+plot_num(gbnigeria26391_analysis,bins = 10)
+```
+
+```{r}
+boxplot(gbnigeria26391_analysis$`Functional Proportion`,
+main = "Proportion Functional to Non-Functional Water Points",
+horizontal = TRUE)
+```
+
+From the numerical plots, boxplot and descriptive statistics generated, we can tell that the functional to non-functional proportion of water points is roughly bell-shaped, with a median of approximately 0.48. There are no extreme outlier values.
