@@ -19,6 +19,8 @@ website:
         menu: 
           - href: exercises/hoex1.qmd
             text: Hands-On Exercise 1
+          - href: exercises/hoex2.qmd
+            text: Hands-On Exercise 2
       - text: In-Class Exercise
         menu: 
           - href: exercises/icex02.qmd
