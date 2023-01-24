@@ -1,0 +1,299 @@
+---
+title: "Hands-on Exercise 2: Choropleth Mapping with R"
+description: "Chloropleth Mapping of Singapore Resident Planning Area / Subzone, Age, Sex and Type of Dwelling"
+author: "Teo Ren Jie"
+date: "1/24/2023"
+categories: ["Hands-on Exercise", "tidyverse", "sf", "tmap"]
+title-block-banner: true
+image: Hands-on_Ex02/preview.png
+---
+
+# 1. Getting Started
+
+------------------------------------------------------------------------
+
+## 1.1 Installing and Loading Packages
+
+Firstly, the code below will check if **pacman** has been installed. If it has not been installed, R will download and install it, before activating it for use during this session.
+
+```{r}
+if (!require('pacman', character.only = T)){
+  install.packages('pacman')
+}
+library('pacman')
+```
+
+Next, pacman assists us by helping us load R packages that we require, `sf`, `tmap` and `tidyverse`. `terra` is included as it is a dependency of `tmap` which may not install/load if `terra` has not been installed prior.
+
+```{r}
+pacman::p_load(sf, tidyverse, tmap, terra)
+```
+
+## 1.2 Data Acquisition
+
+The following public datasets are used:
+
+| Dataset Name                                                                                                                          | Source                                                                                                                                                    |
+|-----------------------------------------------|-------------------------|
+| Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)*                                                                   | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)                                                                          |
+| Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 *(respopagesextod2011to2020.csv)* | [[Department of Statistics, Singapore]{.underline}](https://www.singstat.gov.sg/find-data/search-by-theme/population/geographic-distribution/latest-data) |
+
+The Master Plan 2014 Subzone Boundary (Web) has been extracted to `Hands-on_Ex02/data/geospatial` whereas the Department of Statistics Singapore Resident dataset has been extracted to `Hands-on_Ex02/data/aspatial`.
+
+## 1.3 Importing Geospatial Shapefile Dataset
+
+Firstly, we will import Master Plan 2014 Subzone Boundary (Web).
+
+```{r}
+mpsz = st_read(dsn = "Hands-on_Ex02/data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+```
+
+From the above message, it tells us that the dataset contains `multipolygon` features, containing **323 multipolygon features** and **15 fields** in the `mpsz` simple feature data frame and is in the `svy21` projected coordinates system. The bounding box provides us the x and y `extents` (x min, x max, y min, y max) of the data.
+
+We can use `mpsz` to examine the contents.
+
+```{r}
+mpsz
+```
+
+By default, [only the top 10 records are shown](https://pillar.r-lib.org/reference/pillar_options.html). To show more than 10 records, we can use a workaround below to print n = 15 records:
+
+```{r}
+mpsz %>% print(n = 15)
+```
+
+## 1.4 Checking and Verifying Geospatial Coordinate System
+
+### 1.4.1 Checking the Coordinate System of the Data Frame
+
+To check the coordinate system of a dataset, the *st_crs()* function of sf package could be used. Here, we check the coordinate system of `mpsz` simple feature data frame.
+
+```{r}
+st_crs(mpsz)
+```
+
+Although the data frame has been projected in `SVY21`, if we look at the end of the output, it indicates that the EPSG is 9001 which is incorrect. The correct EPSG code for `SVY21` should be [3414](https://epsg.io/3414).
+
+In the code chunk below, we will correct the crs to EPSG 3414.
+
+```{r}
+mpsz3414 <- st_set_crs(mpsz,3414)
+```
+
+Now, let us check the crs if it has been updated.
+
+```{r}
+st_crs(mpsz3414)
+```
+
+Now, the EPSG has been updated to 3414.
+
+## 1.5 Importing Aspatial Dataset
+
+Since `population` data set is in `csv` format, we will used read_csv() of **readr** package to import `respopagesextod2011to2020.csv` and output it to an R object called `listings`, which is a tibble data frame.
+
+```{r}
+population <- read_csv("Hands-on_Ex02/data/aspatial/respopagesextod2011to2020.csv")
+```
+
+```{r}
+list(population)
+```
+
+Our output shows our `population` tibble data frame consists of **984656 rows** and **7 columns**. The useful fields we would be paying attention to is the `PA` and `SZ` columns, which we will use to match to the geocodes with the Master plan dataset .
+
+# 2. Data Preparation
+
+In this exercise, we are interested in visualising data from the year 2020. We will need to prepare a data table with year 2020 values. The data table should group Age Groups into the following:
+
+-   YOUNG: age group `0 to 4` until age group `20 to 24`,
+
+-   ECONOMY ACTIVE: age group `25-29` until age group `60-64`,
+
+-   AGED: age group `65 and above`,
+
+-   TOTAL: all age group, and
+
+-   DEPENDENCY: the ratio between young and aged against economy active group
+
+In all, we need to prepare the dataframe with the variables `PA`, `SZ`, `YOUNG`, `ECONOMY` `ACTIVE`, `AGED`, `TOTAL`, `DEPENDENCY`.
+
+## 
+
+## 2.1 Data Wrangling {style="color: rgb(248, 248, 242); font-family: \"Segoe UI\", serif; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: break-spaces; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; caret-color: rgb(248, 248, 240); background-color: rgb(39, 40, 34); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"}
+
+We need to perform some data wrangling and transformation to obtain the data in a format that we want to visualise it in.
+
+The specific transformation we have to perform is to group various age groups into categories as mentioned above.
+
+We could use the following functions to help us:
+
+-   *pivot_wider()* of **tidyr** package, and
+
+-   *mutate()*, *filter()*, *group_by()* and *select()* of **dplyr** package
+
+```{r}
+popdata2020 <- population %>%
+  filter(Time == 2020) %>%
+  group_by(PA, SZ, AG) %>%
+  summarise(`POP` = sum(`Pop`)) %>%
+  ungroup()%>%
+  pivot_wider(names_from=AG, 
+              values_from=POP) %>%
+  mutate(YOUNG = rowSums(.[3:6])
+         +rowSums(.[12])) %>%
+mutate(`ECONOMY ACTIVE` = rowSums(.[7:11])+
+rowSums(.[13:15]))%>%
+mutate(`AGED`=rowSums(.[16:21])) %>%
+mutate(`TOTAL`=rowSums(.[3:21])) %>%  
+mutate(`DEPENDENCY` = (`YOUNG` + `AGED`)
+/`ECONOMY ACTIVE`) %>%
+  select(`PA`, `SZ`, `YOUNG`, 
+       `ECONOMY ACTIVE`, `AGED`, 
+       `TOTAL`, `DEPENDENCY`)
+```
+
+From the code above, as the original table groups data into more specific breakdowns such as `Sex` and `TOD` which is not required for our analysis, we use `group_by` to regroup the data by `PA`, `SZ` and `AG`.
+
+The `summarise` function sums the various `pop` values under the grouped rows together.
+
+After performing the calculations, we `ungroup` the data. Then, by utilising `pivot_wider`, we specify to shift the `AG` labels in many rows to become a column label. This will result in `PA`, `SZ` having a singular row, with the various `AG` as their individual column within the row.
+
+`mutate` is used to sum various values together to obtain the desired categories that was specified earlier. `select` statement writes the specific column values to the new dataframe.
+
+## 2.2 Joining Aspatial and Geospatial Data
+
+### 2.2.1 Standardising Fields
+
+The `SZ` and `PA` columns of the aspatial dataset maps directly to the `SUBZONE_N` and `PLN_AREA_N` columns of the master plan geospatial dataset.
+
+However, while the `SUBZONE_N` and `PLN_AREA_N` values are provided in all caps, `SZ` and `PA` comes in a mixture of upper and lowercase. We have to standardise the case.
+
+```{r}
+popdata2020 <- popdata2020 %>%
+  mutate_at(.vars = vars(PA, SZ), 
+          .funs = funs(toupper)) %>%
+  filter(`ECONOMY ACTIVE` > 0)
+```
+
+The `mutate_at` function used above allows specific columns to be specified to perform specified functions, in this case, to convert to uppercase.
+
+### 2.2.2 Merge Geospatial and Apastial Data
+
+Similar to SQL, we can `left_join` data from `popdata2020` to `mpsz`. They will be merged based on the common identifier if `SUBZONE_N` and `SZ` matches.
+
+```{r}
+mpsz_pop2020 <- left_join(mpsz, popdata2020,
+                          by = c("SUBZONE_N" = "SZ"))
+```
+
+We will save the manipulated data into a rds file as a backup.
+
+```{r}
+write_rds(mpsz_pop2020, "Hands-on_Ex02/data/rds/mpszpop2020.rds")
+```
+
+# 3. Choropleth Mapping Geospatial Data using tmap
+
+## 3.1 Quick Start
+
+The easiest method to plot a choropleth map using *tmap* is using `qtm()`.
+
+```{r}
+tmap_mode("plot")
+qtm(mpsz_pop2020, 
+    fill = "DEPENDENCY")
+```
+
+From the code above, we can understand that:
+
+-   *tmap_mode()* toggles between static ("plot") or interactive modes ("view)
+
+-   *fill* argument is used to map the attribute (ie. DEPENDENCY in this case)
+
+## 3.2 Creating a choropleth map by using tmap's elements
+
+While *qtm()* allows one to quickly plot a choropleth map, it is rigid and does not offer much flexibility and control over the map's elements. Hence, tmap's drawing elements should be used instead.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "Dependency ratio") +
+  tm_layout(main.title = "Distribution of Dependency Ratio by planning subzone",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2) +
+  tm_credits("Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\n and Population data from Department of Statistics DOS", 
+             position = c("left", "bottom"))
+```
+
+### 3.2.1 Drawing a Base Map
+
+The basic elements to creating a tmap includes, *tm_shape()*, followed by other layer elements such as *tm_fill()* and/or *tm_polygons().*
+
+In the code below, tm_shape() defines the input data and tm_polygons() tells
+
+In the code chunk below, *tm_shape()* is used to define the input data (i.e *mpsz_pop2020*) and *tm_polygons()* is used to draw the planning subzone polygons
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_polygons()
+```
+
+### 3.2.2 Drawing a Choropleth Map with *tm_polygons()*
+
+Drawing a choropleth map with *tmap* is rather simple. Simply specify the column name under *tm_polygons*.
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_polygons("DEPENDENCY")
+```
+
+From the code above, we can understand from *tm_polygons* that:
+
+-   The default interval binning used to draw the choropleth map is "pretty" which will be elaborated further in XX.XX.XX
+
+-   The default colour scheme used is `YlOrRd` from ColorBrewer. This will be elaborated more in XX.XX.XX
+
+-   By default, missing values are shaded in grey.
+
+### 3.2.3 Drawing a Choropleth Map with *tm_fill()* and *tm_borders()*
+
+We can also use tm_fill() to draw a choropleth map.
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_fill("DEPENDENCY")
+```
+
+From the map above, we can see that the map is coloured, without any lines.
+
+To introduce light borders, we can use *tm_borders()*.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY") +
+  tm_borders(lwd = 0.1,  alpha = 1)
+```
+
+For *tm_borders()*, there are four arguments that are accepted:
+
+-   alpha = transparency, 0 = transparent, 1 = opaque
+
+-   col = border color
+
+-   lwd = border line width, default is 1
+
+-   lty = border line type, default is "solid"
+
+## 3.3 Data Classification Methods
+
+\<to be updated\>
