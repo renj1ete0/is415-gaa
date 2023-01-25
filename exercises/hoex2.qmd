@@ -35,7 +35,7 @@ pacman::p_load(sf, tidyverse, tmap, terra)
 The following public datasets are used:
 
 | Dataset Name                                                                                                                          | Source                                                                                                                                                    |
-|-----------------------------------------------|-------------------------|
+|---------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)*                                                                   | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)                                                                          |
 | Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 *(respopagesextod2011to2020.csv)* | [[Department of Statistics, Singapore]{.underline}](https://www.singstat.gov.sg/find-data/search-by-theme/population/geographic-distribution/latest-data) |
 
@@ -118,7 +118,6 @@ In this exercise, we are interested in visualising data from the year 2020. We w
 -   DEPENDENCY: the ratio between young and aged against economy active group
 
 In all, we need to prepare the dataframe with the variables `PA`, `SZ`, `YOUNG`, `ECONOMY` `ACTIVE`, `AGED`, `TOTAL`, `DEPENDENCY`.
-
 
 ## 2.1 Data Wrangling
 
@@ -409,7 +408,7 @@ tm_shape(mpsz_pop2020)+
 ```
 
 | Classification Name | Description                                                                                                                                                                                          |
-|-------------------|-----------------------------------------------------|
+|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | fixed               | Based on breaks specified                                                                                                                                                                            |
 | sd                  | n number of ranges, must ensure distribution is approx. normal. Measure of dispersion/dispersion (z scores)                                                                                          |
 | equal               | n number of ranges **(excluding missing values)**, equal widths for each range, *avoid if data is skewed or large outlier values (as in example above)*                                              |
@@ -487,6 +486,7 @@ tm_shape(mpsz_pop2020)+
 ```
 
 ## 
+
 3.4 Colour Scheme
 
 ### 3.4.1 Using ColorBrewer Palettes
