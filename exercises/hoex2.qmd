@@ -3,6 +3,7 @@ title: "Hands-on Exercise 2: Choropleth Mapping with R"
 description: "Chloropleth Mapping of Singapore Resident Planning Area / Subzone, Age, Sex and Type of Dwelling"
 author: "Teo Ren Jie"
 date: "1/24/2023"
+last-modified: "1/25/2023"
 categories: ["Hands-on Exercise", "tidyverse", "sf", "tmap"]
 title-block-banner: true
 image: Hands-on_Ex02/preview.png
@@ -118,9 +119,8 @@ In this exercise, we are interested in visualising data from the year 2020. We w
 
 In all, we need to prepare the dataframe with the variables `PA`, `SZ`, `YOUNG`, `ECONOMY` `ACTIVE`, `AGED`, `TOTAL`, `DEPENDENCY`.
 
-## 
 
-## 2.1 Data Wrangling {style="color: rgb(248, 248, 242); font-family: \"Segoe UI\", serif; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: break-spaces; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; caret-color: rgb(248, 248, 240); background-color: rgb(39, 40, 34); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"}
+## 2.1 Data Wrangling
 
 We need to perform some data wrangling and transformation to obtain the data in a format that we want to visualise it in.
 
@@ -296,4 +296,383 @@ For *tm_borders()*, there are four arguments that are accepted:
 
 ## 3.3 Data Classification Methods
 
-\<to be updated\>
+Most choropleth maps use some form of data classification, to group large numbers of observations into classes or n number of data ranges for classification.
+
+**tmap** provides a total ten data classification methods: *fixed*, *sd*, *equal*, *pretty* (default), *quantile*, *kmeans*, *hclust*, *bclust*, *fisher*, and *jenks*.
+
+The style argument of *tm_fill()* or *tm_polygons()* can be used to define a data classification method.
+
+### 3.3.1 Plotting Chloropleth Maps with Built-in Classification Methods
+
+The code below uses a quantile classification method. Jenks classifies data according to the natural breaks within the data.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "jenks") +
+  tm_borders(alpha = 0.5)
+```
+
+The code below uses equal style, which creates n = 5 ranges which are equal in range.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "equal") +
+  tm_borders(alpha = 0.5)
+```
+
+#### 3.3.1.1 Differences between Classification Methods
+
+**fixed:**
+
+Specify each range using the breaks argument manually. Does not require the use of n intervals.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          style = "fixed",
+          breaks = c(-Inf, seq(0, 10, by = 2.5), Inf) ) +
+  tm_borders(alpha = 0.5)
+```
+
+**sd:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "sd") +
+  tm_borders(alpha = 0.5)
+```
+
+**pretty:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "pretty") +
+  tm_borders(alpha = 0.5)
+```
+
+**kmeans:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "kmeans") +
+  tm_borders(alpha = 0.5)
+```
+
+**hclust:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "hclust") +
+  tm_borders(alpha = 0.5)
+```
+
+**bclust:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "bclust") +
+  tm_borders(alpha = 0.5)
+```
+
+**fisher:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "fisher") +
+  tm_borders(alpha = 0.5)
+```
+
+**quantile:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "quantile") +
+  tm_borders(alpha = 0.5)
+```
+
+| Classification Name | Description                                                                                                                                                                                          |
+|-------------------|-----------------------------------------------------|
+| fixed               | Based on breaks specified                                                                                                                                                                            |
+| sd                  | n number of ranges, must ensure distribution is approx. normal. Measure of dispersion/dispersion (z scores)                                                                                          |
+| equal               | n number of ranges **(excluding missing values)**, equal widths for each range, *avoid if data is skewed or large outlier values (as in example above)*                                              |
+| pretty (default)    | n number of ranges **(including missing values)**, equal widths for each range, *avoid if data is skewed or large outlier values (as in example above)*                                              |
+| quantile            | n number of ranges, equal number of observations in each range                                                                                                                                       |
+| kmeans              | n number of ranges, runs euclidean distance computation between centroids and points and reassigns each points to closest cluster centroid until no change in cluster points or threshold is reached |
+| hclust              | n number of ranges, using divisive hierarchical clustering, splits until n number of clusters are obtained based on similarities with other points                                                   |
+| bclust              | n number of ranges, using bagged clustering                                                                                                                                                          |
+| fisher              | n number of ranges, using fisher clustering                                                                                                                                                          |
+| jenks               | n number of ranges, based on natural breaks                                                                                                                                                          |
+
+#### 3.3.1.1 Differences between n ranges (using quantile)
+
+**n = 2:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 2,
+          style = "quantile") +
+  tm_borders(alpha = 0.5)
+```
+
+**n = 5:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 5,
+          style = "quantile") +
+  tm_borders(alpha = 0.5)
+```
+
+**n = 10:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 10,
+          style = "quantile") +
+  tm_borders(alpha = 0.5)
+```
+
+**n = 20:**
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 20,
+          style = "quantile") +
+  tm_borders(alpha = 0.5)
+```
+
+As n amount of ranges increase, the colour differences between each subzone is more distinct. However, the amount of ranges depends on how fine grained the analysis has to be. Too many ranges could make it hard to pinpoint the exact colour and confuse users. Additionally, using quantile method, the outlier range (0.879 to 19.000) may mislead users as it is very similar in colour to the previous range (0.847 to 0.879)
+
+### 3.3.2 Plotting with Custom Breaks
+
+We can specify breaks manually (as in the `fixed` style) instead of being automatically computed.
+
+First, we need to know our `min` and `max` ranges of the data
+
+```{r}
+summary(mpsz_pop2020$DEPENDENCY)
+```
+
+To create custom breaks, we need to specify `n+1` values to obtain `n` ranges as the values includes a `min` and `max`.
+
+The code below creates breaks at `0.60`, `0.70`, `0.80`, `0.90` with a min of `0` and max of `1.00`.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          breaks = c(0, 0.60, 0.70, 0.80, 0.90, 1.00)) +
+  tm_borders(alpha = 0.5)
+```
+
+## 
+3.4 Colour Scheme
+
+### 3.4.1 Using ColorBrewer Palettes
+
+To change the colour, we can use the *palette* argument. Here, we will change it to the `blues` colour scheme.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n = 6,
+          style = "quantile",
+          palette = "Blues") +
+  tm_borders(alpha = 0.5)
+```
+
+We can also reverse the colours using the `-` symbol infront of the desired color. In the below example, we use `Greens`.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = "-Greens") +
+  tm_borders(alpha = 0.5)
+```
+
+## 3.5 Map Layouts
+
+A map layout contains different elements that adds up into a single map.
+
+Other than the objects to be mapped, map elements could include, title, scale bar, compass, margins, aspect ratios, colour settings and data classification methods.
+
+### 3.5.1 Map Legend
+
+There are several *legend* options to change the placement, format and appearance of the legend.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY", 
+          style = "jenks", 
+          palette = "Blues", 
+          legend.hist = TRUE, 
+          legend.is.portrait = TRUE,
+          legend.hist.z = 0.1) +
+  tm_layout(main.title = "Distribution of Dependency Ratio by planning subzone \n(Jenks classification)",
+            main.title.position = "center",
+            main.title.size = 1,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            legend.outside = FALSE,
+            legend.position = c("right", "bottom"),
+            frame = FALSE) +
+  tm_borders(alpha = 0.5)
+```
+
+### 3.5.2 Map Style
+
+Map styles could be changed using the `tmap_style()` function from *tmap*. In the example below, the classic style is used.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY", 
+          style = "quantile", 
+          palette = "-Greens") +
+  tm_borders(alpha = 0.5) +
+  tmap_style("classic")
+```
+
+### 3.5.2 Cartographic Furniture
+
+We can also draw various cartographic furniture onto the map, such as the scale bar, grid and compass.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "No. of persons") +
+  tm_layout(main.title = "Distribution of Dependency Ratio \nby planning subzone",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar(width = 0.15) +
+  tm_grid(lwd = 0.1, alpha = 0.2) +
+  tm_credits("Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)\n and Population data from Department of Statistics DOS", 
+             position = c("left", "bottom"))
+```
+
+To reset the map to the default style, we can use the code below:
+
+```{r}
+tmap_style("white")
+```
+
+## 3.6 Drawing Small Choropleth Maps
+
+We can draw multiple small maps, also known as facet maps, arranged horizontally or stacked vertically to allow us to visualise how spatial relationships change with respect to another variable, such as time.
+
+Using tmap, we can plot multiple small maps in three ways:
+
+-   assigning multiple values to at least one of the aesthetic arguments (eg. *tmap_fill()* or *tmap_polygons()*)
+
+-   defining a group-by variable in *tm_facets()*
+
+-   creating multiple stand-alone maps with *tmap_arrange()*
+
+### 3.6.1 Assigning multiple values to at least one of the aesthetic arguments
+
+In the example below, we specify multiple values using the c()
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill(c("YOUNG", "AGED"),
+          style = "equal", 
+          palette = "Blues") +
+  tm_layout(legend.position = c("right", "bottom")) +
+  tm_borders(alpha = 0.5) +
+  tmap_style("white")
+```
+
+We can also specifically specify *style* and *palette* arguments for each map as shown below:
+
+```{r}
+tm_shape(mpsz_pop2020)+ 
+  tm_polygons(c("DEPENDENCY","AGED"),
+          style = c("equal", "quantile"), 
+          palette = list("Blues","Greens")) +
+  tm_layout(legend.position = c("right", "bottom"))
+```
+
+### 3.6.2 Defining a group-by variable in *tm_facets()*
+
+In the example below, we create multiple maps using *tm_facets().* The map is generated based on different values under the `REGION_N` column.
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = "Blues",
+          thres.poly = 0) + 
+  tm_facets(by="REGION_N", 
+            free.coords=TRUE, 
+            drop.shapes=TRUE) +
+  tm_layout(legend.show = FALSE,
+            title.position = c("center", "center"), 
+            title.size = 20) +
+  tm_borders(alpha = 0.5)
+```
+
+### 3.6.3 Creating Multiple Maps using *tmap_arrange()*
+
+In the example below, we create multiple maps specified individually using *tmap_arrange()*
+
+```{r}
+youngmap <- tm_shape(mpsz_pop2020)+ 
+  tm_polygons("YOUNG", 
+              style = "quantile", 
+              palette = "Blues")
+
+agedmap <- tm_shape(mpsz_pop2020)+ 
+  tm_polygons("AGED", 
+              style = "quantile", 
+              palette = "Blues")
+
+tmap_arrange(youngmap, agedmap, asp=1, ncol=2)
+```
+
+## 3.6 Mapping Spatial Objects Meeting a Selection Criterion
+
+Instead of creating multiple choropleth maps, we can also use the selection function to map spatial objects meeting a certain criterion. In the example below, we only map objects that are in the `CENTRAL REGION`.
+
+```{r}
+tm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N=="CENTRAL REGION", ])+
+  tm_fill("DEPENDENCY", 
+          style = "quantile", 
+          palette = "Blues", 
+          legend.hist = TRUE, 
+          legend.is.portrait = TRUE,
+          legend.hist.z = 0.1) +
+  tm_layout(legend.outside = TRUE,
+            legend.height = 0.45, 
+            legend.width = 5.0,
+            legend.position = c("right", "bottom"),
+            frame = FALSE) +
+  tm_borders(alpha = 0.5)
+```
