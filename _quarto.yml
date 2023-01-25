@@ -25,6 +25,8 @@ website:
         menu: 
           - href: exercises/icex02.qmd
             text: In-Class Exercise 2
+          - href: exercises/icex03.qmd
+            text: In-Class Exercise 3
       - icon: github
         href: https://github.com/renjie-teo
       - icon: linkedin

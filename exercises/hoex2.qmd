@@ -3,7 +3,7 @@ title: "Hands-on Exercise 2: Choropleth Mapping with R"
 description: "Chloropleth Mapping of Singapore Resident Planning Area / Subzone, Age, Sex and Type of Dwelling"
 author: "Teo Ren Jie"
 date: "1/24/2023"
-last-modified: "1/25/2023"
+date-modified: "1/25/2023"
 categories: ["Hands-on Exercise", "tidyverse", "sf", "tmap"]
 title-block-banner: true
 image: Hands-on_Ex02/preview.png
@@ -35,7 +35,7 @@ pacman::p_load(sf, tidyverse, tmap, terra)
 The following public datasets are used:
 
 | Dataset Name                                                                                                                          | Source                                                                                                                                                    |
-|---------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+|----------------------------------|--------------------------------------|
 | Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)*                                                                   | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)                                                                          |
 | Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 *(respopagesextod2011to2020.csv)* | [[Department of Statistics, Singapore]{.underline}](https://www.singstat.gov.sg/find-data/search-by-theme/population/geographic-distribution/latest-data) |
 
@@ -408,7 +408,7 @@ tm_shape(mpsz_pop2020)+
 ```
 
 | Classification Name | Description                                                                                                                                                                                          |
-|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|-------------|-----------------------------------------------------------|
 | fixed               | Based on breaks specified                                                                                                                                                                            |
 | sd                  | n number of ranges, must ensure distribution is approx. normal. Measure of dispersion/dispersion (z scores)                                                                                          |
 | equal               | n number of ranges **(excluding missing values)**, equal widths for each range, *avoid if data is skewed or large outlier values (as in example above)*                                              |

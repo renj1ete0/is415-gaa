@@ -3,7 +3,7 @@ title: "In-Class Exercise 2: Geospatial Data Wrangling"
 description: "Visualising proportion of functional and non-functional water pumps in Nigeria at LGA level"
 author: "Teo Ren Jie"
 date: "1/16/2023"
-date-modified: "1/25/2023"
+last-modified: "1/25/2023"
 categories: ["In-Class Exercise", "tidyverse", "sf", "ggplot2", "funModeling"]
 title-block-banner: true
 image: In-Class_Ex02/preview.png
@@ -134,7 +134,7 @@ list(wpdx)
 
 Our output shows our `wpdx` tibble data frame consists of **95,008 rows** and **70 columns**. The useful fields we would be paying attention to is the `#lat_deg` and `#lon_deg` columns, which are in the decimal degree format. By viewing the [Data Standard on wpdx's website](https://www.waterpointdata.org/wp-content/uploads/2021/04/WPDx_Data_Standard.pdf), we know that the latitude and longitude is in the `wgs84` Geographic Coordinate System.
 
-### 2.4.2 Creating a Simple Feature Data Frame from an Aspatial Data Frame
+### 2.4.2 Creating a Simple Feature Data Frame from an Aspatial Data Frame 
 
 As the geometry is available in `wkt` in the column `New Georeferenced Column`, we can use *st_as_sfc()* to import the geomtry
 

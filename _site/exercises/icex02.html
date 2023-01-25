@@ -177,6 +177,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../exercises/icex02.html">
  <span class="dropdown-text">In-Class Exercise 2</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../exercises/icex03.html">
+ <span class="dropdown-text">In-Class Exercise 3</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item compact">
@@ -239,6 +243,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       </div>
     </div>
     
+      <div>
+      <div class="quarto-title-meta-heading">Modified</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date-modified">January 25, 2023</p>
+      </div>
+    </div>
       
     </div>
     
@@ -269,20 +279,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#wpdx-aspatial-data" id="toc-wpdx-aspatial-data" class="nav-link" data-scroll-target="#wpdx-aspatial-data">2.4 WPdx+ Aspatial Data</a>
   <ul class="collapse">
   <li><a href="#importing-wpdx-aspatial-data" id="toc-importing-wpdx-aspatial-data" class="nav-link" data-scroll-target="#importing-wpdx-aspatial-data">2.4.1 Importing WPdx+ Aspatial Data</a></li>
-  <li><a href="#creating-a-simple-feature-data-frame-from-an-aspatial-data-frame-and-converting-coordinate-system" id="toc-creating-a-simple-feature-data-frame-from-an-aspatial-data-frame-and-converting-coordinate-system" class="nav-link" data-scroll-target="#creating-a-simple-feature-data-frame-from-an-aspatial-data-frame-and-converting-coordinate-system">2.4.2 Creating a Simple Feature Data Frame from an Aspatial Data Frame and Converting Coordinate System</a></li>
+  <li><a href="#creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" id="toc-creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" class="nav-link" data-scroll-target="#creating-a-simple-feature-data-frame-from-an-aspatial-data-frame">2.4.2 Creating a Simple Feature Data Frame from an Aspatial Data Frame</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#derive-proportions" id="toc-derive-proportions" class="nav-link" data-scroll-target="#derive-proportions">3. Derive Proportions</a>
+  <li><a href="#geospatial-data-cleaning" id="toc-geospatial-data-cleaning" class="nav-link" data-scroll-target="#geospatial-data-cleaning">3. Geospatial Data Cleaning</a>
   <ul class="collapse">
-  <li><a href="#understanding-category-labels" id="toc-understanding-category-labels" class="nav-link" data-scroll-target="#understanding-category-labels">3.1 Understanding Category Labels</a></li>
-  <li><a href="#filtering-data" id="toc-filtering-data" class="nav-link" data-scroll-target="#filtering-data">3.2 Filtering Data</a></li>
-  <li><a href="#point-in-polygon-count" id="toc-point-in-polygon-count" class="nav-link" data-scroll-target="#point-in-polygon-count">3.3 Point-in-polygon Count</a></li>
-  <li><a href="#calculating-proportion-of-water-points" id="toc-calculating-proportion-of-water-points" class="nav-link" data-scroll-target="#calculating-proportion-of-water-points">3.4 Calculating Proportion of Water Points</a></li>
+  <li><a href="#excluding-redundant-fields" id="toc-excluding-redundant-fields" class="nav-link" data-scroll-target="#excluding-redundant-fields">3.1 Excluding Redundant Fields</a></li>
+  <li><a href="#checking-for-duplicate-name" id="toc-checking-for-duplicate-name" class="nav-link" data-scroll-target="#checking-for-duplicate-name">3.2 Checking for Duplicate Name</a></li>
   </ul></li>
-  <li><a href="#visualisation-and-exploratory-data-analysis" id="toc-visualisation-and-exploratory-data-analysis" class="nav-link" data-scroll-target="#visualisation-and-exploratory-data-analysis">4. Visualisation and Exploratory Data Analysis</a>
+  <li><a href="#data-wrangling-for-water-point-data" id="toc-data-wrangling-for-water-point-data" class="nav-link" data-scroll-target="#data-wrangling-for-water-point-data">4. Data Wrangling for Water Point Data</a>
   <ul class="collapse">
-  <li><a href="#geospatial-plot" id="toc-geospatial-plot" class="nav-link" data-scroll-target="#geospatial-plot">4.1 Geospatial Plot</a></li>
-  <li><a href="#exploratory-data-analysis-eda" id="toc-exploratory-data-analysis-eda" class="nav-link" data-scroll-target="#exploratory-data-analysis-eda">4.2 Exploratory Data Analysis (EDA)</a></li>
+  <li><a href="#understanding-field-names" id="toc-understanding-field-names" class="nav-link" data-scroll-target="#understanding-field-names">4.1 Understanding Field Names</a></li>
+  <li><a href="#filtering-data" id="toc-filtering-data" class="nav-link" data-scroll-target="#filtering-data">4.2 Filtering Data</a></li>
+  <li><a href="#point-in-polygon-count" id="toc-point-in-polygon-count" class="nav-link" data-scroll-target="#point-in-polygon-count">4.3 Point-in-polygon Count</a></li>
+  <li><a href="#saving-the-analytical-data-in-rds-format" id="toc-saving-the-analytical-data-in-rds-format" class="nav-link" data-scroll-target="#saving-the-analytical-data-in-rds-format">4.4 Saving the Analytical Data in rds format</a></li>
+  <li><a href="#plotting-the-distribution-of-total-water-points-by-lga-in-histogram" id="toc-plotting-the-distribution-of-total-water-points-by-lga-in-histogram" class="nav-link" data-scroll-target="#plotting-the-distribution-of-total-water-points-by-lga-in-histogram">4.5 Plotting the Distribution of Total Water Points by LGA in Histogram</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -350,6 +361,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td>geoBoundaries Nigeria Level-2 Administrative Boundary (<em>geoBoundaries-NGA-ADM2.shp</em>) - UN OCHA CODs</td>
 <td><a href="https://www.geoboundaries.org/index.html#getdata">geoBoundaries</a></td>
 </tr>
+<tr class="odd">
+<td>Humanitarian Data Exchange Nigeria Level-2 Administrative Boundary (<em>nga_admbnda_adm2_osgof_20190417.shp</em>)</td>
+<td><a href="https://data.humdata.org/dataset/81ac1d38-f603-4a98-804d-325c658599a3/resource/aa69f07b-ed8e-456a-9233-b20674730be6/download/nga_adm_osgof_20190417.zip">Humanitarian Data Exchange</a></td>
+</tr>
 </tbody>
 </table>
 <p>The data has been extracted to <code>In-Class_Ex02/data/geospatial</code>.</p>
@@ -373,41 +388,45 @@ Geodetic CRS:  WGS 84</code></pre>
 </div>
 </div>
 <p>From the above message, it tells us that the dataset contains <code>multipolygon</code> features, containing <strong>774 multipolygon</strong> features and <strong>5 fields</strong> in the <code>gbnigeria</code> simple feature data frame and is in the <code>WGS84</code> geographic coordinates system.</p>
+<p>Let us check the other dataset from Humanitarian data exchange.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>nigeria <span class="ot">=</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"In-Class_Ex02/data/geospatial"</span>, <span class="at">layer =</span> <span class="st">"nga_admbnda_adm2_osgof_20190417"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `nga_admbnda_adm2_osgof_20190417' from data source 
+  `C:\renjie-teo\IS415-GAA\exercises\In-Class_Ex02\data\geospatial' 
+  using driver `ESRI Shapefile'
+Simple feature collection with 774 features and 16 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 2.668534 ymin: 4.273007 xmax: 14.67882 ymax: 13.89442
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>From the above message, it tells us that the dataset contains <code>multipolygon</code> features, containing <strong>774 multipolygon</strong> features and <strong>16 fields</strong> in the <code>gbnigeria</code> simple feature data frame and is in the <code>WGS84</code> geographic coordinates system.</p>
+<p>By comparing both datasets, the dataset from Humanitarian Data Exchange is more favourable as we can tell which state the LGA area belongs too which will be beneficial for our analysis</p>
 </section>
 <section id="checking-the-coordinate-reference-system" class="level3">
 <h3 class="anchored" data-anchor-id="checking-the-coordinate-reference-system">2.3.2 Checking the Coordinate Reference System</h3>
 <p>In the code below, we will check if the Coordinate Reference System has been specified correctly.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(gbnigeria)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(nigeria)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
   User input: WGS 84 
   wkt:
 GEOGCRS["WGS 84",
-    ENSEMBLE["World Geodetic System 1984 ensemble",
-        MEMBER["World Geodetic System 1984 (Transit)"],
-        MEMBER["World Geodetic System 1984 (G730)"],
-        MEMBER["World Geodetic System 1984 (G873)"],
-        MEMBER["World Geodetic System 1984 (G1150)"],
-        MEMBER["World Geodetic System 1984 (G1674)"],
-        MEMBER["World Geodetic System 1984 (G1762)"],
-        MEMBER["World Geodetic System 1984 (G2139)"],
+    DATUM["World Geodetic System 1984",
         ELLIPSOID["WGS 84",6378137,298.257223563,
-            LENGTHUNIT["metre",1]],
-        ENSEMBLEACCURACY[2.0]],
+            LENGTHUNIT["metre",1]]],
     PRIMEM["Greenwich",0,
         ANGLEUNIT["degree",0.0174532925199433]],
     CS[ellipsoidal,2],
-        AXIS["geodetic latitude (Lat)",north,
+        AXIS["latitude",north,
             ORDER[1],
             ANGLEUNIT["degree",0.0174532925199433]],
-        AXIS["geodetic longitude (Lon)",east,
+        AXIS["longitude",east,
             ORDER[2],
             ANGLEUNIT["degree",0.0174532925199433]],
-    USAGE[
-        SCOPE["Horizontal component of 3D system."],
-        AREA["World."],
-        BBOX[-90,-180,90,180]],
     ID["EPSG",4326]]</code></pre>
 </div>
 </div>
@@ -417,10 +436,10 @@ GEOGCRS["WGS 84",
 <h3 class="anchored" data-anchor-id="converting-the-coordinate-reference-system">2.3.2 Converting the Coordinate Reference System</h3>
 <p>In the code below, we will convert the Geographic Coordinate Reference System from <code>WGS84</code> to <code>EPSG:26391</code> Projected Coordinate System.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gbnigeria26391 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(gbnigeria, <span class="at">crs =</span> <span class="dv">26391</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>nigeria26391 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(nigeria, <span class="at">crs =</span> <span class="dv">26391</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(gbnigeria26391)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(nigeria26391)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
   User input: EPSG:26391 
@@ -474,11 +493,11 @@ PROJCRS["Minna / Nigeria West Belt",
 <h3 class="anchored" data-anchor-id="importing-wpdx-aspatial-data">2.4.1 Importing WPdx+ Aspatial Data</h3>
 <p>Since <code>WPdx+</code> data set is in <code>csv</code> format, we will use read_csv() of <strong>readr</strong> package to import <code>Water_Point_Data_Exchange_-_Plus__WPdx__.csv</code> and output it to an R object called <code>wpdx</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>wpdx <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"In-Class_Ex02/data/aspatial/Water_Point_Data_Exchange_-_Plus__WPdx__.csv"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">#clean_country_name</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"Nigeria"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>wpdx <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"In-Class_Ex02/data/aspatial/Water_Point_Data_Exchange_-_Plus__WPdx__.csv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">#clean_country_name</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"Nigeria"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(wpdx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(wpdx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 # A tibble: 95,008 × 70
@@ -505,242 +524,194 @@ PROJCRS["Minna / Nigeria West Belt",
 </div>
 <p>Our output shows our <code>wpdx</code> tibble data frame consists of <strong>95,008 rows</strong> and <strong>70 columns</strong>. The useful fields we would be paying attention to is the <code>#lat_deg</code> and <code>#lon_deg</code> columns, which are in the decimal degree format. By viewing the <a href="https://www.waterpointdata.org/wp-content/uploads/2021/04/WPDx_Data_Standard.pdf">Data Standard on wpdx’s website</a>, we know that the latitude and longitude is in the <code>wgs84</code> Geographic Coordinate System.</p>
 </section>
-<section id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame-and-converting-coordinate-system" class="level3">
-<h3 class="anchored" data-anchor-id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame-and-converting-coordinate-system">2.4.2 Creating a Simple Feature Data Frame from an Aspatial Data Frame and Converting Coordinate System</h3>
-<p>The code below converts the <code>wpdx</code> tibble data fame into a simple feature data frame by using <em>st_as_sf()</em> from <strong>sf</strong> packages, which converts foreign data formats to an sf object. At the same time, the st_transform statement will convert the longitude, latitude Geographic Coordinate System from <code>EPSG:4236</code> (WGS 84) to <code>EPSG:26391</code>, one of Nigeria’s Projected Coordinate Systems.</p>
+<section id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" class="level3">
+<h3 class="anchored" data-anchor-id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame">2.4.2 Creating a Simple Feature Data Frame from an Aspatial Data Frame</h3>
+<p>As the geometry is available in <code>wkt</code> in the column <code>New Georeferenced Column</code>, we can use <em>st_as_sfc()</em> to import the geomtry</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>wpdx_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(wpdx,</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"#lon_deg"</span>, <span class="st">"#lat_deg"</span>),</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">26391</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>wpdx<span class="sc">$</span>Geometry <span class="ot">&lt;-</span> <span class="fu">st_as_sfc</span>(wpdx<span class="sc">$</span><span class="st">`</span><span class="at">New Georeferenced Column</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>As there is no spatial data information, firstly, we assign the original projection when converting the tibble dataframe to sf. The original is <code>wgs84</code> which is <code>EPSG:4326</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(wpdx_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>wpdx_sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(wpdx, <span class="at">crs=</span><span class="dv">4326</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>wpdx_sf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[[1]]
-Simple feature collection with 95008 features and 68 fields
+<pre><code>Simple feature collection with 95008 features and 70 fields
 Geometry type: POINT
 Dimension:     XY
-Bounding box:  xmin: 32536.82 ymin: 33461.24 xmax: 1292096 ymax: 1091052
-Projected CRS: Minna / Nigeria West Belt
-# A tibble: 95,008 × 69
-   row_id `#source`      #repo…¹ #stat…² #wate…³ #wate…⁴ #wate…⁵ #wate…⁶ #faci…⁷
- *  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
- 1 429068 GRID3          08/29/… Unknown &lt;NA&gt;    &lt;NA&gt;    Tapsta… Tapsta… Improv…
- 2 222071 Federal Minis… 08/16/… Yes     Boreho… Well    Mechan… Mechan… Improv…
- 3 160612 WaterAid       12/04/… Yes     Boreho… Well    Hand P… Hand P… Improv…
- 4 160669 WaterAid       12/04/… Yes     Boreho… Well    &lt;NA&gt;    &lt;NA&gt;    Improv…
- 5 160642 WaterAid       12/04/… Yes     Boreho… Well    Hand P… Hand P… Improv…
- 6 160628 WaterAid       12/04/… Yes     Boreho… Well    Hand P… Hand P… Improv…
- 7 160632 WaterAid       12/04/… Yes     Boreho… Well    Hand P… Hand P… Improv…
- 8 642747 Living Water … 10/03/… Yes     Boreho… Well    Mechan… Mechan… Improv…
- 9 642456 Living Water … 10/03/… Yes     Boreho… Well    Hand P… Hand P… Improv…
-10 641347 Living Water … 03/28/… Yes     Boreho… Well    Hand P… Hand P… Improv…
-# … with 94,998 more rows, 60 more variables: `#clean_country_name` &lt;chr&gt;,
-#   `#clean_adm1` &lt;chr&gt;, `#clean_adm2` &lt;chr&gt;, `#clean_adm3` &lt;chr&gt;,
-#   `#clean_adm4` &lt;chr&gt;, `#install_year` &lt;dbl&gt;, `#installer` &lt;chr&gt;,
-#   `#rehab_year` &lt;lgl&gt;, `#rehabilitator` &lt;lgl&gt;, `#management_clean` &lt;chr&gt;,
-#   `#status_clean` &lt;chr&gt;, `#pay` &lt;chr&gt;, `#fecal_coliform_presence` &lt;chr&gt;,
-#   `#fecal_coliform_value` &lt;dbl&gt;, `#subjective_quality` &lt;chr&gt;,
-#   `#activity_id` &lt;chr&gt;, `#scheme_id` &lt;chr&gt;, `#wpdx_id` &lt;chr&gt;, …</code></pre>
+Bounding box:  xmin: 2.707441 ymin: 4.301812 xmax: 14.21828 ymax: 13.86568
+Geodetic CRS:  WGS 84
+# A tibble: 95,008 × 71
+   row_id `#source`      #lat_…¹ #lon_…² #repo…³ #stat…⁴ #wate…⁵ #wate…⁶ #wate…⁷
+ *  &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
+ 1 429068 GRID3             7.98    5.12 08/29/… Unknown &lt;NA&gt;    &lt;NA&gt;    Tapsta…
+ 2 222071 Federal Minis…    6.96    3.60 08/16/… Yes     Boreho… Well    Mechan…
+ 3 160612 WaterAid          6.49    7.93 12/04/… Yes     Boreho… Well    Hand P…
+ 4 160669 WaterAid          6.73    7.65 12/04/… Yes     Boreho… Well    &lt;NA&gt;   
+ 5 160642 WaterAid          6.78    7.66 12/04/… Yes     Boreho… Well    Hand P…
+ 6 160628 WaterAid          6.96    7.78 12/04/… Yes     Boreho… Well    Hand P…
+ 7 160632 WaterAid          7.02    7.84 12/04/… Yes     Boreho… Well    Hand P…
+ 8 642747 Living Water …    7.33    8.98 10/03/… Yes     Boreho… Well    Mechan…
+ 9 642456 Living Water …    7.17    9.11 10/03/… Yes     Boreho… Well    Hand P…
+10 641347 Living Water …    7.20    9.22 03/28/… Yes     Boreho… Well    Hand P…
+# … with 94,998 more rows, 62 more variables: `#water_tech_category` &lt;chr&gt;,
+#   `#facility_type` &lt;chr&gt;, `#clean_country_name` &lt;chr&gt;, `#clean_adm1` &lt;chr&gt;,
+#   `#clean_adm2` &lt;chr&gt;, `#clean_adm3` &lt;chr&gt;, `#clean_adm4` &lt;chr&gt;,
+#   `#install_year` &lt;dbl&gt;, `#installer` &lt;chr&gt;, `#rehab_year` &lt;lgl&gt;,
+#   `#rehabilitator` &lt;lgl&gt;, `#management_clean` &lt;chr&gt;, `#status_clean` &lt;chr&gt;,
+#   `#pay` &lt;chr&gt;, `#fecal_coliform_presence` &lt;chr&gt;,
+#   `#fecal_coliform_value` &lt;dbl&gt;, `#subjective_quality` &lt;chr&gt;, …</code></pre>
 </div>
 </div>
-<p>Previously, there were <strong>70 columns</strong> in the aspatial data, only <strong>69 columns</strong> exists now. <code>#lat</code> and <code>#lon</code> columns were dropped and a new column has been created for <code>geometry</code>.</p>
-</section>
-</section>
-</section>
-<section id="derive-proportions" class="level1">
-<h1>3. Derive Proportions</h1>
-<hr>
-<section id="understanding-category-labels" class="level2">
-<h2 class="anchored" data-anchor-id="understanding-category-labels">3.1 Understanding Category Labels</h2>
-<p>First, let us have a look at the <code>#status_clean</code> column which stores the information about <code>Functional</code> and <code>Non-Functional</code> data points. The code below returns all unique values that were used in the column.</p>
+<p>Next, we then convert the projection to the appropriate decimal based projection system.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(wpdx[<span class="st">"#status_clean"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>wpdx_sf <span class="ot">&lt;-</span> wpdx_sf <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">26391</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="geospatial-data-cleaning" class="level1">
+<h1>3. Geospatial Data Cleaning</h1>
+<section id="excluding-redundant-fields" class="level2">
+<h2 class="anchored" data-anchor-id="excluding-redundant-fields">3.1 Excluding Redundant Fields</h2>
+<p>As the wpdx sf dataframe consist of many redundant field, we use <code>select()</code> to select the fields which we want to retain.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>nigeria26391 <span class="ot">&lt;-</span> nigeria26391 <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">c</span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">8</span><span class="sc">:</span><span class="dv">9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="checking-for-duplicate-name" class="level2">
+<h2 class="anchored" data-anchor-id="checking-for-duplicate-name">3.2 Checking for Duplicate Name</h2>
+<p>It is important to check for duplicate name in the data main data fields. Using <code>duplicated()</code>, we can flag out LGA names that might be duplicated as shown below:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="fu">duplicated</span>(nigeria26391<span class="sc">$</span>ADM2_EN) <span class="sc">==</span> <span class="cn">TRUE</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 9 × 1
-  `#status_clean`                 
-  &lt;chr&gt;                           
-1 &lt;NA&gt;                            
-2 Functional                      
-3 Abandoned/Decommissioned        
-4 Non-Functional                  
-5 Functional but not in use       
-6 Functional but needs repair     
-7 Abandoned                       
-8 Non functional due to dry season
-9 Non-Functional due to dry season</code></pre>
+<pre><code>[1] "Bassa"    "Ifelodun" "Irepodun" "Nasarawa" "Obi"      "Surulere"</code></pre>
 </div>
 </div>
-<p>As we are interested in looking into the Proportions of <code>Functional</code> and <code>Non-functional</code> water points, we can safely disregard the <code>NA</code> values.</p>
-<p>Next, from our remaining 8 category labels, all except those marked strictly as <code>Functional</code> are <code>Non-functional</code>. These <code>Non-functional</code> labels could include categories marked as <code>Abadoned</code>, <code>Functional but not in use</code> (which means its non-functional at that point) and <code>Functional but needs repair</code>, should be classified</p>
+<p>To reduce duplication of LGA names, we will put the state names behind to make it more specific.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">94</span>] <span class="ot">&lt;-</span> <span class="st">"Bassa, Kogi"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">95</span>] <span class="ot">&lt;-</span> <span class="st">"Bassa, Plateau"</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">304</span>] <span class="ot">&lt;-</span> <span class="st">"Ifelodun, Kwara"</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">305</span>] <span class="ot">&lt;-</span> <span class="st">"Ifelodun, Osun"</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">355</span>] <span class="ot">&lt;-</span> <span class="st">"Irepodun, Kwara"</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">356</span>] <span class="ot">&lt;-</span> <span class="st">"Ireopodun, Osun"</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">519</span>] <span class="ot">&lt;-</span> <span class="st">"Nasarawa, Kano"</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">520</span>] <span class="ot">&lt;-</span> <span class="st">"Nasarawa, Nasarawa"</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">546</span>] <span class="ot">&lt;-</span> <span class="st">"Obi, Benue"</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">547</span>] <span class="ot">&lt;-</span> <span class="st">"Obi, Nasarawa"</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">693</span>] <span class="ot">&lt;-</span> <span class="st">"Surulere, Lagos"</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="dv">694</span>] <span class="ot">&lt;-</span> <span class="st">"Surulere, Oyo"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let us check now if the duplication has been resolved.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>nigeria26391<span class="sc">$</span>ADM2_EN[<span class="fu">duplicated</span>(nigeria26391<span class="sc">$</span>ADM2_EN) <span class="sc">==</span> <span class="cn">TRUE</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>character(0)</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="data-wrangling-for-water-point-data" class="level1">
+<h1>4. Data Wrangling for Water Point Data</h1>
+<hr>
+<section id="understanding-field-names" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-field-names">4.1 Understanding Field Names</h2>
+<p>First, let us have a look at the <code>#status_clean</code> column which stores the information about <code>Functional</code> and <code>Non-Functional</code> data points. The code below returns all values that were used in the column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freq</span>(<span class="at">data =</span> wpdx_sf,</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">input =</span> <span class="st">'#status_clean'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="icex02_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                     #status_clean frequency percentage cumulative_perc
+1                       Functional     45883      48.29           48.29
+2                   Non-Functional     29385      30.93           79.22
+3                             &lt;NA&gt;     10656      11.22           90.44
+4      Functional but needs repair      4579       4.82           95.26
+5 Non-Functional due to dry season      2403       2.53           97.79
+6        Functional but not in use      1686       1.77           99.56
+7         Abandoned/Decommissioned       234       0.25           99.81
+8                        Abandoned       175       0.18           99.99
+9 Non functional due to dry season         7       0.01          100.00</code></pre>
+</div>
+</div>
+<p>As there might be issues performing mathematical calculations with <code>NA</code> labels, we will rename them to <code>unknown</code>.</p>
+<p>The code below renames the column <code>#status_clean</code> to <code>status_clean</code>, select only the <code>status_clean</code> for manipulation and then replace all na values to <code>unknown</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>wpdx_sf_nga <span class="ot">&lt;-</span> wpdx_sf <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">status_clean =</span> <span class="st">'#status_clean'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(status_clean) <span class="sc">%&gt;%</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">status_clean =</span> <span class="fu">replace_na</span>(status_clean, <span class="st">"unknown"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="filtering-data" class="level2">
-<h2 class="anchored" data-anchor-id="filtering-data">3.2 Filtering Data</h2>
-<p>With our previous knowledge, we can filter the data to obtain functional proportion counts in each LGA level. The functional proportion counts could be obtained through <code>Functional Proportion = Functional Count / Total Count</code></p>
-<p>Hence, the code below will filter <code>Functional Count</code> (for functional water points) and <code>Total Count</code> (for water points that are not NA) into separate data frames.</p>
+<h2 class="anchored" data-anchor-id="filtering-data">4.2 Filtering Data</h2>
+<p>With our previous knowledge, we can filter the data to obtain functional proportion counts in each LGA level. We will filter the <code>wpdx_sf_nga</code> dataframes to option functional and non-functional water points.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>wpdx_func <span class="ot">&lt;-</span> wpdx_sf <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="st">`</span><span class="at">#status_clean</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"Functional"</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>wpdx_nonna <span class="ot">&lt;-</span> wpdx_sf <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="st">`</span><span class="at">#status_clean</span><span class="st">`</span> <span class="sc">!=</span> <span class="st">"NA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>wpdx_func <span class="ot">&lt;-</span> wpdx_sf_nga <span class="sc">%&gt;%</span> </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(status_clean <span class="sc">%in%</span> </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">c</span>(<span class="st">"Functional"</span>, </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Functional but not in use"</span>, </span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Functional but needs repair"</span>))</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>wpdx_nonfunc <span class="ot">&lt;-</span> wpdx_sf_nga <span class="sc">%&gt;%</span> </span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(status_clean <span class="sc">%in%</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>          <span class="fu">c</span>(<span class="st">"Abadoned/Decommissioned"</span>, </span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Abandoned"</span>,</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Non-Functional due to dry season"</span>,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Non-Functional"</span>,</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Non functional due to dry season"</span>))</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>wpdx_unknown <span class="ot">&lt;-</span> wpdx_sf_nga <span class="sc">%&gt;%</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(status_clean <span class="sc">==</span> <span class="st">"unknown"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="point-in-polygon-count" class="level2">
-<h2 class="anchored" data-anchor-id="point-in-polygon-count">3.3 Point-in-polygon Count</h2>
-<p>Utilising <em>st_intersects()</em> of <strong>sf</strong> package and lengths, we can find how many <code>Functional</code> water points and <code>Total</code> (non-NA) water points fall under which LGA.</p>
+<h2 class="anchored" data-anchor-id="point-in-polygon-count">4.3 Point-in-polygon Count</h2>
+<p>Utilising <em>st_intersects()</em> of <strong>sf</strong> package and lengths, we check where each data point for the water point which fall inside each LGA. We do each calculation separation so we can cross check later to ensure all the values sum to the same total.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>gbnigeria26391<span class="sc">$</span><span class="st">`</span><span class="at">Functional Count</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(gbnigeria26391, wpdx_func))</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>gbnigeria26391<span class="sc">$</span><span class="st">`</span><span class="at">Total Count</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(gbnigeria26391, wpdx_nonna))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Using <em>summary()</em> , we can view summary statistics of the newly derived <code>Functional Count</code> and <code>Total Count</code> fields.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gbnigeria26391<span class="sc">$</span><span class="st">`</span><span class="at">Functional Count</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-   0.00   13.00   38.00   59.27   75.00  670.00 </code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gbnigeria26391<span class="sc">$</span><span class="st">`</span><span class="at">Total Count</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-   0.00   36.25   87.00  108.95  152.50  894.00 </code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>nigeria_wp <span class="ot">&lt;-</span> nigeria26391 <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">total_wp</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">lengths</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_intersects</span>(nigeria26391, wpdx_sf_nga))) <span class="sc">%&gt;%</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">wp_functional</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">lengths</span>(</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_intersects</span>(nigeria26391, wpdx_func))) <span class="sc">%&gt;%</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">wp_nonfunctional</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">lengths</span>(</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_intersects</span>(nigeria26391, wpdx_nonfunc))) <span class="sc">%&gt;%</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">wp_unknown</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">lengths</span>(</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_intersects</span>(nigeria26391, wpdx_unknown)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="calculating-proportion-of-water-points" class="level2">
-<h2 class="anchored" data-anchor-id="calculating-proportion-of-water-points">3.4 Calculating Proportion of Water Points</h2>
+<section id="saving-the-analytical-data-in-rds-format" class="level2">
+<h2 class="anchored" data-anchor-id="saving-the-analytical-data-in-rds-format">4.4 Saving the Analytical Data in rds format</h2>
+<p>In order to retain the sf data structure for subsequent analysis, we should save the sf dataframe into rds format.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(nigeria_wp, <span class="st">"In-Class_Ex02/data/rds/nigeria_wp.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="plotting-the-distribution-of-total-water-points-by-lga-in-histogram" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-the-distribution-of-total-water-points-by-lga-in-histogram">4.5 Plotting the Distribution of Total Water Points by LGA in Histogram</h2>
 <p>Next, we will use <em>mutate()</em>&nbsp;of <strong>dplyr</strong> package to compute the proportion of <code>Functional</code> and <code>Non-</code> water points.</p>
 <p>This is given by <code>Functional Proportion = Functional Count / Total Count</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>gbnigeria26391 <span class="ot">&lt;-</span> gbnigeria26391 <span class="sc">%&gt;%</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Functional Proportion</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Functional Count</span><span class="st">`</span><span class="sc">/</span><span class="st">`</span><span class="at">Total Count</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Now, we can view the summary of all LGA.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gbnigeria26391<span class="sc">$</span><span class="st">`</span><span class="at">Functional Proportion</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
- 0.0000  0.3448  0.4833  0.4955  0.6387  1.0000      21 </code></pre>
-</div>
-</div>
-<p>Why do we see 21 NAs? In 3.2, we have already removed the NA values. Let us check the NA values that are recorded under the <code>Functional Proportion</code> column.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(gbnigeria26391 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="st">`</span><span class="at">Functional Proportion</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"NaN"</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[[1]]
-Simple feature collection with 21 features and 9 fields
-Geometry type: MULTIPOLYGON
-Dimension:     XY
-Bounding box:  xmin: 101566.3 ymin: 89533.9 xmax: 1343798 ymax: 1092644
-Projected CRS: Minna / Nigeria West Belt
-First 10 features:
-    shapeName    pcode level                    shapeID shapeGroup shapeType
-1    Madagali NG002010  ADM2 NGA-ADM2-13203401B61781029        NGA      ADM2
-2      Abadam NG008001  ADM2 NGA-ADM2-13203401B32056311        NGA      ADM2
-3        Bama NG008003  ADM2 NGA-ADM2-13203401B17712835        NGA      ADM2
-4      Damboa NG008007  ADM2 NGA-ADM2-13203401B45202019        NGA      ADM2
-5       Dikwa NG008008  ADM2 NGA-ADM2-13203401B80916619        NGA      ADM2
-6       Gubio NG008009  ADM2 NGA-ADM2-13203401B97417667        NGA      ADM2
-7    Guzamala NG008010  ADM2 NGA-ADM2-13203401B26924752        NGA      ADM2
-8       Gwoza NG008011  ADM2  NGA-ADM2-13203401B8862109        NGA      ADM2
-9        Kaga NG008014  ADM2 NGA-ADM2-13203401B28031404        NGA      ADM2
-10 Kala/Balge NG008015  ADM2 NGA-ADM2-13203401B85515115        NGA      ADM2
-                         geometry Functional Count Total Count
-1  MULTIPOLYGON (((1239405 783...                0           0
-2  MULTIPOLYGON (((1245549 106...                0           0
-3  MULTIPOLYGON (((1334890 876...                0           0
-4  MULTIPOLYGON (((1200101 776...                0           0
-5  MULTIPOLYGON (((1303878 886...                0           0
-6  MULTIPOLYGON (((1159707 993...                0           0
-7  MULTIPOLYGON (((1168642 102...                0           0
-8  MULTIPOLYGON (((1239405 783...                0           0
-9  MULTIPOLYGON (((1127455 815...                0           0
-10 MULTIPOLYGON (((1334890 876...                0           0
-   Functional Proportion
-1                    NaN
-2                    NaN
-3                    NaN
-4                    NaN
-5                    NaN
-6                    NaN
-7                    NaN
-8                    NaN
-9                    NaN
-10                   NaN</code></pre>
-</div>
-</div>
-<p>Oh, so from the records above, it appears that the <code>Functional Proportion</code> column is <code>NA</code> as there were no <em>non-NA</em> records of any water pumps within that LGA. In short, there were no records of water pumps.</p>
-</section>
-</section>
-<section id="visualisation-and-exploratory-data-analysis" class="level1">
-<h1>4. Visualisation and Exploratory Data Analysis</h1>
-<section id="geospatial-plot" class="level2">
-<h2 class="anchored" data-anchor-id="geospatial-plot">4.1 Geospatial Plot</h2>
-<p>We can plot a simple geospatial visualisation of the map of Nigeria’s LGA to the proportion of functional to total water pumps within the LGA.</p>
-<p>For white areas, these are areas where there was no data on any water pump (functional or non-functional) in the region.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gbnigeria26391[<span class="st">'Functional Proportion'</span>],<span class="at">main =</span> <span class="st">"Proportion Functional to Non-Functional Water Points"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> nigeria_wp,</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> total_wp)) <span class="sc">+</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"light blue"</span>) <span class="sc">+</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept =</span> <span class="fu">mean</span>(</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    total_wp, <span class="at">na.rm =</span> T)),</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"red"</span>,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">"dashed"</span>,</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Distribution of total water points by LGA"</span>) <span class="sc">+</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"No. of water points"</span>) <span class="sc">+</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"No of</span><span class="sc">\n</span><span class="st">LGAs"</span>) <span class="sc">+</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="icex02_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+<p><img src="icex02_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="exploratory-data-analysis-eda" class="level2">
-<h2 class="anchored" data-anchor-id="exploratory-data-analysis-eda">4.2 Exploratory Data Analysis (EDA)</h2>
-<p>We will save the values to another variable to perform EDA.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>gbnigeria26391_analysis <span class="ot">&lt;-</span> gbnigeria26391</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>In our EDA, let us calculate the area in <code>m^2</code> for some correlation analysis later. Let us save it as <code>int</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>gbnigeria26391_analysis<span class="sc">$</span>AREA <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">st_area</span>(gbnigeria26391_analysis))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>For our EDA, we need to drop the <code>geometry</code> values. We will set the geometry to <code>NULL</code> to remove all the geometry values.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(gbnigeria26391_analysis) <span class="ot">&lt;-</span> <span class="cn">NULL</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>By using <code>profiling_num</code> of <code>funModeling</code> package, we will be able to get some descriptive statistics.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">profiling_num</span>(gbnigeria26391_analysis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>               variable         mean      std_dev variation_coef         p_01
-1      Functional Count 5.926873e+01 7.553528e+01      1.2744541 0.000000e+00
-2           Total Count 1.089548e+02 1.030984e+02      0.9462496 0.000000e+00
-3 Functional Proportion 4.954910e-01 2.121557e-01      0.4281727 3.170909e-02
-4                  AREA 1.182254e+09 1.411630e+09      1.1940157 1.340083e+07
-          p_05         p_25         p_50         p_75         p_95         p_99
-1 1.000000e+00 1.300000e+01 3.800000e+01 7.500000e+01 1.872000e+02 3.918900e+02
-2 4.000000e+00 3.625000e+01 8.700000e+01 1.525000e+02 2.944000e+02 4.887800e+02
-3 1.758824e-01 3.448276e-01 4.832536e-01 6.387097e-01 8.792982e-01 1.000000e+00
-4 5.321743e+07 2.802043e+08 7.149905e+08 1.513378e+09 3.980630e+09 6.751858e+09
-   skewness  kurtosis          iqr                             range_98
-1 3.4927669 20.665452 6.200000e+01                          [0, 391.89]
-2 2.3395608 12.453790 1.162500e+02                          [0, 488.78]
-3 0.2596697  2.634984 2.938821e-01              [0.0317090909090909, 1]
-4 2.6998921 13.123940 1.233174e+09 [13400828.6775154, 6751858494.69934]
-                              range_80
-1                             [5, 128]
-2                          [13, 220.8]
-3             [0.229760795278037, 0.8]
-4 [115511990.291964, 2710885284.18212]</code></pre>
-</div>
-</div>
-<p>Similarly, using the <code>plot_num</code> function of <code>funModeling</code> package, we can plot a histogram of the <code>numerical</code> columns.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_num</span>(gbnigeria26391_analysis,<span class="at">bins =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="icex02_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(gbnigeria26391_analysis<span class="sc">$</span><span class="st">`</span><span class="at">Functional Proportion</span><span class="st">`</span>,</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="at">main =</span> <span class="st">"Proportion Functional to Non-Functional Water Points"</span>,</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="at">horizontal =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="icex02_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>From the numerical plots, boxplot and descriptive statistics generated, we can tell that the functional to non-functional proportion of water points is roughly bell-shaped, with a median of approximately 0.48. There are no extreme outlier values.</p>
 
 
 </section>
