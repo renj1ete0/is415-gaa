@@ -267,7 +267,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </ul></li>
   <li><a href="#choropleth-map-for-rates" id="toc-choropleth-map-for-rates" class="nav-link" data-scroll-target="#choropleth-map-for-rates"><span class="toc-section-number">3</span>  Choropleth Map for Rates</a>
   <ul class="collapse">
-  <li><a href="#deriving-proportion-of-functional-water-points-and-non-functional-water-points" id="toc-deriving-proportion-of-functional-water-points-and-non-functional-water-points" class="nav-link" data-scroll-target="#deriving-proportion-of-functional-water-points-and-non-functional-water-points"><span class="toc-section-number">3.1</span>  Deriving Proportion of Functional Water pOints and Non-Functional Water Points</a></li>
+  <li><a href="#deriving-proportion-of-functional-water-points-and-non-functional-water-points" id="toc-deriving-proportion-of-functional-water-points-and-non-functional-water-points" class="nav-link" data-scroll-target="#deriving-proportion-of-functional-water-points-and-non-functional-water-points"><span class="toc-section-number">3.1</span>  Deriving Proportion of Functional Water Points and Non-Functional Water Points</a></li>
   <li><a href="#plotting-map-of-rate" id="toc-plotting-map-of-rate" class="nav-link" data-scroll-target="#plotting-map-of-rate"><span class="toc-section-number">3.2</span>  Plotting Map of Rate</a></li>
   </ul></li>
   <li><a href="#extreme-value-maps" id="toc-extreme-value-maps" class="nav-link" data-scroll-target="#extreme-value-maps"><span class="toc-section-number">4</span>  Extreme Value Maps</a>
@@ -291,14 +291,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="background" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Background</h1>
 <hr>
-<p>To be updated</p>
 <section id="objectives" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="objectives"><span class="header-section-number">1.1</span> Objectives</h2>
-<p>To be updated</p>
+<p>In this in-class exercise, you will gain hands-on experience on using appropriate R methods to plot analytical maps. For the purpose of this exercise, Nigeria water point data prepared during In-class Exercise 2 will be used.</p>
 </section>
 <section id="task" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="task"><span class="header-section-number">1.2</span> Task</h2>
-<p>To be updated</p>
+<p>By the end of this in-class exercise, you will be able to use appropriate functions of tmap and tidyverse to perform the following tasks:</p>
+<ul>
+<li><p>Importing geospatial data in rds format into R environment.</p></li>
+<li><p>Creating cartographic quality choropleth maps by using appropriate tmap functions.</p></li>
+<li><p>Creating rate map</p></li>
+<li><p>Creating percentile map</p></li>
+<li><p>Creating boxmap</p></li>
+</ul>
 </section>
 </section>
 <section id="getting-started" class="level1" data-number="2">
@@ -327,6 +333,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="visualising-distribution-of-non-functional-water-points" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="visualising-distribution-of-non-functional-water-points"><span class="header-section-number">2.3</span> Visualising Distribution of Non-Functional Water Points</h2>
+<p>Here, we will plot 2 maps, <code>p1</code> which shows the functional water points and <code>p2</code> by total number of water points for side-by-side visualisation.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(NGA_wp) <span class="sc">+</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"wp_functional"</span>,</span>
@@ -349,6 +356,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of total water points by LGA"</span>,</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.outside =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Using the <em>tmap_arrange()</em> function, we can arrange the two maps plotted on a single row for side-by-side comparison.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(p2, p1, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -359,8 +367,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="choropleth-map-for-rates" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Choropleth Map for Rates</h1>
+<p>By mapping the rate map of choropleth map, we can better tell the proportion of functional and non-functional water points, rather than just the total water point size.</p>
 <section id="deriving-proportion-of-functional-water-points-and-non-functional-water-points" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="deriving-proportion-of-functional-water-points-and-non-functional-water-points"><span class="header-section-number">3.1</span> Deriving Proportion of Functional Water pOints and Non-Functional Water Points</h2>
+<h2 data-number="3.1" class="anchored" data-anchor-id="deriving-proportion-of-functional-water-points-and-non-functional-water-points"><span class="header-section-number">3.1</span> Deriving Proportion of Functional Water Points and Non-Functional Water Points</h2>
+<p>With the code below, we use <em>mutate()</em> to calculate the percentages of functional and nonpfunctional water points.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>NGA_wp <span class="ot">&lt;-</span> NGA_wp <span class="sc">%&gt;%</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pct_functional =</span> wp_functional <span class="sc">/</span> total_wp) <span class="sc">%&gt;%</span></span>
@@ -369,6 +379,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="plotting-map-of-rate" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="plotting-map-of-rate"><span class="header-section-number">3.2</span> Plotting Map of Rate</h2>
+<p>Utilising <em>tmap</em>, we can specify the NGA_wp dataframe to colour by <code>pct_functional</code> water points.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(NGA_wp) <span class="sc">+</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"pct_functional"</span>,</span>
@@ -401,12 +412,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>To create the map, we can set the breakpoints as <code>c(0, 0.01, 0.1, 0.5, 0.9, 0.99, 1)</code>. Note that the start and endpoints needs to be included.</p>
 <section id="data-preparation" class="level3" data-number="4.1.1">
 <h3 data-number="4.1.1" class="anchored" data-anchor-id="data-preparation"><span class="header-section-number">4.1.1</span> Data Preparation</h3>
-<p>Firstly, we exclude recrords with NA using the code below:</p>
+<p>Firstly, we exclude records with NA using the code below:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>NGA_wp <span class="ot">&lt;-</span> NGA_wp <span class="sc">%&gt;%</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Secondly, we create a customised classification and</p>
+<p>Secondly, we create a customised classification andextract the values.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>percent <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>, <span class="fl">0.99</span>, <span class="dv">1</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>var <span class="ot">&lt;-</span> NGA_wp[<span class="st">"pct_functional"</span>] <span class="sc">%&gt;%</span></span>
@@ -420,6 +431,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="function-to-get-variable-data-frame" class="level3" data-number="4.1.2">
 <h3 data-number="4.1.2" class="anchored" data-anchor-id="function-to-get-variable-data-frame"><span class="header-section-number">4.1.2</span> Function to Get Variable Data Frame</h3>
+<p>With the function below, we can extract a variable out of the sf dataframe as a vector.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>get.var <span class="ot">&lt;-</span> <span class="cf">function</span>(vname, df) {</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  v <span class="ot">&lt;-</span> df[vname] <span class="sc">%&gt;%</span></span>
@@ -431,6 +443,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="percentile-mapping-function" class="level3" data-number="4.1.3">
 <h3 data-number="4.1.3" class="anchored" data-anchor-id="percentile-mapping-function"><span class="header-section-number">4.1.3</span> Percentile Mapping Function</h3>
+<p>This percentmap function allows us to take various inputs and automatically calculate the values and points needed for the percentile map.</p>
+<p>The use of functions allows us to easily plot percentile maps of other variables flexibly without rewriting the entire code.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>percentmap <span class="ot">&lt;-</span> <span class="cf">function</span>(vnam, df, <span class="at">legtitle =</span> <span class="cn">NA</span>, <span class="at">mtitle =</span> <span class="st">"Percentile Map"</span>){</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  percent <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>, <span class="fl">0.99</span>, <span class="dv">1</span>)</span>

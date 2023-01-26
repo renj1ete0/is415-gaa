@@ -16,15 +16,23 @@ execute:
 
 ------------------------------------------------------------------------
 
-To be updated
-
 ## Objectives
 
-To be updated
+In this in-class exercise, you will gain hands-on experience on using appropriate R methods to plot analytical maps. For the purpose of this exercise, Nigeria water point data prepared during In-class Exercise 2 will be used.
 
 ## Task
 
-To be updated
+By the end of this in-class exercise, you will be able to use appropriate functions of tmap and tidyverse to perform the following tasks:
+
+-   Importing geospatial data in rds format into R environment.
+
+-   Creating cartographic quality choropleth maps by using appropriate tmap functions.
+
+-   Creating rate map
+
+-   Creating percentile map
+
+-   Creating boxmap
 
 # Getting Started
 
@@ -57,6 +65,8 @@ NGA_wp <- read_rds("In-Class_Ex03/data/rds/nigeria_wp.rds")
 
 ## Visualising Distribution of Non-Functional Water Points
 
+Here, we will plot 2 maps, `p1` which shows the functional water points and `p2` by total number of water points for side-by-side visualisation.
+
 ```{r}
 p1 <- tm_shape(NGA_wp) +
   tm_fill("wp_functional",
@@ -81,13 +91,19 @@ p2 <- tm_shape(NGA_wp) +
             legend.outside = FALSE)
 ```
 
+Using the *tmap_arrange()* function, we can arrange the two maps plotted on a single row for side-by-side comparison.
+
 ```{r}
 tmap_arrange(p2, p1, nrow = 1)
 ```
 
 # Choropleth Map for Rates
 
-## Deriving Proportion of Functional Water pOints and Non-Functional Water Points
+By mapping the rate map of choropleth map, we can better tell the proportion of functional and non-functional water points, rather than just the total water point size.
+
+## Deriving Proportion of Functional Water Points and Non-Functional Water Points
+
+With the code below, we use *mutate()* to calculate the percentages of functional and nonpfunctional water points.
 
 ```{r}
 NGA_wp <- NGA_wp %>%
@@ -96,6 +112,8 @@ NGA_wp <- NGA_wp %>%
 ```
 
 ## Plotting Map of Rate
+
+Utilising *tmap*, we can specify the NGA_wp dataframe to colour by `pct_functional` water points.
 
 ```{r}
 tm_shape(NGA_wp) +
@@ -131,14 +149,14 @@ To create the map, we can set the breakpoints as `c(0, 0.01, 0.1, 0.5, 0.9, 0.99
 
 ### Data Preparation
 
-Firstly, we exclude recrords with NA using the code below:
+Firstly, we exclude records with NA using the code below:
 
 ```{r}
 NGA_wp <- NGA_wp %>%
   drop_na()
 ```
 
-Secondly, we create a customised classification and
+Secondly, we create a customised classification andextract the values.
 
 ```{r}
 percent <- c(0, 0.01, 0.1, 0.5, 0.9, 0.99, 1)
@@ -148,6 +166,8 @@ quantile(var[,1], percent)
 ```
 
 ### Function to Get Variable Data Frame
+
+With the function below, we can extract a variable out of the sf dataframe as a vector.
 
 ```{r}
 get.var <- function(vname, df) {
@@ -159,6 +179,10 @@ get.var <- function(vname, df) {
 ```
 
 ### Percentile Mapping Function
+
+This percentmap function allows us to take various inputs and automatically calculate the values and points needed for the percentile map.
+
+The use of functions allows us to easily plot percentile maps of other variables flexibly without rewriting the entire code.
 
 ```{r}
 percentmap <- function(vnam, df, legtitle = NA, mtitle = "Percentile Map"){
