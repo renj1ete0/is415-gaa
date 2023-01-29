@@ -3,7 +3,7 @@ title: "Hands-on Exercise 3: 1st Order Spatial Point Patterns Analysis Methods"
 description: "Spatial Point Pattern Analysis of Distribution of Childcare Centres in Singapore"
 author: "Teo Ren Jie"
 date: "1/29/2023"
-categories: ["Hands-on Exercise", "tidyverse", "sf", "tmap"]
+categories: ["Hands-on Exercise", "sf", "tmap", "mpatools", "spatstat", "raster"]
 title-block-banner: true
 image: Hands-on_Ex03/preview.png
 execute:
@@ -40,7 +40,7 @@ if (!require('pacman', character.only = T)){
 library('pacman')
 ```
 
-Next, pacman assists us by helping us load R packages that we require, `sf`, `tmap` and `maptools`, `spstat`, `raster`.
+Next, pacman assists us by helping us load R packages that we require, `sf`, `tmap` and `maptools`, `spatstat`, `raster`.
 
 ```{r}
 pacman::p_load(sf, tmap, maptools, spatstat, raster)
