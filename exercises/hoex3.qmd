@@ -1,0 +1,140 @@
+---
+title: "Hands-on Exercise 3: 1st Order Spatial Point Patterns Analysis Methods"
+description: "Spatial Point Pattern Analysis of Distribution of Childcare Centres in Singapore"
+author: "Teo Ren Jie"
+date: "1/29/2023"
+categories: ["Hands-on Exercise", "tidyverse", "sf", "tmap"]
+title-block-banner: true
+image: Hands-on_Ex03/preview.png
+---
+
+# Getting Started
+
+## Overview
+
+Spatial Point Pattern Analysis is the evaluation of the pattern or distribution, of a set of points on a surface. The point can be location of:
+
+-   events such as crime, traffic accident and disease onset, or
+
+-   business services (coffee and fastfood outlets) or facilities such as childcare and eldercare.
+
+Using appropriate functions of [spatstat](https://cran.r-project.org/web/packages/spatstat/), this hands-on exercise aims to discover the spatial point processes of childecare centres in Singapore.
+
+The specific questions we would like to answer are as follows:
+
+-   are the childcare centres in Singapore randomly distributed throughout the country?
+
+-   if the answer is not, then the next logical question is where are the locations with higher concentration of childcare centres?
+
+## Installing and Loading Packages
+
+Firstly, the code below will check if **pacman** has been installed. If it has not been installed, R will download and install it, before activating it for use during this session.
+
+```{r}
+if (!require('pacman', character.only = T)){
+  install.packages('pacman')
+}
+library('pacman')
+```
+
+Next, pacman assists us by helping us load R packages that we require, `sf`, `tmap` and `maptools`, `spstat`, `raster`.
+
+```{r}
+pacman::p_load(sf, tmap, maptools, spstat, raster)
+```
+
+The following packages assists us to accomplish the following:
+
+-   *sf* helps to import, manage and process vector-based geospatial data in R
+
+-   *tmap* provides functions to allow us to plot high quality static or interactive maps using leaflet API
+
+-   *maptoolsI* provides us a set of tools for manipulating geographic data
+
+-   *spstat* has a wide range of functions for point pattern analysis
+
+-   *raster* reads, writes, manipulates, analyses and model of gridded spatial data (raster)
+
+## Data Acquisition
+
+The following public datasets are used:
+
+| Dataset Name                                                        | Source                                                                                      |
+|-------------------------------------------------|-----------------------|
+| Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)* | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)            |
+| Pre-Schools Location *(preschools-location.geojson)*                | [[data.gov.sg]{.underline}](https://dataportal.asia/dataset/203030733_pre-schools-location) |
+| Coastal Outline (*CostalOutline.shp*)                               | Prof Kam - SLA                                                                              |
+
+# Spatial Data Wrangling
+
+## Importing Spatial Data
+
+We will use *st_read()* of sf package to import the three geospatial datasets.
+
+```{r}
+childcare_sf <- st_read(dsn = "Hands-on_Ex03/data/geospatial/child-care-services-geojson.geojson")
+```
+
+```{r}
+sg_sf <- st_read(dsn = "Hands-on_Ex03/data/geospatial", layer = "CostalOutline")
+```
+
+```{r}
+mpsz_sf <- st_read(dsn = "Hands-on_Ex03/data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+```
+
+## Inspect and Reproject Coordinate System
+
+### Childcare Dataset
+
+First, we inspect the crs of the sf dataframe.
+
+```{r}
+st_crs(childcare_sf)
+```
+
+The ID provided is `EPSG:4326` which matches the intended WGS84 Coordinate reference. We will now convert the CRS from WGS84 Geographic Coordinate System to SVY21 Projected Coordinate System for further analysis.
+
+```{r}
+childcare3414_sf <- st_transform(childcare_sf , crs = 3414)
+```
+
+### Coastal Outline Dataset
+
+First, we inspect the crs of the sf dataframe.
+
+```{r}
+st_crs(sg_sf)
+```
+
+The ID provided is `EPSG:9001` which does not match the intended Projected CRS input of SVY21. Now, we correct the CRS ID using the code below.
+
+```{r}
+sg_sf_3414 <- st_set_crs(sg_sf,3414)
+```
+
+Now, let us check if the CRS ID has been set correctly:
+
+```{r}
+st_crs(sg_sf_3414)
+```
+
+### Master Plan Subzone Dataset
+
+First, we inspect the crs of the sf dataframe.
+
+```{r}
+st_crs(mpsz_sf)
+```
+
+The ID provided is `EPSG:9001` which does not match the intended Projected CRS input of SVY21. Now, we correct the CRS ID using the code below.
+
+```{r}
+sg_sf_3414 <- st_set_crs(sg_sf,3414)
+```
+
+Now, let us check if the CRS ID has been set correctly:
+
+```{r}
+st_crs(sg_sf_3414)
+```

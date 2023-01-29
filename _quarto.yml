@@ -21,6 +21,8 @@ website:
             text: Hands-On Exercise 1
           - href: exercises/hoex2.qmd
             text: Hands-On Exercise 2
+          - href: exercises/hoex3.qmd
+            text: Hands-On Exercise 3
       - text: In-Class Exercise
         menu: 
           - href: exercises/icex02.qmd
