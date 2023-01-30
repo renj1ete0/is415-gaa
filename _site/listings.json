@@ -1,14 +1,9 @@
 [
   {
-    "listing": "/blog.html",
-    "items": [
-      "/exercises/hoex2.html",
-      "/exercises/test.html"
-    ]
-  },
-  {
     "listing": "/index.html",
     "items": [
+      "/exercises/icex04.html",
+      "/exercises/thex01.html",
       "/exercises/hoex3.html",
       "/exercises/icex03.html",
       "/exercises/hoex2.html",

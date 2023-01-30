@@ -166,6 +166,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../exercises/hoex2.html">
  <span class="dropdown-text">Hands-On Exercise 2</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../exercises/hoex3.html">
+ <span class="dropdown-text">Hands-On Exercise 3</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -176,6 +180,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>
     <a class="dropdown-item" href="../exercises/icex02.html">
  <span class="dropdown-text">In-Class Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercises/icex03.html">
+ <span class="dropdown-text">In-Class Exercise 3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercises/icex04.html">
+ <span class="dropdown-text">In-Class Exercise 4</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../exercises/thex01.html">
+ <span class="dropdown-text">Take-home Exercise 1</span></a>
   </li>  
     </ul>
   </li>
@@ -319,7 +342,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="installing-and-loading-packages" class="level2">
 <h2 class="anchored" data-anchor-id="installing-and-loading-packages">1.1 Installing and Loading Packages</h2>
 <p>Firstly, the code below will check if <strong>pacman</strong> has been installed. If it has not been installed, R will download and install it, before activating it for use during this session.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-1_42371cba162a79ccb710276a183ac6b4">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">'pacman'</span>, <span class="at">character.only =</span> T)){</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">'pacman'</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -329,7 +352,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">'pacman'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, pacman assists us by helping us load R packages that we require, <code>sf</code> and <code>tidyverse</code>.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-2_93eb4ac6c302d4a03b3d0fb04f069965">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
@@ -372,7 +395,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="importing-master-plan-2014-subzone-boundary-web" class="level3">
 <h3 class="anchored" data-anchor-id="importing-master-plan-2014-subzone-boundary-web">1.3.1 Importing Master Plan 2014 Subzone Boundary (Web)</h3>
 <p>Firstly, we will import Master Plan 2014 Subzone Boundary (Web). In the code below, <code>dsn</code> specifies the filepath where the dataset is located and <code>layer</code> provides the filename of the dataset excluding the file extension.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-3_afaebec795797da904ed29eafaf24d85">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mpsz <span class="ot">=</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"Hands-on_Ex01/data/geospatial"</span>, <span class="at">layer =</span> <span class="st">"MP14_SUBZONE_WEB_PL"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `MP14_SUBZONE_WEB_PL' from data source 
@@ -390,7 +413,7 @@ Projected CRS: SVY21</code></pre>
 <section id="importing-cycling-path" class="level3">
 <h3 class="anchored" data-anchor-id="importing-cycling-path">1.3.2 Importing Cycling Path</h3>
 <p>Next, we will import Cycling Path.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-4_13f12637f2d3ba6d65a8c8a036889552">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cyclingpath <span class="ot">=</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"Hands-on_Ex01/data/geospatial"</span>, <span class="at">layer =</span> <span class="st">"CyclingPathGazette"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `CyclingPathGazette' from data source 
@@ -412,7 +435,7 @@ Projected CRS: SVY21</code></pre>
 <section id="importing-pre-schools-location" class="level3">
 <h3 class="anchored" data-anchor-id="importing-pre-schools-location">1.4.1 Importing Pre-Schools Location</h3>
 <p>In the code below, we do not specify <code>dsn</code> and <code>layer</code>. Just the filepath and filename will suffice.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-5_c71d7f79257474982893c9c03abc6245">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>preschools <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">"Hands-on_Ex01/data/geospatial/preschools-location.kml"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `PRESCHOOLS_LOCATION' from data source 
@@ -449,7 +472,7 @@ Geodetic CRS:  WGS 84</code></pre>
 <p>There are some methods to obtain information about a data frame quickly.</p>
 <section id="st_geometry" class="level2">
 <h2 class="anchored" data-anchor-id="st_geometry">2.1 st_geometry()</h2>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-6_c3a42a43ff06a632fdd1f9d3754a486b">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Geometry set for 323 features 
@@ -479,7 +502,7 @@ First 5 geometries:</code></pre>
 </section>
 <section id="glimpse" class="level2">
 <h2 class="anchored" data-anchor-id="glimpse">2.2 glimpse()</h2>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-7_8e1d6bf56a51bdf61ee7536e6d181813">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 323
@@ -506,7 +529,7 @@ $ geometry   &lt;MULTIPOLYGON [m]&gt; MULTIPOLYGON (((31495.56 30..., MULTIPOLYG
 </section>
 <section id="head" class="level2">
 <h2 class="anchored" data-anchor-id="head">2.3 head()</h2>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-8_654b3001b414cf596040301f867ac2a1">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mpsz, <span class="at">n=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 5 features and 15 fields
@@ -544,7 +567,7 @@ Projected CRS: SVY21
 <section id="multi-plot-attributes" class="level2">
 <h2 class="anchored" data-anchor-id="multi-plot-attributes">3.1 Multi-plot Attributes</h2>
 <p>The following code will plot multiple attributes within the dataframe up to a reasonable limit.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-9_652df3f3ab12e85ff965fe9967c74c98">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: plotting the first 9 out of 15 attributes; use max.plot = 15 to plot
@@ -558,7 +581,7 @@ all</code></pre>
 <section id="geometry-plot" class="level2">
 <h2 class="anchored" data-anchor-id="geometry-plot">3.2 Geometry Plot</h2>
 <p>Recall st_geometry from <code>Checking Content of a Simple Data Frame</code> from earlier? st_geometry provides the geometry of the map, where we could use plot to plot just the geomtry of the data frame.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-10_2577594a7838afa7d1e20f7c03fbff4c">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(mpsz))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="hoex1_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
@@ -568,7 +591,7 @@ all</code></pre>
 <section id="specific-attributes" class="level2">
 <h2 class="anchored" data-anchor-id="specific-attributes">3.3 Specific Attributes</h2>
 <p>We could also choose to plot a specific attribute of the data frame. The following code below will plot the <code>PLN_AREA_N</code> attribute.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-11_c696af4c42938dd6e0ffb04172f839c7">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mpsz[<span class="st">"PLN_AREA_N"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="hoex1_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
@@ -597,7 +620,7 @@ all</code></pre>
 <section id="checking-the-coordinate-system-of-the-data-frame" class="level3">
 <h3 class="anchored" data-anchor-id="checking-the-coordinate-system-of-the-data-frame">4.1.1 Checking the Coordinate System of the Data Frame</h3>
 <p>To check the coordinate system of a dataset, the <em>st_crs()</em> function of sf package could be used. Here, we check the coordinate system of <code>mpsz</code> simple feature data frame.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-12_8362f2405ba929f4b710f4092be5e1b9">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(mpsz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
@@ -642,7 +665,7 @@ PROJCRS["SVY21",
 </div>
 <p>Although the data frame has been projected in <code>SVY21</code>, if we look at the end of the output, it indicates that the EPSG is 9001 which is incorrect. The correct EPSG code for <code>SVY21</code> should be <a href="https://epsg.io/3414">3414</a>.</p>
 <p>In the code chunk below, we will correct the crs to EPSG 3414.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-13_61a4f5433767cc97c341b7fa3970500c">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>mpsz3414 <span class="ot">&lt;-</span> <span class="fu">st_set_crs</span>(mpsz,<span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: st_crs&lt;- : replacing crs does not reproject data; use st_transform for
@@ -650,7 +673,7 @@ that</code></pre>
 </div>
 </div>
 <p>Now, let us check the crs if it has been updated.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-14_20a6f2724f088a1ff09dfa1f5043196a">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(mpsz3414)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
@@ -701,7 +724,7 @@ PROJCRS["SVY21 / Singapore TM",
 <section id="transforming-from-wgs84-to-svy21" class="level3">
 <h3 class="anchored" data-anchor-id="transforming-from-wgs84-to-svy21">4.1.2 Transforming from wgs84 to svy21</h3>
 <p>It is important in geospatial analytics to ensure that datasets are converted to projected coordinate system from the geographic coordinate system. Geographic coordinate system is not appropriate if analysis requires distance and/or area measurements.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-15_c34d0b9788dc17d555253384d9114531">
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
   User input: WGS 84 
@@ -725,11 +748,11 @@ GEOGCRS["WGS 84",
 <p>In the preschools data frame, it is in the <code>wgs84</code> coordinate system.</p>
 <p>Since reprojection is necessary from <code>wgs84</code> to <code>svy21</code> mathematically, <em>st_set_crs()</em>&nbsp;would not be appropriate. We will utilise <em>st_transform()</em>.</p>
 <p>In the example below, we reproject the <code>preschools</code> dataframe to <code>svy21</code>&nbsp;(EPSG 3414).</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-16_c95f05b2b11cab1cce82926e64d869c7">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>preschools3414 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(preschools, <span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s see the content of the reprojected <code>preschools3414</code> dataframe.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-17_81341458663201b6c11a0af090f07c40">
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
   User input: EPSG:3414 
@@ -795,7 +818,7 @@ PROJCRS["SVY21 / Singapore TM",
 <section id="importing-aspatial-data" class="level2">
 <h2 class="anchored" data-anchor-id="importing-aspatial-data">5.1 Importing Aspatial Data</h2>
 <p>Since <code>listings</code> data set is in <code>csv</code> format, we will used read_csv() of <strong>readr</strong> package to import <code>listing.csv</code> and output it to an R object called <code>listings</code>, which is a tibble data frame.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-18_dc4284836e87f4b41f93efa5de72bed7">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>listings <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"Hands-on_Ex01/data/aspatial/listings.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 4161 Columns: 18
@@ -810,7 +833,7 @@ date  (1): last_review
 </div>
 </div>
 <p>Instead of using <em>glimpse()</em> as shown earlier, <em>list()</em>&nbsp;could also do the job.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-19_98e2f89a0b6a3dbfc1c1fa904065a134">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(listings)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
@@ -840,7 +863,7 @@ date  (1): last_review
 <section id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" class="level2">
 <h2 class="anchored" data-anchor-id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame">5.2 Creating a Simple Feature Data Frame from an Aspatial Data Frame</h2>
 <p>The code below converts the <code>listings</code> tibble data fame into a simple feature data frame by using <em>st_as_sf()</em> from <strong>sf</strong> packages, which converts foreign data formats to an sf object.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-20_eb683125a83d8592c61152b763ebd1bb">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>listings_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(listings,</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">%&gt;%</span></span>
@@ -855,7 +878,7 @@ date  (1): last_review
 </section>
 <section id="examining-simple-feature-data-frame" class="level2">
 <h2 class="anchored" data-anchor-id="examining-simple-feature-data-frame">5.3 Examining Simple Feature Data Frame</h2>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-21_6a0b9a2e0f0c521a5674b472d3dc6a44">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(listings_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 4,161
@@ -900,18 +923,18 @@ $ geometry                       &lt;POINT [m]&gt; POINT (22646.02 35167.9), POI
 </div>
 </div>
 <p>Firstly, we utilise <em>st_buffer()</em>&nbsp;of <strong>sf</strong> package to compute the 5-metre buffers around cycling paths.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-22_d42d0431ea94c955d4f7a2d1111ba14c">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>buffer_cycling <span class="ot">&lt;-</span> <span class="fu">st_buffer</span>(cyclingpath,</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">dist =</span> <span class="dv">5</span>,</span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">nQuadSegs =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>What <code>nQuadSegs</code> alters is the generalisation of points to create the buffer. More segments means it is less generalised and less segments means more generalised buffers.</p>
 <p>Next, we calculate the area of the buffers.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-23_cd0bf2dbb532ac96300e53a0f0adafe6">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>buffer_cycling<span class="sc">$</span>AREA <span class="ot">&lt;-</span> <span class="fu">st_area</span>(buffer_cycling)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now, we can sum the area to get total land required for the buffer.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-24_5c8ba50986b07c864873860576b43628">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(buffer_cycling<span class="sc">$</span>AREA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>1556978 [m^2]</code></pre>
@@ -932,11 +955,11 @@ $ geometry                       &lt;POINT [m]&gt; POINT (22646.02 35167.9), POI
 </div>
 </div>
 <p>Firstly, we utilise <em>st_intersects()</em> of <strong>sf</strong> package to find which pre-schools falls under which planning subzone. Then, using lengths, we calculate the number of pre-schools within each planning subzone.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-25_19b551cffe14d79fd5b1f53e182a65d2">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(mpsz3414, preschools3414))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We could use <em>summary()</em> to viewsummary statistics of the newly derived <em>PreSch Count</em> field.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-26_890036d19f112145956267cd2926d54b">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -946,7 +969,7 @@ $ geometry                       &lt;POINT [m]&gt; POINT (22646.02 35167.9), POI
 <p>Wow! Here, we can see that there is at least one planning subzone with 58 pre-schools, with a mean of 5.96 pre-schools in each subzone.</p>
 <p>Now, let’s look at the top sub-zone with the most pre-schools.</p>
 <p>The code below utilises <em>top_n</em> of <strong>dplyr</strong> package to look in the mpsz3414 dataframe, under the field PreSch Count for the top record</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-27_fbc512e0943cfec9265c35a62a7c813d">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">top_n</span>(mpsz3414, <span class="dv">1</span>, <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 1 feature and 16 fields
@@ -976,17 +999,17 @@ Projected CRS: SVY21 / Singapore TM
 </div>
 <p>First, the formula for density is <code>density = count / area</code></p>
 <p>We will first calculate the area of each subzone below:</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-28_80819f5bb67f0e69332d9dbe681d32a6">
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>mpsz3414<span class="sc">$</span>Area <span class="ot">&lt;-</span> mpsz3414 <span class="sc">%&gt;%</span></span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_area</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, we will use <em>mutate()</em>&nbsp;of <strong>dplyr</strong> package to compute density. We multiply it by 1000000 to reduce the amount of decimal points by converting it to km2 for easier handling.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-29_02e714a83a2446c8c07a638eeaff825c">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>mpsz3414 <span class="ot">&lt;-</span> mpsz3414 <span class="sc">%&gt;%</span></span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span><span class="sc">/</span>Area <span class="sc">*</span> <span class="dv">1000000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now, we can view the density of preschools.</p>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-30_bffc6646af8f40702af3f09ee7f9f2c5">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
@@ -1058,7 +1081,7 @@ Units: [1/m^2]
 <p>We can plot a histogram to investigate the distrubtion of <code>PreSch Density</code>.</p>
 <section id="histogram-hist-of-mpsz3414presch-density" class="level3">
 <h3 class="anchored" data-anchor-id="histogram-hist-of-mpsz3414presch-density">7.1.1 Histogram (hist) of mpsz3414$<code>PreSch Density</code></h3>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-31_adda3d3db22ac6262083ba6dda607d8b">
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="hoex1_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
@@ -1068,7 +1091,7 @@ Units: [1/m^2]
 </section>
 <section id="histogram-ggplot2-of-mpsz3414presch-density" class="level3">
 <h3 class="anchored" data-anchor-id="histogram-ggplot2-of-mpsz3414presch-density">7.1.2 Histogram (ggplot2) of mpsz3414$<code>PreSch Density</code></h3>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-32_04846dc10d915cb2807933e984ea4ab0">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>mpsz3414,</span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>))) <span class="sc">+</span></span>
 <span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">20</span>,</span>
@@ -1093,7 +1116,7 @@ Units: [1/m^2]
 </div>
 </div>
 </div>
-<div class="cell">
+<div class="cell" data-hash="hoex1_cache/html/unnamed-chunk-33_c17e0a716301195d8304b0d885557d99">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>mpsz3414,</span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>), <span class="at">y =</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>))) <span class="sc">+</span></span>
 <span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color=</span><span class="st">"black"</span>,</span>

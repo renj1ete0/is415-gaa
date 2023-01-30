@@ -408,7 +408,7 @@ tm_shape(mpsz_pop2020)+
 ```
 
 | Classification Name | Description                                                                                                                                                                                          |
-|-------------|-----------------------------------------------------------|
+|----------------|--------------------------------------------------------|
 | fixed               | Based on breaks specified                                                                                                                                                                            |
 | sd                  | n number of ranges, must ensure distribution is approx. normal. Measure of dispersion/dispersion (z scores)                                                                                          |
 | equal               | n number of ranges **(excluding missing values)**, equal widths for each range, *avoid if data is skewed or large outlier values (as in example above)*                                              |

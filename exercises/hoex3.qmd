@@ -3,7 +3,8 @@ title: "Hands-on Exercise 3: 1st Order Spatial Point Patterns Analysis Methods"
 description: "Spatial Point Pattern Analysis of Distribution of Childcare Centres in Singapore"
 author: "Teo Ren Jie"
 date: "1/29/2023"
-categories: ["Hands-on Exercise", "sf", "tmap", "mpatools", "spatstat", "raster"]
+date-modified: "1/30/2023"
+categories: ["Hands-on Exercise", "sf", "tmap", "maptools", "spatstat", "raster"]
 title-block-banner: true
 image: Hands-on_Ex03/preview.png
 execute:
@@ -21,7 +22,7 @@ Spatial Point Pattern Analysis is the evaluation of the pattern or distribution,
 
 -   business services (coffee and fastfood outlets) or facilities such as childcare and eldercare.
 
-Using appropriate functions of [spatstat](https://cran.r-project.org/web/packages/spatstat/), this hands-on exercise aims to discover the spatial point processes of childecare centres in Singapore.
+Using appropriate functions of *spatstat*, this hands-on exercise aims to discover the spatial point processes of childecare centres in Singapore.
 
 The specific questions we would like to answer are as follows:
 
@@ -63,7 +64,7 @@ The following packages assists us to accomplish the following:
 The following public datasets are used:
 
 | Dataset Name                                                        | Source                                                                                      |
-|-----------------------------------------------|-------------------------|
+|-------------------------------|-----------------------------------------|
 | Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)* | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)            |
 | Pre-Schools Location *(preschools-location.geojson)*                | [[data.gov.sg]{.underline}](https://dataportal.asia/dataset/203030733_pre-schools-location) |
 | Coastal Outline (*CostalOutline.shp*)                               | Prof Kam - SLA                                                                              |
@@ -473,9 +474,9 @@ plot(density(childcareSG_ppp.km,
              main = "Disc")
 ```
 
-# Fixed and Adaptive KDE
+## Fixed and Adaptive KDE
 
-## Computing KDE by using Fixed Bandwidth
+### Computing KDE by using Fixed Bandwidth
 
 Next, we can compute a KDE layer by defining a bandwidth of 600 metres. As the unit of measurement of `childcareSG_ppp.km` object is in kilometres, we use a sigma value of 0.6.
 
@@ -484,7 +485,7 @@ kde_childcareSG_600 <- density(childcareSG_ppp.km, sigma = 0.6, edge = TRUE, ker
 plot(kde_childcareSG_600)
 ```
 
-## Computing KDE by using Adaptive Bandwidth
+### Computing KDE by using Adaptive Bandwidth
 
 The fixed bandwidth method is very sensitive to highly skewed distribution of spatial point patterns over geographical units (eg. urban vs rural). One way to overcome the problem is to use adaptive bandwidth.
 
@@ -503,7 +504,7 @@ plot(kde_childcareSG_bw, main = "Fixed bandwidth")
 plot(kde_childcareSG_adaptive, main = "Adaptive bandwidth")
 ```
 
-## Converting KDE Output into Grid Object
+### Converting KDE Output into Grid Object
 
 The results are the same, but the conversion allows us to use it for mapping purposes.
 
@@ -512,7 +513,7 @@ gridded_kde_childcareSG_bw <- as.SpatialGridDataFrame.im(kde_childcareSG_bw)
 spplot(gridded_kde_childcareSG_bw)
 ```
 
-### Converting Gridded Output into Raster
+#### Converting Gridded Output into Raster
 
 Next, we will convert gridded kernel density objects into RasterLayer object using *raster()* of the raster object.
 
@@ -528,7 +529,7 @@ kde_childcareSG_bw_raster
 
 Note that the CRS property is NA.
 
-### Assigning Projection Systems
+#### Assigning Projection Systems
 
 The code below will be used to include CRS information.
 
@@ -680,7 +681,7 @@ plot(density(childcare_tm_ppp.km,
              main = "Tampines")
 ```
 
-# Nearest Neighbour Analysis
+## Nearest Neighbour Analysis
 
 In this section, we will perform the Clark-Evans test of aggregation for a spatial point pattern by using *clarkevans.test()* of statspat at 95% confidence interval.
 
@@ -690,7 +691,7 @@ The test hypotheses are:
 
 -   H1 = The distribution of childcare services are not randomly distributed.
 
-## Testing Spatial Point Patterns using Clark and Evans Test
+### Testing Spatial Point Patterns using Clark and Evans Test
 
 ```{r}
 clarkevans.test(childcareSG_ppp,
@@ -700,9 +701,9 @@ clarkevans.test(childcareSG_ppp,
                 nsim=99)
 ```
 
-As P is 0.01 \< 0.05, we accept the alternative hypothesis that the childcare services are not randomly distributed. Since, R = 0.54756 \< 1, the points are corresponding to a clustered pattern.
+As P is 0.01 \< 0.05, we reject the null hypothesis that the childcare services are randomly distributed. We can infer from the R value (Nearest Neighbour Index) that since R = 0.54756 \< 1, the pattern exhibits clustering in Tampines.
 
-## Clark and Evans Test: Choa Chu Kang Planning Area
+### Clark and Evans Test: Choa Chu Kang Planning Area
 
 ```{r}
 clarkevans.test(childcare_ck_ppp,
@@ -712,9 +713,9 @@ clarkevans.test(childcare_ck_ppp,
                 nsim=999)
 ```
 
-As P is 0.204 \< 0.025, we reject the alternative hypothesis that the childcare services are not randomly distributed. We have no evidence that the childcare services are corresponding to a clustered or regular pattern in Choa Chu Kang.
+As P is 0.204 \> 0.05, we cannot reject the null hypothesis that the childcare services are randomly distributed in Choa Chu Kang.
 
-## Clark and Evans Test: Tampines Planning Area
+### Clark and Evans Test: Tampines Planning Area
 
 ```{r}
 clarkevans.test(childcare_tm_ppp,
@@ -724,4 +725,6 @@ clarkevans.test(childcare_tm_ppp,
                 nsim=999)
 ```
 
-As P is 0.002 \< 0.025, we accept the alternative hypothesis that the childcare services are not randomly distributed. We have evidence that the childcare services are corresponding to a clustered or regular pattern in Tampines.
+As P is 0.002 \< 0.05, we reject the null hypothesis that the childcare services are randomly distributed.
+
+We can infer from the R value (Nearest Neighbour Index) that since R = 0.79654 \< 1, the patten exhibits clustering in Tampines.

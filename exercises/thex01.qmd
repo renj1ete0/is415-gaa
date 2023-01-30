@@ -1,0 +1,16 @@
+---
+title: "Take-Home Exerise 01"
+description: " "
+author: "Teo Ren Jie"
+date: "1/30/2023"
+date-modified: "`r Sys.Date()`"
+number-sections: true
+categories: ["Take-Home Exercise"]
+title-block-banner: true
+#image: In-Class_Ex04/preview.png
+execute:
+  message: true
+  warning: true
+---
+
+To be completed

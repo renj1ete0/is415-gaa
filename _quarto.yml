@@ -29,6 +29,12 @@ website:
             text: In-Class Exercise 2
           - href: exercises/icex03.qmd
             text: In-Class Exercise 3
+          - href: exercises/icex04.qmd
+            text: In-Class Exercise 4
+      - text: Take-home Exercise
+        menu: 
+          - href: exercises/thex01.qmd
+            text: Take-home Exercise 1
       - icon: github
         href: https://github.com/renjie-teo
       - icon: linkedin

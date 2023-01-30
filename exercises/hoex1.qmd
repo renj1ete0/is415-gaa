@@ -6,6 +6,8 @@ date: "1/15/2023"
 categories: ["Hands-on Exercise", "tidyverse", "sf", "ggplot2"]
 title-block-banner: true
 image: Hands-on_Ex01/preview.png
+execute:
+  cache: true
 ---
 
 # 1. Getting Started
@@ -34,7 +36,7 @@ pacman::p_load(sf, tidyverse)
 For the purpose of this exercise, the following public datasets are used:
 
 | Dataset Name                                                        | Source                                                                                                         |
-|-----------------------------------------------|-------------------------|
+|----------------------------|--------------------------------------------|
 | Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)* | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)                               |
 | Pre-Schools Location *(preschools-location.kml)*                    | [data.gov.sg](https://dataportal.asia/dataset/203030733_pre-schools-location)                                  |
 | Cycling Path *(CyclingPathGazette.shp)*                             | [LTA Datamall](https://datamall.lta.gov.sg/content/datamall/en/search_datasets.html?searchText=Cycling%20Path) |
