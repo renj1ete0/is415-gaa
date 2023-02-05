@@ -23,6 +23,10 @@ website:
             text: Hands-On Exercise 2
           - href: exercises/hoex3.qmd
             text: Hands-On Exercise 3
+          - href: exercises/icex04.qmd
+            text: Hands-On Exercise 4
+          - href: exercises/hoex5.qmd
+            text: Hands-On Exercise 5
       - text: In-Class Exercise
         menu: 
           - href: exercises/icex02.qmd

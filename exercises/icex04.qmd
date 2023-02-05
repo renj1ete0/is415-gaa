@@ -22,7 +22,7 @@ Spatial Point Pattern Analysis is the evaluation of the pattern or distribution,
 
 -   business services (coffee and fastfood outlets) or facilities such as childcare and eldercare.
 
-Using appropriate functions of *spatstat*, this hands-on exercise aims to discover the spatial point processes of childecare centres in Singapore.
+Using appropriate functions of *spatstat*, this In Class exercise aims to discover the spatial point processes of childecare centres in Singapore.
 
 The specific questions we would like to answer are as follows:
 
@@ -64,15 +64,15 @@ The following public datasets are used:
 We will use *st_read()* of sf package to import the three geospatial datasets.
 
 ```{r}
-childcare_sf <- st_read(dsn = "Hands-on_Ex03/data/geospatial/child-care-services-geojson.geojson")
+childcare_sf <- st_read(dsn = "In-Class_Ex04/data/geospatial/child-care-services-geojson.geojson")
 ```
 
 ```{r}
-sg_sf <- st_read(dsn = "Hands-on_Ex03/data/geospatial", layer = "CostalOutline")
+sg_sf <- st_read(dsn = "In-Class_Ex04/data/geospatial", layer = "CostalOutline")
 ```
 
 ```{r}
-mpsz_sf <- st_read(dsn = "Hands-on_Ex03/data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
+mpsz_sf <- st_read(dsn = "In-Class_Ex04/data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 ```
 
 ## Inspect and Reproject Coordinate System

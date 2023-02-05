@@ -1,0 +1,115 @@
+---
+title: "Hands-on Exercise 5: Analysing Marked Point Patterns"
+description: "ddd"
+author: "Teo Ren Jie"
+date: "2/3/2023"
+categories: ["Hands-on Exercise", "sf", "tmap", "maptools", "spatstat", "raster"]
+title-block-banner: true
+image: Hands-on_Ex05/preview.png
+execute:
+  message: false
+  warning: false
+---
+
+# Getting Started
+
+## Overview
+
+In previous exercises, we have learnt about point pattern dataset containing a complete enumeration of events, objects of interest, occuring in a defined study region. These could include a measurable location including traffic accidents, crime occurences, etc. with an associated continuous (num. of students) or categorical measurement (type of schools).
+
+The measures are called marks and events with marks are called marked point pattern.
+
+Marked point patterns have first-order properties which are related to the intensity of events and associated marks across the study region. They also have second-order properties which is related to spatial dependence of events and associated marks across the study area.
+
+## Research Questions
+
+1.  Are locations of childcare centre by different business groups (NT, PT, RC, ST) spatially independent?
+
+2.  If it is not spatially independent, are there any phenomena of attraction or repulsion?
+
+## Installing and Loading Packages
+
+Firstly, the code below will check if **pacman** has been installed. If it has not been installed, R will download and install it, before activating it for use during this session.
+
+```{r}
+if (!require('pacman', character.only = T)){
+  install.packages('pacman')
+}
+library('pacman')
+```
+
+Next, pacman assists us by helping us load R packages that we require, `rgdal`, `sf`, `tmap` and `maptools`, `spatstat`, `raster`.
+
+```{r}
+pacman::p_load(rgdal, tmap, maptools, spatstat, raster)
+```
+
+The following packages assists us to accomplish the following:
+
+-   *rgdal* helps to import geospatial data in GIS file (shp) into R and save them as Spatial\*Dataframe
+
+-   *tmap* provides functions to allow us to plot high quality static or interactive maps using leaflet API
+
+-   *maptoolsI* provides us a set of tools for manipulating geographic data
+
+-   *spatstat* has a wide range of functions for point pattern analysis
+
+-   *raster* reads, writes, manipulates, analyses and model of gridded spatial data (raster)
+
+## Data Acquisition
+
+The following public datasets are used:
+
+| Dataset Name                                                        | Source                                                                                      |
+|-------------------------------|-----------------------------------------|
+| Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)* | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)            |
+| Pre-Schools Location *(preschools-location.geojson)*                | [[data.gov.sg]{.underline}](https://dataportal.asia/dataset/203030733_pre-schools-location) |
+
+# Spatial Data Wrangling
+
+## Importing Geospatial Data
+
+In previous exercises, we used the *sf* library to import spatial data into R. Since our first and second-order analysis uses *spatstat* which requires conversion from *Spatial\** to generic *sp* to *ppp* format, we can avoid the additional conversion from sf to *Spatial\** by importing directly into R with *rgdal* into *Spatial\** Dataframe directly.
+
+We will use `readOGR()` of *rgdal* to import both shapefiles into R
+
+```{r}
+childcare <- readOGR(dsn = "Hands-on_Ex05/data/geospatial", layer="CHILDCARE")
+```
+
+```{r}
+mpsz <- readOGR(dsn = "Hands-on_Ex05/data/geospatial", layer="MP14_SUBZONE_WEB_PL")
+```
+
+Since `readOCR()` of *rgdal* is used, the output R objects will be in SpatialPointsDataframe and SpatialPolygonsDataframe respectively.
+
+Next, we will use `str()` of *base R* to check the data type of `childcare` SpatialPointsDataFrame to ensure that the **marked** field is in **factor** data type if the values are categorical.
+
+```{r}
+str(childcare)
+```
+
+The output above shows the `Type` field is in `char` data type and not in `factor` daata type as required by *spatstat*. Using the code below, we can convert `Type` field to `factor` data type.
+
+```{r}
+childcare@data$Type <- as.factor(childcare@data$Type)
+```
+
+Let us check if the datatype has changed.
+
+```{r}
+str(childcare)
+```
+
+## Mapping the Geospatial Datasets
+
+After checking the CRS of each geospatial data frame, we can plot a map to see their spatial patterns.
+
+```{r}
+tmap_mode("view")
+tm_shape(mpsz)+
+  tm_borders(alpha = 0.5) +
+  tmap_options(check.and.fix = TRUE) +
+tm_shape(childcare) +
+  tm_dots(col = 'Type', size= 0.02)
+```

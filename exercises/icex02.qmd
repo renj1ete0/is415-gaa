@@ -64,7 +64,7 @@ pacman::p_load(sf, tidyverse, funModeling)
 For the purpose of this exercise, the following public datasets are used:
 
 | Dataset Name                                                                                               | Source                                                                                                                                                                                |
-|---------------------------|---------------------------------------------|
+|------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | WPdx+ (*Water_Point_Data_Exchange\_-\_Plus\_\_WPdx\_\_.csv*)                                               | [WPdx Global Data Repositories](https://www.waterpointdata.org/access-data/)                                                                                                          |
 | geoBoundaries Nigeria Level-2 Administrative Boundary (*geoBoundaries-NGA-ADM2.shp*) - UN OCHA CODs        | [geoBoundaries](https://www.geoboundaries.org/index.html#getdata)                                                                                                                     |
 | Humanitarian Data Exchange Nigeria Level-2 Administrative Boundary (*nga_admbnda_adm2_osgof_20190417.shp*) | [Humanitarian Data Exchange](https://data.humdata.org/dataset/81ac1d38-f603-4a98-804d-325c658599a3/resource/aa69f07b-ed8e-456a-9233-b20674730be6/download/nga_adm_osgof_20190417.zip) |
