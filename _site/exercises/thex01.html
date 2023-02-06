@@ -9,7 +9,7 @@
 <meta name="author" content="Teo Ren Jie">
 <meta name="dcterms.date" content="2023-01-30">
 
-<title>Ren Jie’s IS415 Journal - Take-Home Exerise 01</title>
+<title>Ren Jie’s IS415 Journal - Take-Home Exercise 01</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -173,7 +173,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Take-Home Exerise 01</h1>
+      <h1 class="title">Take-Home Exercise 01</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">Take-Home Exercise</div>
               </div>
@@ -200,7 +200,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Modified</div>
       <div class="quarto-title-meta-contents">
-        <p class="date-modified">February 4, 2023</p>
+        <p class="date-modified">February 5, 2023</p>
       </div>
     </div>
       
@@ -211,7 +211,23 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="toc-section-number">1</span>  Overview</a>
+  <ul class="collapse">
+  <li><a href="#setting-the-scene" id="toc-setting-the-scene" class="nav-link" data-scroll-target="#setting-the-scene"><span class="toc-section-number">1.1</span>  Setting the Scene</a></li>
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives"><span class="toc-section-number">1.2</span>  Objectives</a></li>
+  <li><a href="#tasks" id="toc-tasks" class="nav-link" data-scroll-target="#tasks"><span class="toc-section-number">1.3</span>  Tasks</a>
+  <ul class="collapse">
+  <li><a href="#exploratory-spatial-data-analysis-esda" id="toc-exploratory-spatial-data-analysis-esda" class="nav-link" data-scroll-target="#exploratory-spatial-data-analysis-esda"><span class="toc-section-number">1.3.1</span>  Exploratory Spatial Data Analysis (ESDA)</a></li>
+  <li><a href="#second-order-spatial-point-patterns-analysis" id="toc-second-order-spatial-point-patterns-analysis" class="nav-link" data-scroll-target="#second-order-spatial-point-patterns-analysis"><span class="toc-section-number">1.3.2</span>  Second-order Spatial Point Patterns Analysis</a></li>
+  <li><a href="#spatial-correlation-analysis" id="toc-spatial-correlation-analysis" class="nav-link" data-scroll-target="#spatial-correlation-analysis"><span class="toc-section-number">1.3.3</span>  Spatial Correlation Analysis</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
@@ -219,9 +235,51 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>To be completed</p>
+<section id="overview" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Overview</h1>
+<section id="setting-the-scene" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="setting-the-scene"><span class="header-section-number">1.1</span> Setting the Scene</h2>
+<p>Water is an important resource to mankind. Clean and accessible water is critical to human health. It provides a healthy environment, a sustainable economy, reduces poverty and ensures peace and security. Yet over 40% of the global population does not have access to sufficient clean water. By 2025, 1.8 billion people will be living in countries or regions with absolute water scarcity, according to UN-Water. The lack of water poses a major threat to several sectors, including food security. Agriculture uses about 70% of the world's accessible freshwater.</p>
+<p>Developing countries are most affected by water shortages and poor water quality. Up to 80% of illnesses in the developing world are linked to inadequate water and sanitation. Despite technological advancement, providing clean water to the rural community is still a major development issues in many countries globally, especially countries in the Africa continent.</p>
+<p>To address the issue of providing clean and sustainable water supply to the rural community, a global <a href="https://www.waterpointdata.org/about/">Water Point Data Exchange (WPdx)</a> project has been initiated. The main aim of this initiative is to collect water point related data from rural areas at the water point or small water scheme level and share the data via WPdx Data Repository, a cloud-based data library. What is so special of this project is that data are collected based on <a href="https://www.waterpointdata.org/wp-content/uploads/2021/04/WPDx_Data_Standard.pdf">WPDx Data Standard</a>.</p>
+</section>
+<section id="objectives" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="objectives"><span class="header-section-number">1.2</span> Objectives</h2>
+<p>Geospatial analytics hold tremendous potential to address complex problems facing society. In this study, you are tasked to apply appropriate spatial point patterns analysis methods to discover the geographical distribution of functional and non-function water points and their co-locations if any in Osun State, Nigeria.</p>
+</section>
+<section id="tasks" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="tasks"><span class="header-section-number">1.3</span> Tasks</h2>
+<p>The specific tasks of this take-home exercise are as follows:</p>
+<section id="exploratory-spatial-data-analysis-esda" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="exploratory-spatial-data-analysis-esda"><span class="header-section-number">1.3.1</span> Exploratory Spatial Data Analysis (ESDA)</h3>
+<ul>
+<li><p>Derive kernel density maps of functional and non-functional water points. Using appropriate tmap functions,</p></li>
+<li><p>Display the kernel density maps on openstreetmap of Osub State, Nigeria.</p></li>
+<li><p>Describe the spatial patterns revealed by the kernel density maps. Highlight the advantage of kernel density map over point map.</p></li>
+</ul>
+</section>
+<section id="second-order-spatial-point-patterns-analysis" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="second-order-spatial-point-patterns-analysis"><span class="header-section-number">1.3.2</span> Second-order Spatial Point Patterns Analysis</h3>
+<p>With reference to the spatial point patterns observed in ESDA:</p>
+<ul>
+<li><p>Formulate the null hypothesis and alternative hypothesis and select the confidence level.</p></li>
+<li><p>Perform the test by using appropriate Second order spatial point patterns analysis technique.</p></li>
+<li><p>With reference to the analysis results, draw statistical conclusions.</p></li>
+</ul>
+</section>
+<section id="spatial-correlation-analysis" class="level3" data-number="1.3.3">
+<h3 data-number="1.3.3" class="anchored" data-anchor-id="spatial-correlation-analysis"><span class="header-section-number">1.3.3</span> Spatial Correlation Analysis</h3>
+<p>In this section, you are required to confirm statistically if the spatial distribution of functional and non-functional water points are independent from each other.</p>
+<ul>
+<li><p>Formulate the null hypothesis and alternative hypothesis and select the confidence level.</p></li>
+<li><p>Perform the test by using appropriate Second order spatial point patterns analysis technique.</p></li>
+<li><p>With reference to the analysis results, draw statistical conclusions.</p></li>
+</ul>
 
 
+</section>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

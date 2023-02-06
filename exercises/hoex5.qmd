@@ -1,11 +1,11 @@
 ---
 title: "Hands-on Exercise 5: Analysing Marked Point Patterns"
-description: "ddd"
+#description: "ddd"
 author: "Teo Ren Jie"
 date: "2/3/2023"
 categories: ["Hands-on Exercise", "sf", "tmap", "maptools", "spatstat", "raster"]
 title-block-banner: true
-image: Hands-on_Ex05/preview.png
+#image: Hands-on_Ex05/preview.png
 execute:
   message: false
   warning: false
@@ -61,7 +61,7 @@ The following packages assists us to accomplish the following:
 The following public datasets are used:
 
 | Dataset Name                                                        | Source                                                                                      |
-|-------------------------------|-----------------------------------------|
+|---------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
 | Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)* | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)            |
 | Pre-Schools Location *(preschools-location.geojson)*                | [[data.gov.sg]{.underline}](https://dataportal.asia/dataset/203030733_pre-schools-location) |
 

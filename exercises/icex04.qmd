@@ -159,10 +159,13 @@ We can also prepare a pin map (interactive) by using the code below
 ```{r}
 tmap_mode('view') +
 tm_shape(childcare_sf) +
-  tm_dots()
+  tm_dots(alph = 0.5, size = 0.01) +
+  tm_view(set.zoom.limits = c(11, 14))
 ```
 
 From the interactive map above, we can see that *tmap* is ustilising the leaflet for R API, which allows us to interact, navigate, zoom and query each simple feature. Changing the background of the map is also possible.
+
+By using `alph = 0.5` it allows us to plot the dots. The setting will allow for dots to be translucent so that we can tell if
 
 After setting the *tmap_mode()* to `view` we need to remember to switch it back to `plot`.
 

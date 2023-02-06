@@ -1,6 +1,6 @@
 ---
-title: "Take-Home Exerise 01"
-description: " "
+title: "Take-Home Exercise 01"
+#description: " "
 author: "Teo Ren Jie"
 date: "1/30/2023"
 date-modified: "`r Sys.Date()`"
@@ -13,4 +13,362 @@ execute:
   warning: true
 ---
 
-To be completed
+# Overview
+
+## Setting the Scene
+
+Water is an important resource to mankind. Clean and accessible water is critical to human health. It provides a healthy environment, a sustainable economy, reduces poverty and ensures peace and security. Yet over 40% of the global population does not have access to sufficient clean water. By 2025, 1.8 billion people will be living in countries or regions with absolute water scarcity, according to UN-Water. The lack of water poses a major threat to several sectors, including food security. Agriculture uses about 70% of the world's accessible freshwater.
+
+Developing countries are most affected by water shortages and poor water quality. Up to 80% of illnesses in the developing world are linked to inadequate water and sanitation. Despite technological advancement, providing clean water to the rural community is still a major development issues in many countries globally, especially countries in the Africa continent.
+
+To address the issue of providing clean and sustainable water supply to the rural community, a global [Water Point Data Exchange (WPdx)](https://www.waterpointdata.org/about/) project has been initiated. The main aim of this initiative is to collect water point related data from rural areas at the water point or small water scheme level and share the data via WPdx Data Repository, a cloud-based data library. What is so special of this project is that data are collected based on [WPDx Data Standard](https://www.waterpointdata.org/wp-content/uploads/2021/04/WPDx_Data_Standard.pdf).
+
+## Objectives
+
+Geospatial analytics hold tremendous potential to address complex problems facing society. In this study, you are tasked to apply appropriate spatial point patterns analysis methods to discover the geographical distribution of functional and non-function water points and their co-locations if any in Osun State, Nigeria.
+
+## Tasks
+
+The specific tasks of this take-home exercise are as follows:
+
+### Exploratory Spatial Data Analysis (ESDA)
+
+-   Derive kernel density maps of functional and non-functional water points. Using appropriate tmap functions,
+
+-   Display the kernel density maps on openstreetmap of Osun State, Nigeria.
+
+-   Describe the spatial patterns revealed by the kernel density maps. Highlight the advantage of kernel density map over point map.
+
+### Second-order Spatial Point Patterns Analysis
+
+With reference to the spatial point patterns observed in ESDA:
+
+-   Formulate the null hypothesis and alternative hypothesis and select the confidence level.
+
+-   Perform the test by using appropriate Second order spatial point patterns analysis technique.
+
+-   With reference to the analysis results, draw statistical conclusions.
+
+### Spatial Correlation Analysis
+
+In this section, you are required to confirm statistically if the spatial distribution of functional and non-functional water points are independent from each other.
+
+-   Formulate the null hypothesis and alternative hypothesis and select the confidence level.
+
+-   Perform the test by using appropriate Second order spatial point patterns analysis technique.
+
+-   With reference to the analysis results, draw statistical conclusions.
+
+# Getting Started
+
+## Data Acquisition
+
+The following datasets would be used to study the geographical distribution of water points in Osun State in Nigeria.
+
+| Dataset Name                                                                                               | Source                                                                                                                                                                                |
+|---------------------------|---------------------------------------------|
+| WPdx+ (*wpdx_nga.csv*) - Filtered by #clean_country_name from the website                                  | [WPdx Global Data Repositories](https://www.waterpointdata.org/access-data/)                                                                                                          |
+| geoBoundaries Nigeria Level-1 Administrative Boundary (*geoBoundaries-NGA-ADM1.shp*) - UN OCHA CODs        | [geoBoundaries](https://www.geoboundaries.org/index.html#getdata)                                                                                                                     |
+| Humanitarian Data Exchange Nigeria Level-1 Administrative Boundary (*nga_admbnda_adm1_osgof_20190417.shp*) | [Humanitarian Data Exchange](https://data.humdata.org/dataset/81ac1d38-f603-4a98-804d-325c658599a3/resource/aa69f07b-ed8e-456a-9233-b20674730be6/download/nga_adm_osgof_20190417.zip) |
+
+*wpdx_nigeria.csv* has been extracted to `Take-Home_Ex01/data/aspatial`. The two other geospatial datasets has been extracted to `In-Class_Ex02/data/geospatial`.
+
+## Installing and Loading Packages
+
+Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and funModeling.
+
+```{r}
+pacman::p_load(funModeling, sf, tidyverse, tmap, maptools, spatstat, raster)
+```
+
+The following packages assists us to accomplish the following:
+
+-   *funModeling* helps us with performing quick Data Exploration in R
+
+-   *sf* helps to import, manage and process vector-based geospatial data in R
+
+-   *tidyverse* which includes *readr* to import delimited text file, *tidyr* for tidying data and *dplyr* for wrangling data
+
+-   *tmap* provides functions to allow us to plot high quality static or interactive maps using leaflet API
+
+-   *maptools* provides us a set of tools for manipulating geographic data
+
+-   *spatstat* has a wide range of functions for point pattern analysis
+
+-   *raster* reads, writes, manipulates, analyses and model of gridded spatial data (raster)
+
+# Importing and Preparing Geospatial Data
+
+## Importing and Comparing Datasets
+
+We have two geospatial shapefiles which indicates the the Nigeria Level-1 Administrative Boundary. However, we do not know which dataset is better suited for the task. Hence, we will do some data exploration to understand more about the attributes of each shapefile.
+
+In the code below, `dsn` specifies the filepath where the dataset is located and `layer` provides the filename of the dataset excluding the file extension.
+
+```{r}
+geoBoundaries_NGA = st_read(dsn = "Take-Home_Ex01/data/geospatial", layer = "geoBoundaries-NGA-ADM1")
+```
+
+From the above message, it tells us that the dataset contains `multipolygon` features, containing **37 multipolygon** features and **7 fields** in the `geoBoundaries_NGA`simple feature data frame and is in the `WGS84` geographic coordinates system.
+
+Let us check the other dataset from Humanitarian data exchange.
+
+```{r}
+HDX_NGA = st_read(dsn = "Take-Home_Ex01/data/geospatial", layer = "nga_admbnda_adm1_osgof_20190417")
+```
+
+From the above message, it tells us that the dataset contains `multipolygon` features, containing **37 multipolygon** features and **13 fields** in the `gbnigeria` simple feature data frame and is in the `WGS84` geographic coordinates system.
+
+Let us compare the fields to determine which dataset would be sufficiently useful for our analysis.
+
+```{r}
+head(geoBoundaries_NGA)
+```
+
+```{r}
+head(HDX_NGA)
+```
+
+By comparing both datasets, the dataset from **geoBoundaries is more favourable**. Both tables contain similar values, such as name of state, state code and the deometry.
+
+Humanitarian Data Exchange contains values such as its parent (ADM0). However, ADM0 is country level and since we are only looking at **Osun State** which is specifically in **Nigeria**, this data is not very relevant to our analysis.
+
+The rest of the columns are not very relevant to the analysis to be conducted. Hence, we will pick geoBoundaries which has lesser irrelevant data to reduce size of data needed to compute the analysis.
+
+The code below will remove the `HDX_NGA` dataset as we have determined that it is no longer required for our analysis.
+
+```{r}
+remove(HDX_NGA)
+```
+
+## Coordinate Reference System
+
+### Checking the Coordinate Reference System
+
+In the code below, we will check if the Coordinate Reference System has been specified correctly.
+
+```{r}
+st_crs(geoBoundaries_NGA)
+```
+
+As seen above, the file has been configured correctly, having a `WGS84` Geographic Coordinate System which maps to `EPSG:4326`.
+
+### Converting the Coordinate Reference System
+
+What coordinate system do we utilise? Nigeria emcompasses 3 Universal Traverse Mercator (UTM) Zones, Zones 31N, 32N and 33N, each having its unique Projected Coordinate System. Let us refer to the figure below.
+
+![](Take-Home_Ex01/utm-zones.png)
+
+*(Sylvester O et al., 2018)*
+
+Given that Osun State, Nigeria, has a coordinate of *7.5629° N, 4.5200° E* which falls within Zone 31N, we would use the `EPSG:26391` Projected Coordinate System which Zone 31N, Minna, Nigeria West Belt, corresponds to.
+
+In the code below, we will convert the Geographic Coordinate Reference System from `WGS84` to `EPSG:26391` Projected Coordinate System:
+
+```{r}
+nigeria <- st_transform(geoBoundaries_NGA, crs = 26391)
+```
+
+```{r}
+st_crs(nigeria)
+```
+
+After running the code, we can confirm that the data frame has been converted to `EPSG:26391` Projected Coordinate System.
+
+After converting to Projected Coordinated System, we no longer require the original dataset that was in the `WGS84` Geographic Reference System. Let us remove it now.
+
+```{r}
+remove(geoBoundaries_NGA)
+```
+
+# Importing and Preparing Aspatial Data
+
+## Importing WPdx+ Aspatial Data
+
+Since `WPdx+` data set is in `csv` format, we will use read_csv() of **readr** package to import `wpdx_nigeria.csv` and output it to an R object called `wpdx`.
+
+```{r}
+wpdx <- read_csv("Take-Home_Ex01/data/aspatial/wpdx_nga.csv")
+```
+
+```{r}
+list(wpdx)
+```
+
+Our output shows our `wpdx` tibble data frame consists of **95,478 rows** and **74 columns**. The useful fields we would be paying attention to is the `#lat_deg` and `#lon_deg` columns, which are in the decimal degree format. By viewing the [Data Standard on wpdx's website](https://www.waterpointdata.org/wp-content/uploads/2021/04/WPDx_Data_Standard.pdf), we know that the latitude and longitude is in the `WGS84` Geographic Coordinate System.
+
+::: callout-note
+While `wpdx` contains all possible water points within nigeria at the moment, we still do not want to filter the data as some water points may be misclassified by state name (ie. a possible water point may be classified under an adjacent state name but physically is located in one state). We will filter the unrelated water points at a later stage.
+:::
+
+### Creating a Simple Feature Data Frame from an Aspatial Data Frame
+
+As the geometry is available in `wkt` in the column `New Georeferenced Column`, we can use *st_as_sfc()* to import the geomtry
+
+```{r}
+wpdx$Geometry <- st_as_sfc(wpdx$`New Georeferenced Column`)
+```
+
+As there is no spatial data information, firstly, we assign the original projection when converting the tibble dataframe to sf. The original is `wgs84` which is `EPSG:4326`.
+
+```{r}
+wpdx <- st_sf(wpdx, crs=4326)
+```
+
+Next, we then convert the projection to the appropriate decimal based projection system. As discussed earlier, we utilise the `EPSG:26391` Projected Coordinate System as Osun falls under Minna, Nigeria West Belt.
+
+```{r}
+wpdx <- wpdx %>%
+  st_transform(crs = 26391)
+```
+
+```{r}
+wpdx
+```
+
+# Geospatial Data Cleaning
+
+## Excluding Redundant Fields
+
+As the nigeria sf dataframe consist of many redundant field, we use `select()` to select the fields which we want to retain. In our case, we will only retain the *shapeName (State Name), pCode (State Code), shapeType (ADM Level)* and *geometry* fields.
+
+```{r}
+nigeria <- nigeria %>%
+  select(c(0:2, 6))
+```
+
+## Checking for Duplicated State Names
+
+It is important to check for duplicate name in the data main data fields. Using `duplicated()`, we can flag out LGA names that might be duplicated as shown below:
+
+```{r}
+nigeria$ADM1_EN[duplicated(nigeria$ADM1_EN) == TRUE]
+```
+
+Great! There are no duplicate state names.
+
+```{r}
+nigeria_osun <- nigeria %>% filter(shapeName == "Osun")
+```
+
+# Data Wrangling for Water Point Data
+
+------------------------------------------------------------------------
+
+## Understanding Field Names
+
+First, let us have a look at the `#status_clean` column which stores the information about `Functional` and `Non-Functional` data points. The code below returns all values that were used in the column.
+
+```{r}
+freq(data = wpdx,
+     input = '#status_clean')
+```
+
+As there might be issues performing mathematical calculations with `NA` labels, we will rename them to `unknown`.
+
+The code below renames the column `#status_clean` to `status_clean`, select only the `status_clean` for manipulation and then replace all `NA` values to `unknown`.
+
+```{r}
+wpdx <- wpdx %>%
+  rename(status_clean = '#status_clean') %>%
+  select(status_clean) %>%
+  mutate(status_clean = replace_na(status_clean, "unknown"))
+```
+
+## Filtering Data
+
+Firstly, since the wpdx dataset contains all data from all Nigeria states which is not required, let us use *st_intersection()* to filter out the unnecessary datapoints for our analysis. Using the code below, we keep points that are within nigeria_osun's state boundary.
+
+::: callout-note
+Previously, we mentioned that some points may be misclassified as within a certain state but its coordinates may fall under another state. This method ensures that water points with its coordinates fall within the correct state boundary!
+:::
+
+```{r}
+wpdx <- st_intersection(wpdx, nigeria_osun)
+```
+
+With our previous knowledge, we can filter the data to obtain functional proportion counts in each LGA level. We will filter the `wpdx` dataframe to functional and non-functional water points.
+
+```{r}
+wpdx <- wpdx %>% 
+  mutate(status_clean = recode(status_clean, 
+                         `Functional but not in use` = 'Functional',
+                         `Functional, not in use` = 'Functional', 
+                         `Functional, needs repair` =  'Functional',  
+                         `Abandoned/Decommissioned` = "Non-Functional",
+                         `Non-Functional, dry` = "Non-Functional"))
+```
+
+```{r}
+wpdx_func <- wpdx %>% 
+  filter(status_clean %in% 
+           c("Functional", 
+             "Functional but not in use", 
+             "Functional, not in use",
+             "Functional, needs repair"))
+wpdx_nonfunc <- wpdx %>% 
+  filter(status_clean %in%
+          c("Abandoned/Decommissioned", 
+            "Non-Functional",
+            "Non-Functional, dry"))
+wpdx_unknown <- wpdx %>%
+  filter(status_clean == "unknown")
+```
+
+## Point-in-polygon Count
+
+Utilising *st_intersects()* of **sf** package and lengths, we check where each data point for the water point which fall inside each LGA. We do each calculation separation so we can cross check later to ensure all the values sum to the same total.
+
+```{r}
+nigeria_osun <- nigeria_osun %>%
+  mutate(`total_wp` = lengths(
+    st_intersects(nigeria_osun, wpdx))) %>%
+  mutate(`wp_functional` = lengths(
+    st_intersects(nigeria_osun, wpdx_func))) %>%
+  mutate(`wp_nonfunctional` = lengths(
+    st_intersects(nigeria_osun, wpdx_nonfunc))) %>%
+  mutate(`wp_unknown` = lengths(
+    st_intersects(nigeria_osun, wpdx_unknown)))
+```
+
+## Plotting the Distribution of Total Water Points by LGA in Histogram
+
+Next, we will use *mutate()* of **dplyr** package to compute the proportion of `Functional` and `Non-` water points.
+
+This is given by `Functional Proportion = Functional Count / Total Count`.
+
+```{r}
+ggplot(data = nigeria_osun,
+       aes(x = total_wp)) +
+  geom_histogram(bins = 20,
+                 color = "black",
+                 fill = "light blue") +
+  geom_vline(aes(xintercept = mean(
+    total_wp, na.rm = T)),
+    color = "red",
+    linetype = "dashed",
+    size = 0.8) +
+  ggtitle("Distribution of total water points by LGA") +
+  xlab("No. of water points") +
+  ylab("No of\nLGAs") +
+  theme(axis.title.y = element_text(angle = 0))
+```
+
+```{r}
+
+```
+
+```{r}
+tmap_mode('view')
+tmap_shape(nigeria_osun) +
+  tmap_polygons()
+tm_shape(wpdx) +
+  tm_dots("status_clean", alpha = 0.4,
+          size = 0.05)
+```
+
+## 
+
+# References
+
+1.  Sylvester O, E., Olujimi F, O. and Sunday A, O. (2018) "On the determination of NTM and UTM positions from post processing of static DGPS observations on the Nigeria Minna Datum," *International Journal of Engineering Research and Advanced Technology*, 4(10), pp. 10--24. Available at: https://doi.org/10.31695/ijerat.2018.3332.

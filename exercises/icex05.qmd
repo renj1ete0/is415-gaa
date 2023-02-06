@@ -1,0 +1,102 @@
+---
+title: "In-Class Exercise 5: Local Colocation Quotients"
+description: "Calculating and Visualising the Local Colocation of 7-Eleven and Family Mart Convenience Store Chains in Taipei"
+author: "Teo Ren Jie"
+date: "02/06/2023"
+number-sections: true
+categories: ["In-Class Exercise", "sf", "tidyverse", "tmap"]
+title-block-banner: true
+image: In-Class_Ex04/preview.png
+execute:
+  message: true
+  warning: true
+---
+
+# Getting Started
+
+## Installing and Loading Packages
+
+Firstly, the code below will check if **pacman** has been installed. If it has not been installed, R will download and install it, before activating it for use during this session.
+
+```{r}
+if (!require('pacman', character.only = T)){
+  install.packages('pacman')
+}
+library('pacman')
+```
+
+Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and `tmap`.
+
+```{r}
+pacman::p_load(tidyverse, tmap, sf, sfdep)
+```
+
+## Importing Data
+
+```{r}
+studyArea <- st_read(dsn = "In-Class_Ex05/data", layer = "study_area") %>%
+  st_transform(crs = 3829)
+```
+
+```{r}
+stores <- st_read(dsn = "In-Class_Ex05/data", layer = "stores") %>%
+  st_transform(crs = 3829)
+```
+
+## Visualising SF Layers
+
+```{r}
+tmap_mode("view")
+tm_shape(studyArea) +
+  tm_polygons() +
+tm_shape(stores) +
+  tm_dots(col = "Name",
+          size = 0.01,
+          border.col = "black",
+          border.lwd = 0.5) +
+tm_view(set.zoom.limits = c(12,16))
+```
+
+::: callout-note
+The polygon layers should always be above the dots. The geospatial layers are rendered in sequence, hence if polygons are rendered after the dots (ie. dots are ontop of the polygon code), the dots might be coverd by the polygon line/fill.
+:::
+
+# Local Colocation Quotients (LCLQ)
+
+```{r}
+nb <- include_self(
+  st_knn(st_geometry(stores), 6))
+wt <- st_kernel_weights(nb, stores, "gaussian")
+```
+
+The variable *nb* stores the values of its neighbours. The number *6* defines 6 points including itself and 5 other neighbours.
+
+The variable *wt* will balance weights according to distance to centre point. The further points will get lower weights.
+
+```{r}
+FamilyMart <- stores %>%
+  filter(Name == "Family Mart")
+A <- FamilyMart$Name
+
+SevenEleven <- stores %>%
+  filter(Name == "7-Eleven")
+B <- SevenEleven$Name
+
+LCLQ <- local_colocation(A, B, nb, wt, 49) #49 = 50 simulations and immediately see p value
+
+LCLQ_stores <- cbind(stores, LCLQ)
+
+tmap_mode("view")
+```
+
+```{r}
+tmap_mode("view")
+tm_shape(studyArea) +
+  tm_polygons() +
+tm_shape(LCLQ_stores) +
+  tm_dots(col = "X7.Eleven",
+          size = 0.01,
+          border.col = "black",
+          border.lwd = 0.5) +
+tm_view(set.zoom.limits = c(12,16))
+```

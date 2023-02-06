@@ -34,5 +34,14 @@
   },
   "exercises/hoex5.qmd": {
     "hoex5.html": "de42d0e0"
+  },
+  "exercises/icex05.qmd": {
+    "icex05.html": "99a8b0d9"
+  },
+  "exercises/In-Class_Ex05/data/stores.qmd": {
+    "stores.html": "20629cd5"
+  },
+  "exercises/In-Class_Ex05/data/study_area.qmd": {
+    "study_area.html": "d7f6c5f1"
   }
 }
