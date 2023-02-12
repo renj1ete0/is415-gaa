@@ -6,7 +6,7 @@ date: "02/06/2023"
 number-sections: true
 categories: ["In-Class Exercise", "sf", "tidyverse", "tmap"]
 title-block-banner: true
-image: In-Class_Ex04/preview.png
+image: In-Class_Ex05/preview.png
 execute:
   message: true
   warning: true

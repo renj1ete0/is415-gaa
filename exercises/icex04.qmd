@@ -52,7 +52,7 @@ pacman::p_load(maptools, sf, raster, spatstat, tmap)
 The following public datasets are used:
 
 | Dataset Name                                                        | Source                                                                                      |
-|-------------------------------|-----------------------------------------|
+|---------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
 | Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)* | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)            |
 | Pre-Schools Location *(preschools-location.geojson)*                | [[data.gov.sg]{.underline}](https://dataportal.asia/dataset/203030733_pre-schools-location) |
 | Coastal Outline (*CostalOutline.shp*)                               | Prof Kam - SLA                                                                              |
@@ -149,7 +149,8 @@ tm_shape(sg_sf)+
 tm_shape(mpsz_sf) +
   tm_polygons() +
 tm_shape(childcare_sf) +
-  tm_dots()
+  tm_dots() +
+tmap_options(check.and.fix = TRUE)
 ```
 
 Here, we do not see any anomalies, all the geospatial points are within the map's context, which means that the reference system and coordinate values are referred to the similar spatial context.
