@@ -37,6 +37,8 @@ website:
             text: In-Class Exercise 4
           - href: exercises/icex05.qmd
             text: In-Class Exercise 5
+          - href: exercises/icex06.qmd
+            text: In-Class Exercise 6
       - text: Take-home Exercise
         menu: 
           - href: exercises/thex01.qmd

@@ -725,7 +725,7 @@
     "href": "index.html",
     "title": "Ren Jie’s IS415 Journal",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nIn-Class Exercise 5: Local Colocation Quotients\n\n\n\n\n\nCalculating and Visualising the Local Colocation of 7-Eleven and Family Mart Convenience Store Chains in Taipei\n\n\n\n\n\n\nFeb 6, 2023\n\n\nTeo Ren Jie\n\n\n1 min\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHands-on Exercise 5: Analysing Marked Point Patterns\n\n\n\n\n\n\n\n\n\n\n\n\nFeb 3, 2023\n\n\nTeo Ren Jie\n\n\n3 min\n\n\n\n\n\n\n  \n\n\n\n\nIn-Class Exercise 4: 2nd Order Spatial Point Patterns Analysis Methods\n\n\n\n\n\nSpatial Point Pattern Analysis of Distribution of Childcare Centres in Singapore\n\n\n\n\n\n\nJan 30, 2023\n\n\nTeo Ren Jie\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nTake-Home Exercise 01: Water Points in Osun, Nigeria\n\n\n\n\n\nCalculating and discovering the spatial point patterns and geographical distribution of functional and non-functional water points in Osun, Nigeria\n\n\n\n\n\n\nJan 30, 2023\n\n\nTeo Ren Jie\n\n\n25 min\n\n\n\n\n\n\n  \n\n\n\n\nHands-on Exercise 3: 1st Order Spatial Point Patterns Analysis Methods\n\n\n\n\n\nSpatial Point Pattern Analysis of Distribution of Childcare Centres in Singapore\n\n\n\n\n\n\nJan 29, 2023\n\n\nTeo Ren Jie\n\n\n19 min\n\n\n\n\n\n\n  \n\n\n\n\nIn-Class Exercise 3: Analytical Mapping\n\n\n\n\n\nVisualising Functional and Non-Functional Water Pumps in Nigeria at LGA level\n\n\n\n\n\n\nJan 25, 2023\n\n\nTeo Ren Jie\n\n\n4 min\n\n\n\n\n\n\n  \n\n\n\n\nHands-on Exercise 2: Choropleth Mapping with R\n\n\n\n\n\nChloropleth Mapping of Singapore Resident Planning Area / Subzone, Age, Sex and Type of Dwelling\n\n\n\n\n\n\nJan 24, 2023\n\n\nTeo Ren Jie\n\n\n27 min\n\n\n\n\n\n\n  \n\n\n\n\nIn-Class Exercise 2: Geospatial Data Wrangling\n\n\n\n\n\nVisualising proportion of functional and non-functional water pumps in Nigeria at LGA level\n\n\n\n\n\n\nJan 16, 2023\n\n\nTeo Ren Jie\n\n\n10 min\n\n\n\n\n\n\n  \n\n\n\n\nHands-on Exercise 1: Geospatial Data Handling and Wrangling\n\n\n\n\n\nIn this exercise, I learn how to handle, perform geoprocessing and EDA using sf, tidyverse, ggplot2 and other packages.\n\n\n\n\n\n\nJan 15, 2023\n\n\nTeo Ren Jie\n\n\n11 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nIn-Class Exercise 6: Spatial Weights and Applications\n\n\n\n\n\n\n\n\n\n\n\n\nFeb 13, 2023\n\n\nTeo Ren Jie\n\n\n2 min\n\n\n\n\n\n\n  \n\n\n\n\nIn-Class Exercise 5: Local Colocation Quotients\n\n\n\n\n\nCalculating and Visualising the Local Colocation of 7-Eleven and Family Mart Convenience Store Chains in Taipei\n\n\n\n\n\n\nFeb 6, 2023\n\n\nTeo Ren Jie\n\n\n1 min\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHands-on Exercise 5: Analysing Marked Point Patterns\n\n\n\n\n\n\n\n\n\n\n\n\nFeb 3, 2023\n\n\nTeo Ren Jie\n\n\n3 min\n\n\n\n\n\n\n  \n\n\n\n\nIn-Class Exercise 4: 2nd Order Spatial Point Patterns Analysis Methods\n\n\n\n\n\nSpatial Point Pattern Analysis of Distribution of Childcare Centres in Singapore\n\n\n\n\n\n\nJan 30, 2023\n\n\nTeo Ren Jie\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nTake-Home Exercise 01: Water Points in Osun, Nigeria\n\n\n\n\n\nCalculating and discovering the spatial point patterns and geographical distribution of functional and non-functional water points in Osun, Nigeria\n\n\n\n\n\n\nJan 30, 2023\n\n\nTeo Ren Jie\n\n\n25 min\n\n\n\n\n\n\n  \n\n\n\n\nHands-on Exercise 3: 1st Order Spatial Point Patterns Analysis Methods\n\n\n\n\n\nSpatial Point Pattern Analysis of Distribution of Childcare Centres in Singapore\n\n\n\n\n\n\nJan 29, 2023\n\n\nTeo Ren Jie\n\n\n19 min\n\n\n\n\n\n\n  \n\n\n\n\nIn-Class Exercise 3: Analytical Mapping\n\n\n\n\n\nVisualising Functional and Non-Functional Water Pumps in Nigeria at LGA level\n\n\n\n\n\n\nJan 25, 2023\n\n\nTeo Ren Jie\n\n\n4 min\n\n\n\n\n\n\n  \n\n\n\n\nHands-on Exercise 2: Choropleth Mapping with R\n\n\n\n\n\nChloropleth Mapping of Singapore Resident Planning Area / Subzone, Age, Sex and Type of Dwelling\n\n\n\n\n\n\nJan 24, 2023\n\n\nTeo Ren Jie\n\n\n27 min\n\n\n\n\n\n\n  \n\n\n\n\nIn-Class Exercise 2: Geospatial Data Wrangling\n\n\n\n\n\nVisualising proportion of functional and non-functional water pumps in Nigeria at LGA level\n\n\n\n\n\n\nJan 16, 2023\n\n\nTeo Ren Jie\n\n\n10 min\n\n\n\n\n\n\n  \n\n\n\n\nHands-on Exercise 1: Geospatial Data Handling and Wrangling\n\n\n\n\n\nIn this exercise, I learn how to handle, perform geoprocessing and EDA using sf, tidyverse, ggplot2 and other packages.\n\n\n\n\n\n\nJan 15, 2023\n\n\nTeo Ren Jie\n\n\n11 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "exercises/thex01.html#plotting-map-of-water-points",
@@ -733,5 +733,47 @@
     "title": "Take-Home Exercise 01: Water Points in Osun, Nigeria",
     "section": "6.3 Plotting Map of Water Points",
     "text": "6.3 Plotting Map of Water Points\nUsing tmap, we can quickly plot a map of where the Functional, Non-Functional and Unknown water points are. We have plotted an interactive map which uses Openstreetmaps as its base layer so we can view each point’s location in relation to where roads, rivers, etc. are.\n\ntmap_mode('view')\ntm_basemap(server = \"OpenStreetMap\") +\ntm_shape(nigeria_osun) +\n  tm_polygons(alpha = 0.2) +\ntm_shape(wpdx) +\n  tm_dots(\"status_clean\", \n          alpha = 0.4,\n          size = 0.05,\n          palette = c(\"darkolivegreen2\", \"brown2\", \"cadetblue\"))\n\n\n\n\n\n\nWith the help of Openstreetmaps base map, from a quick glance, it seems that water points are typically located near roads. There is more water points in certain areas, which could be attributed to being closer to urban centers or residential areas, given the denser layouts of roads.\nIn larger urban areas such as Osogobo in Osun, Nigeria, we can see clearly that there is a greater proportion of water points closer towards the centre of town.\nHowever, it is hard for us to see the density of functional and non-functional water points from this map."
+  },
+  {
+    "objectID": "exercises/icex06.html",
+    "href": "exercises/icex06.html",
+    "title": "In-Class Exercise 6: Spatial Weights and Applications",
+    "section": "",
+    "text": "Pacman assists us by helping us load R packages that we require, sf, sfdep, tidyverse and tmap.\n\npacman::p_load(tidyverse, tmap, sf, sfdep)\n\n\n\n\nThe following public datasets are used:\n\n\n\nDataset Name\nSource\n\n\n\n\nHunan (Hunan.shp)\nProf Kam\n\n\nHunan 2021 (Hunan-2021.csv)\nProf Kam"
+  },
+  {
+    "objectID": "exercises/icex06.html#importing-spatial-data",
+    "href": "exercises/icex06.html#importing-spatial-data",
+    "title": "In-Class Exercise 6: Spatial Weights and Applications",
+    "section": "2.1 Importing Spatial Data",
+    "text": "2.1 Importing Spatial Data\nWe will use st_read() of sf package to import the three geospatial datasets.\n\nhunan <- st_read(dsn = \"In-Class_Ex06/data/geospatial\", layer = \"hunan\")\n\nReading layer `hunan' from data source \n  `C:\\renjie-teo\\IS415-GAA\\exercises\\In-Class_Ex06\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 88 features and 7 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812\nGeodetic CRS:  WGS 84\n\n\n\nhunan_2012 <- read_csv(\"In-Class_Ex06/data/aspatial/Hunan_2012.csv\")\n\nRows: 88 Columns: 29\n── Column specification ────────────────────────────────────────────────────────\nDelimiter: \",\"\nchr  (2): County, City\ndbl (27): avg_wage, deposite, FAI, Gov_Rev, Gov_Exp, GDP, GDPPC, GIO, Loan, ...\n\nℹ Use `spec()` to retrieve the full column specification for this data.\nℹ Specify the column types or set `show_col_types = FALSE` to quiet this message."
+  },
+  {
+    "objectID": "exercises/icex06.html#combining-both-data-frame-by-using-left-join",
+    "href": "exercises/icex06.html#combining-both-data-frame-by-using-left-join",
+    "title": "In-Class Exercise 6: Spatial Weights and Applications",
+    "section": "2.2 Combining both data frame by using left join",
+    "text": "2.2 Combining both data frame by using left join\n\nhunan_GDPPC <- left_join(hunan, hunan_2012) %>%\n  select(1:4, 7, 15)\n\nJoining, by = \"County\"\n\n\nIf two columns have the same name, they will automatically be joined, else, the following code has to be specified after the dataframes to be joined. A == B"
+  },
+  {
+    "objectID": "exercises/icex06.html#contiguity-neighbours-methods",
+    "href": "exercises/icex06.html#contiguity-neighbours-methods",
+    "title": "In-Class Exercise 6: Spatial Weights and Applications",
+    "section": "4.1 Contiguity Neighbours Methods",
+    "text": "4.1 Contiguity Neighbours Methods\nIn the code chunk below st_contiguity() is used to derive a contiguity neighbour list by using Queen’s method.\n\ncn_queen <- hunan_GDPPC %>%\n  mutate(nb = st_contiguity(geometry),\n         .before = 1)\n\n\ncn_rook <- hunan_GDPPC %>%\n  mutate(nb = st_contiguity(geometry),\n         queen = FALSE,\n         .before = 1)"
+  },
+  {
+    "objectID": "exercises/icex06.html#contiguity-weights-queens-method",
+    "href": "exercises/icex06.html#contiguity-weights-queens-method",
+    "title": "In-Class Exercise 6: Spatial Weights and Applications",
+    "section": "5.1 Contiguity Weights: Queen’s Method",
+    "text": "5.1 Contiguity Weights: Queen’s Method\n\nwm_q <- hunan_GDPPC %>%\n  mutate(nb = st_contiguity(geometry),\n         wt = st_weights(nb),\n         .before = 1)"
+  },
+  {
+    "objectID": "exercises/icex06.html#contiguity-weights-rooks-method",
+    "href": "exercises/icex06.html#contiguity-weights-rooks-method",
+    "title": "In-Class Exercise 6: Spatial Weights and Applications",
+    "section": "5.2 Contiguity Weights: Rook’s Method",
+    "text": "5.2 Contiguity Weights: Rook’s Method\n\nwm_r <- hunan_GDPPC %>%\n  mutate(nb = st_contiguity(geometry),\n         wt = st_weights(nb),\n         queen = FALSE,\n         .before = 1)"
   }
 ]
