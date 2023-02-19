@@ -1,8 +1,8 @@
 ---
-title: "Hands-on Exercise 5: Analysing Marked Point Patterns"
+title: "Hands-on Exercise 5: Global and Local Measures of Spatial Autocorrelation"
 #description: "ddd"
 author: "Teo Ren Jie"
-date: "2/3/2023"
+date: "2/18/2023"
 categories: ["Hands-on Exercise", "sf", "tmap", "maptools", "spatstat", "raster"]
 title-block-banner: true
 #image: Hands-on_Ex05/preview.png
@@ -15,101 +15,142 @@ execute:
 
 ## Overview
 
-In previous exercises, we have learnt about point pattern dataset containing a complete enumeration of events, objects of interest, occuring in a defined study region. These could include a measurable location including traffic accidents, crime occurences, etc. with an associated continuous (num. of students) or categorical measurement (type of schools).
+In this hands-on exercise, you will learn how to compute Global and Local Measure of Spatial Autocorrelation (GLSA) by using **spdep** package. By the end to this hands-on exercise, you will be able to:
 
-The measures are called marks and events with marks are called marked point pattern.
+-   import geospatial data using appropriate function(s) of **sf** package,
 
-Marked point patterns have first-order properties which are related to the intensity of events and associated marks across the study region. They also have second-order properties which is related to spatial dependence of events and associated marks across the study area.
+-   import csv file using appropriate function of **readr** package,
+
+-   perform relational join using appropriate join function of **dplyr** package,
+
+-   compute Global Spatial Autocorrelation (GSA) statistics by using appropriate functions of **spdep** package,
+
+    -   plot Moran scatterplot,
+
+    -   compute and plot spatial correlogram using appropriate function of **spdep** package.
+
+-   compute Local Indicator of Spatial Association (LISA) statistics for
+    detecting clusters and outliers by using appropriate functions **spdep** package;
+
+-   compute Getis-Ord\'s Gi-statistics for detecting hot spot or/and cold spot area by using appropriate functions of **spdep** package; and
+
+-   to visualise the analysis output by using **tmap** package.
 
 ## Research Questions
 
-1.  Are locations of childcare centre by different business groups (NT, PT, RC, ST) spatially independent?
+In spatial policy, one of the main development objective of the local government and planners is to ensure equal distribution of development in the province. Our task in this study, hence, is to apply appropriate spatial statistical methods to discover if development are even distributed geographically. If the answer is **No**. Then, our next question will be \"is there sign of spatial clustering?\". And, if the answer for this question is yes, then our next question will be \"where are these clusters?\"
 
-2.  If it is not spatially independent, are there any phenomena of attraction or repulsion?
+In this case study, we are interested to examine the spatial pattern of a selected development indicator (i.e. GDP per capita) of Hunan Provice, People Republic of China.(https://en.wikipedia.org/wiki/Hunan)
 
 ## Installing and Loading Packages
 
-Firstly, the code below will check if **pacman** has been installed. If it has not been installed, R will download and install it, before activating it for use during this session.
+Pacman assists us by helping us load R packages that we require, `sf`, `sfdep`, `tmap` and `tidyverse`.
 
 ```{r}
-if (!require('pacman', character.only = T)){
-  install.packages('pacman')
-}
-library('pacman')
-```
-
-Next, pacman assists us by helping us load R packages that we require, `rgdal`, `sf`, `tmap` and `maptools`, `spatstat`, `raster`.
-
-```{r}
-pacman::p_load(rgdal, tmap, maptools, spatstat, raster)
+pacman::p_load(sf, sfdep, tmap, tidyverse)
 ```
 
 The following packages assists us to accomplish the following:
 
--   *rgdal* helps to import geospatial data in GIS file (shp) into R and save them as Spatial\*Dataframe
+-   *sfdep* helps to compute spatial weights, global and local spatial autocorrelation statistics
 
 -   *tmap* provides functions to allow us to plot high quality static or interactive maps using leaflet API
 
--   *maptoolsI* provides us a set of tools for manipulating geographic data
-
--   *spatstat* has a wide range of functions for point pattern analysis
-
--   *raster* reads, writes, manipulates, analyses and model of gridded spatial data (raster)
-
 ## Data Acquisition
 
-The following public datasets are used:
+The following datasets are used:
 
-| Dataset Name                                                        | Source                                                                                      |
-|---------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)* | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web)            |
-| Pre-Schools Location *(preschools-location.geojson)*                | [[data.gov.sg]{.underline}](https://dataportal.asia/dataset/203030733_pre-schools-location) |
+| Dataset Name                  | Source   |
+|-------------------------------|----------|
+| Hunan *(Hunan.shp)*           | Prof Kam |
+| Hunan 2021 *(Hunan-2021.csv)* | Prof Kam |
 
 # Spatial Data Wrangling
 
 ## Importing Geospatial Data
 
-In previous exercises, we used the *sf* library to import spatial data into R. Since our first and second-order analysis uses *spatstat* which requires conversion from *Spatial\** to generic *sp* to *ppp* format, we can avoid the additional conversion from sf to *Spatial\** by importing directly into R with *rgdal* into *Spatial\** Dataframe directly.
-
-We will use `readOGR()` of *rgdal* to import both shapefiles into R
+Using the code chunk below, we will import the *Hunan shapefile* into R as *sf data frame*.
 
 ```{r}
-childcare <- readOGR(dsn = "Hands-on_Ex05/data/geospatial", layer="CHILDCARE")
+hunan <- st_read(dsn = "Hands-on_Ex05/data/geospatial",
+                 layer = "Hunan")
 ```
 
+## 
+Importing Geospatial Data
+
+Using the code chunk below, we will import *Hunan_2012.csv* into R, which reults in a *R data frame*.
+
 ```{r}
-mpsz <- readOGR(dsn = "Hands-on_Ex05/data/geospatial", layer="MP14_SUBZONE_WEB_PL")
+hunan2012 <- read_csv("Hands-on_Ex05/data/aspatial/Hunan_2012.csv")
 ```
 
-Since `readOCR()` of *rgdal* is used, the output R objects will be in SpatialPointsDataframe and SpatialPolygonsDataframe respectively.
+## Perfoming Relational Join
 
-Next, we will use `str()` of *base R* to check the data type of `childcare` SpatialPointsDataFrame to ensure that the **marked** field is in **factor** data type if the values are categorical.
+The *hunan2012.csv* provides attributes that we want to combine with our shapefile. To do this, we can do a left join as shown in the code chunk, before selecting the columns that we want to retain.
 
 ```{r}
-str(childcare)
+hunan <- left_join(hunan, hunan2012) %>%
+  select(1:4, 7, 15)
 ```
 
-The output above shows the `Type` field is in `char` data type and not in `factor` daata type as required by *spatstat*. Using the code below, we can convert `Type` field to `factor` data type.
+## Visualising Regional Development Indicator
+
+Next, we will prepare a chloropleth map to show the distribution of GDPPC in Hunan in 2012.
 
 ```{r}
-childcare@data$Type <- as.factor(childcare@data$Type)
-```
-
-Let us check if the datatype has changed.
-
-```{r}
-str(childcare)
-```
-
-## Mapping the Geospatial Datasets
-
-After checking the CRS of each geospatial data frame, we can plot a map to see their spatial patterns.
-
-```{r}
-tmap_mode("view")
-tm_shape(mpsz)+
+equal <- tm_shape(hunan) +
+  tm_fill("GDPPC",
+          n = 5,
+          style = "equal") +
   tm_borders(alpha = 0.5) +
-  tmap_options(check.and.fix = TRUE) +
-tm_shape(childcare) +
-  tm_dots(col = 'Type', size= 0.02)
+  tm_layout(main.title = "Equal interval classification")
+
+quantile <- tm_shape(hunan) +
+  tm_fill("GDPPC",
+          n = 5,
+          style = "quantile") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "Equal quantile classification")
+
+tmap_arrange(equal, 
+             quantile, 
+             asp=1, 
+             ncol=2)
+```
+
+# Global Spatial Autocorrelation
+
+In In-Class Exercise 6, we have learnt how to calculate Contiguity Spatial Weights usingt he Queen's method. Now, we will apply that to get our first order neighbours using the Queen criteria.
+
+## Computing Contiguity Spatial Weights
+
+Using the *sfdep* package with with *mutate()* and *st_contiguity()* and *st_weights()*, it performs the necessary tasks, to obtain the contiguity weights and then row-standardised weight matrix.
+
+By default, the code chunk below will assign each neighbouring with equal weight (style="W")
+
+```{r}
+wm_q <- hunan %>%
+  mutate(nb = st_contiguity(geometry),
+         wt = st_weights(nb),
+         .before = 1)
+```
+
+```{r}
+summary(wm_q)
+```
+
+From the summary report, we can see that there are 88 area units, with the most connected area unit having 11 neighbours.
+
+## 
+Global Spatial Correlation
+
+### Moran's I Test
+
+The code chunk below performs Moran's I statistical testing using *global_moran_test* of **sfdep**.
+
+```{r}
+global_moran_test(hunan$GDPPC,
+                  wm_q$nb,
+                  wm_q$wt)
 ```

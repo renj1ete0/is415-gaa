@@ -1,10 +1,10 @@
 ---
 title: "In-Class Exercise 6: Spatial Weights and Applications"
-description: " "
+description: "Computing Contiguity and Distance-Based Weights in Hunan, China"
 author: "Teo Ren Jie"
 date: "02/13/2023"
 number-sections: true
-categories: ["In-Class Exercise", "sf", "tidyverse", "tmap"]
+categories: ["In-Class Exercise", "sf", "sfdep", "tidyverse", "tmap"]
 title-block-banner: true
 image: In-Class_Ex06/preview.png
 execute:
@@ -24,7 +24,7 @@ pacman::p_load(tidyverse, tmap, sf, sfdep)
 
 ## Data Acquisition
 
-The following public datasets are used:
+The following datasets are used:
 
 | Dataset Name                  | Source   |
 |-------------------------------|----------|
@@ -81,19 +81,34 @@ Before a spatial weight matrix can be derived, the neighbours need to be identif
 
 ## Contiguity Neighbours Methods
 
+### Queen's Method
+
 In the code chunk below `st_contiguity()` is used to derive a contiguity neighbour list by using Queen's method.
 
 ```{r}
-cn_queen <- hunan_GDPPC %>%
+nb_queen <- hunan_GDPPC %>%
   mutate(nb = st_contiguity(geometry),
          .before = 1)
 ```
 
+The code chunk below prints the neighbours found using the Queen's method:
+
 ```{r}
-cn_rook <- hunan_GDPPC %>%
-  mutate(nb = st_contiguity(geometry),
-         queen = FALSE,
+summary(nb_queen)
+```
+
+### Rook's Method
+
+```{r}
+nb_rook <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry, queen = FALSE),
          .before = 1)
+```
+
+The code chunk below prints the neighbours found using the Rook's method:
+
+```{r}
+summary(nb_rook)
 ```
 
 # Computing Contiguity Weights
@@ -107,12 +122,127 @@ wm_q <- hunan_GDPPC %>%
          .before = 1)
 ```
 
+```{r}
+wm_q
+```
+
 ## Contiguity Weights: Rook's Method
 
 ```{r}
 wm_r <- hunan_GDPPC %>%
-  mutate(nb = st_contiguity(geometry),
+  mutate(nb = st_contiguity(geometry, queen = FALSE),
          wt = st_weights(nb),
-         queen = FALSE,
          .before = 1)
+```
+
+```{r}
+wm_r
+```
+
+# Distance Based Weights
+
+There are three popular distance-based spatial weights that are being used:
+
+1.  Fixed distance weights
+2.  Adaptive distance weights
+3.  Inverse distance weights (IDW)
+
+## Deriving Fixed Distance Weights
+
+Before we can derive the fixed distance weights, we need to determine the upper limit for distance band using the code chunk below
+
+```{r}
+geo <- sf::st_geometry((hunan_GDPPC))
+nb <- st_knn(geo, longlat = TRUE)
+dists <- unlist(st_nb_dists(geo, nb))
+```
+
+From the code chunk above, we can know that:
+
+`st_nb_dists()` of *sfdep* is used to calculate nearest neighbour distance. It outputs a list of distances for each observation's neighbours list.
+
+`unlist()` of *Base R* is used to return output as vector so the summary statistics of nearest neighbour distances can be derived
+
+Now, let's derived the summary statistics of nearest neighbour distances vector (ie. dists) by using the code chunk below:
+
+```{r}
+summary(dists)
+```
+
+From the code chunk above, we know that the maximum nearest neighbour distance is `65.80km`. By using a threshold value of 66km, we can ensure that each area has at least one neighbour.
+
+Now, we will go ahead to compute the fixed distance weights using the code chunk below.
+
+```{r}
+wm_fd <- hunan_GDPPC %>% 
+  mutate(nb = st_dist_band(geometry, upper = 66),
+         wt = st_weights(nb),
+         .before = 1)
+```
+
+From the code above, we can know that:
+
+`st_dists_band()` of *sfdep* is used to identity neighbours based on a distance band. Output is a list of neighbours
+
+`st_weights()` is used to calculate polygon spatial weights of nb list.
+
+-   the default *style* argument is set to "W" for row standardised weights and
+
+-   the default *allow_zero* is set to TRUE, assigns zero as lagged value to zone without neighbours
+
+Let us examine the dataframe of the fixed distance weights
+
+```{r}
+wm_fd
+```
+
+## Deriving Adaptive Distance Weights
+
+```{r}
+wm_ad <- hunan_GDPPC %>%
+  mutate(nb = st_knn(geometry,
+                     k = 8),
+         wt = st_weights(nb),
+         .before = 1)
+```
+
+From the code above, we can learn that:
+
+`st_knn()` of sfdep is used to identify neighbours based on k (ie. k = 8 indicates 8 nearest neighbours). Output similarly is a list of neighbours (ie. nb)
+
+`st_weights()` is used to calculate polygon spatial weights of nb list. Note
+
+-   the default *style* argument is set to "W" for row standardised weights and
+
+-   the default *allow_zero* is set to TRUE, assigns zero as lagged value to zone without neighbours
+
+```{r}
+wm_ad
+```
+
+## Deriving Inverse Distance Weights
+
+```{r}
+wm_idw <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         wts = st_inverse_distance(nb, geometry,
+                                   scale = 1,
+                                   alpha = 1),
+         .before = 1)
+```
+
+From the code above, we can learn that:
+
+`st_contiguity()` of sfdep is used to identify neighbours by contiguity criteria. The output is a list of neighbours (ie. nb)
+
+`st_inverse_distance()` is used to calculate inverse distance weights of neighbours on the nb list
+
+Note:
+
+-   the default *style* argument is set to "W" for row standardised weights and
+
+-   the default *allow_zero* is set to TRUE, assigns zero as lagged value to zone without neighbours
+
+```{r}
+wm_idw
 ```
