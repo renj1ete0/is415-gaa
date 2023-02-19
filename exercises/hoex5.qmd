@@ -47,7 +47,7 @@ In this case study, we are interested to examine the spatial pattern of a select
 Pacman assists us by helping us load R packages that we require, `sf`, `sfdep`, `tmap` and `tidyverse`.
 
 ```{r}
-pacman::p_load(sf, sfdep, tmap, tidyverse)
+pacman::p_load(sf, sfdep, tmap, tidyverse, spdep)
 ```
 
 The following packages assists us to accomplish the following:
@@ -147,10 +147,160 @@ Global Spatial Correlation
 
 ### Moran's I Test
 
-The code chunk below performs Moran's I statistical testing using *global_moran_test* of **sfdep**.
+The code chunk below performs Moran's I statistical testing using `global_moran_test()` of **sfdep**.
+
+Our hypothesis formulated is as follows:
+
+Ho = The observations of spatial pattern of GDPPC values in Hunan are randomly distributed.
+
+H1= The observations of spatial pattern of GDPPC values in Hunan are not randomly distributed.
+
+The null hypothesis will be rejected is p-value is smaller than alpha value of 0.001.
 
 ```{r}
 global_moran_test(hunan$GDPPC,
                   wm_q$nb,
                   wm_q$wt)
 ```
+
+From the code, since the p-value is \< 0.001, we reject the null hypothesis
+
+#### Computing Monte Carlo Moran's I
+
+```{r}
+set.seed(1234)
+bperm = global_moran_perm(hunan$GDPPC,
+                          wm_q$nb,
+                          wm_q$wt,
+                          nsim = 999,
+                          zero.policy = TRUE,
+                          na.action = na.omit)
+bperm
+```
+
+Since I (0.300749970) \> 0, there appears to be clustering in Hunan, China and observations tend to be similar.
+
+#### Visualising Monte Carlo Moran's I
+
+We can better visualise Moran's I test statistics in greater detail by plotting the distrubtion of statistical values as a histogram using the code chunk below.
+
+```{r}
+mean(bperm$res[1:999])
+```
+
+```{r}
+var(bperm$res[1:999])
+```
+
+```{r}
+summary(bperm$res[1:999])
+```
+
+```{r}
+hist(bperm$res,
+     freq = TRUE,
+     breaks = 20,
+     xlab = "Simulated Moran's I")
+abline(v = 0,
+       col = "red")
+```
+
+### Global Spatial Autocorreclation: Geary's
+
+#### Geary's C Test
+
+In this section, we will use `global_c_test()` from *sfdep* to conudct Geary's C Test
+
+Our hypothesis formulated is as follows:
+
+Ho = The observations of spatial pattern of GDPPC values in Hunan are randomly distributed.
+
+H1= The observations of spatial pattern of GDPPC values in Hunan are not randomly distributed.
+
+The null hypothesis will be rejected is p-value is smaller than alpha value of 0.001.
+
+```{r}
+global_c_test(hunan$GDPPC,
+                  wm_q$nb,
+                  wm_q$wt)
+```
+
+From the code, since the p-value is \< 0.001, we reject the null hypothesis
+
+#### Computing Monte Carlo Geary's C
+
+```{r}
+set.seed(1234)
+bperm = global_c_perm(hunan$GDPPC,
+                      wm_q$nb,
+                      wm_q$wt,
+                      nsim = 999)
+bperm
+```
+
+Since C (0.69072) \< 1, there appears to be clustering in Hunan, China and observations tend to be similar.
+
+#### Visualising the Monte Carlo Gerary's C
+
+```{r}
+mean(bperm$res[1:999])
+```
+
+```{r}
+var(bperm$res[1:999])
+```
+
+```{r}
+summary(bperm$res[1:999])
+```
+
+```{r}
+hist(bperm$res, freq = TRUE, breaks = 20, xlab = "Simulated Geary C")
+abline(v = 1, col = "red")
+```
+
+## Spatial Correlogram
+
+Spatial correlograms are great to examine patterns of spatial autocorrelation in your data or model residuals. They show how correlated are pairs of spatial observations when you increase the distance (lag) between them - they are plots of some index of autocorrelation (Moran's I or Geary's c) against distance.Although correlograms are not as fundamental as variograms (a keystone concept of geostatistics), they are very useful as an exploratory and descriptive tool. For this purpose they actually provide richer information than variograms.
+
+### Compute Moran's I Correlogram
+
+As *sfdep* does not offer a method to plot the correlogram, we will be using `sp.correlogram()` of *spdep* package. Thereafter, we use *plot* to plot the output of the graph
+
+```{r}
+MI_corr <- sp.correlogram(wm_q$nb, 
+                          hunan$GDPPC, 
+                          order=6, 
+                          method="I", 
+                          style="W")
+plot(MI_corr)
+```
+
+The plot does not allow us to fully interpret the autocorrelation values as some of the values might not be statistically significant. Hence, we should print the analysis results using the code below.
+
+```{r}
+print(MI_corr)
+```
+
+\<analyse\>
+
+### Plot Geary's C Correlogram and Plot
+
+As *sfdep* does not offer a method to plot the correlogram, we will be using `sp.correlogram()` of *spdep* package. Thereafter, we use *plot* to plot the output of the graph
+
+```{r}
+GC_corr <- sp.correlogram(wm_q$nb, 
+                          hunan$GDPPC, 
+                          order=6, 
+                          method="C", 
+                          style="W")
+plot(GC_corr)
+```
+
+The plot does not allow us to fully interpret the autocorrelation values as some of the values might not be statistically significant. Hence, we should print the analysis results using the code below.
+
+```{r}
+print(GC_corr)
+```
+
+\<analyse\>
