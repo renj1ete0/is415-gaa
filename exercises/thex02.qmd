@@ -93,11 +93,7 @@ The following packages assists us to accomplish the following:
 
 -   *tmap* provides functions to allow us to plot high quality static or interactive maps using leaflet API
 
--   *maptools* provides us a set of tools for manipulating geographic data
-
--   *spatstat* has a wide range of functions for point pattern analysis
-
--   *raster* reads, writes, manipulates, analyses and model of gridded spatial data (raster)
+-   *gifski* helps us to handle the GIF animation for tmap
 
 ## Context
 
@@ -138,8 +134,6 @@ The dataset above a variety of information, a breakdown by subdistrict level of 
 
 In our analysis, we only require information related to the population count, subdistrict and district information and geometry information. Hence, we will only filter and retain information from index 0 to 9.
 
-Keep 9 column cos impt bla bla and rest for proc
-
 ```{r}
 jkt <- jkt[0:9]
 head(jkt, 1)
@@ -169,7 +163,7 @@ tm_shape(jkt) +
 
 We can see there are many small dots to the top and left of the main Jarkata region. Those are outer islands. In this analysis, we will exclude the outer islands of Jarkata from our analysis.
 
-Now, let us try to identify how to identify and remove the outer islands. Below, we will plot `KAB_KOTA` which is the City District.
+Now, let us try to identify how to identify and remove the outer islands. Below, we will plot `City`.
 
 ```{r}
 tmap_mode("view")
@@ -320,8 +314,8 @@ Let's check how many rows we should expect in our tidied dataframe per month:
 vac_202106 %>% filter(vac_202106$`WILAYAH KOTA` != "KAB.ADM.KEP.SERIBU")
 ```
 
-::: {.callout-note icon="false"}
-Recall that the filter function will drop NA rows automatically. Hence, we are expecting 260 rows per month, for a total of 3130 rows for the whole 12 months
+::: callout-note
+The code block above tells us we are expecting 261 rows per month, a total of 3132 rows for our combined vaccination dataset over 12 months
 :::
 
 The creates a function *proc_data()* which processes the imported dataset to do the following:
@@ -407,7 +401,7 @@ Let us inspect the `combined_jkt_vac` sf object now.
 glimpse(combined_jkt_vac)
 ```
 
-Yes, the, the data has been processed correctly with 3132 rows which was calculated earlier.
+Checking back with our previous calculations, we have 3132 rows here, hence, the data preparation has been done correctly!
 
 # Chloropleth Mapping and Analysis
 
@@ -423,10 +417,16 @@ vacrate_anim <-
   tm_facets(along = "period", free.coords = FALSE)
 ```
 
+By calling the `vacrate_anim` variable stored above, we can display the static maps below. The number ontop of the map denotes the YYYYMM time period of the Vaccination Rates by Subdistricts. (202205 means Vaccination Rates in May 2022 by Subdistrict)
+
+```{r}
+vacrate_anim
+```
+
 Utilising the *tmap_animations()* function, we can export a *gif* animation that we can insert into the quarto doc for better understanding of spatial point patterns between the different time periods.
 
 ```{r}
-tmap_animation(vacrate_anim, filename = "Take-Home_Ex02/vacrate.gif", delay = 100, width = 1280, height = 720)
+tmap_animation(vacrate_anim, filename = "Take-Home_Ex02/vacrate.gif", delay = 100, width = 1280, height = 720, scale = 2)
 ```
 
 Here, we have generated an animation of the Vaccination rates from June 2021 to May 2022 using the tmap_animation to export it as a gif with the help of *gifski.*
@@ -444,10 +444,364 @@ From the animation above, we can see that there is a rather steady and rapid inc
 
 Thereafter, vaccination rates slowly increased to the "0.8 to 0.9" range around neighbouring regions who has previous achieved highest rates of vaccinations.
 
-# Local GI\* Analysis
+Majority of the subdistricts has reached "0.8 to 0.9" vaccination range by around Janurary to February 2022.
+
+# Creating a Time Series Cube
+
+## Gathering Requisite Data
+
+We will create another function to come up with the data format required for the spacetime cube:
+
+The creates a function *proc_timeseries_raw_data()* which processes the imported dataset to do the following:
+
+-   Remove the "Total" row
+
+-   Remove the outer islands records
+
+-   Drop unnecessary columns not required for processing
+
+-   Recode Bahasa Indonesia column names to English for easy processing
+
+-   Add a `period` column which indicates the month
+
+-   Calculate vaccination rate (`VaccinationRate`) utilising formula stated above
+
+```{r}
+proc_timeseries_raw_data <- function(df, date){
+    df <- filter(df, df$KELURAHAN != "TOTAL")
+    df <- filter(df, df$`WILAYAH KOTA` != "KAB.ADM.KEP.SERIBU")
+    
+    # recode column names to english
+    new_df <- df %>% rename(
+                      "SubDistrict" = "KELURAHAN",
+                      "SubDistrictCode" = "KODE KELURAHAN",
+                      "CityArea" = "WILAYAH KOTA",
+                      "TargetPop" = "SASARAN",
+                      "YetToBeVac" = "BELUM VAKSIN")
+    
+    new_df <- new_df[,c(
+                   "SubDistrictCode",
+                   "SubDistrict",
+                   "CityArea",
+                   "TargetPop",
+                   "YetToBeVac"
+                   )]
+    
+    new_df$period = date
+    
+    new_df <- new_df %>%
+      mutate(VaccinationRate = (new_df$TargetPop - new_df$YetToBeVac) / new_df$TargetPop)
+    
+    return (new_df)
+}
+```
+
+The code chunk below uses the *proc_timeseries_raw_data()* function to process the original imported vaccination data into data usable for the time series cube. We will use *rbind()* to combine all the tables together
+
+```{r}
+jkt_vac <-
+rbind(proc_timeseries_raw_data(vac_202106, 202106),
+      proc_timeseries_raw_data(vac_202107, 202107),
+      proc_timeseries_raw_data(vac_202108, 202108),
+      proc_timeseries_raw_data(vac_202109, 202109),
+      proc_timeseries_raw_data(vac_202110, 202110),
+      proc_timeseries_raw_data(vac_202111, 202111),
+      proc_timeseries_raw_data(vac_202112, 202112),
+      proc_timeseries_raw_data(vac_202201, 202201),
+      proc_timeseries_raw_data(vac_202202, 202202),
+      proc_timeseries_raw_data(vac_202203, 202203),
+      proc_timeseries_raw_data(vac_202204, 202204),
+      proc_timeseries_raw_data(vac_202205, 202205)
+      )
+          
+```
+
+We will also reload the map and perform the required transformations that were done above. The only difference in `jkt_geo` is that we will just drop the two polygons which has no City, District or Subdistrict filled in instead of merging to PADEMANGAN TIMUR:
+
+1.  DANAU SUNTER (OBJECT_ID 25645)
+2.  DANAU SUNTER DLL (OBJECT_ID 25646)
+
+This is done as there would be errors in computing the weights later on using the originally merged geometry.
+
+```{r}
+jkt_geo <- st_read(dsn = "Take-Home_Ex02/data/geospatial", layer = "BATAS_DESA_DESEMBER_2019_DUKCAPIL_DKI_JAKARTA") %>% st_transform(crs = 23837) 
+jkt_geo  <- jkt_geo[0:9] 
+jkt_geo <- jkt_geo %>% rename("SubDistrictCode" = "KODE_DESA",
+                      "SubDistrict" = "DESA",
+                      "Code" = "KODE",
+                       "Province" = "PROVINSI",
+                      "City" = "KAB_KOTA",
+                      "District" = "KECAMATAN",
+                      "SubDistrictName" = "DESA_KELUR",
+                      "TotalPop" = "JUMLAH_PEN") 
+jkt_geo <- jkt_geo %>% 
+  filter(jkt_geo$City != "KEPULAUAN SERIBU")
+```
+
+## Creating Spatio-Temporal Time Series Cube
+
+Using the code below, we will use *spacetime()* of sfdep package to create a spatio-temporal cube
+
+```{r}
+jkt_st <- spacetime(.data = jkt_vac, .geometry = jkt_geo,
+                    .loc_col = "SubDistrictCode",
+                    .time_col = "period")
+```
+
+Next, we will check if the spacetime cube has been created correctly with the code below:
+
+```{r}
+is_spacetime_cube(jkt_st)
+```
+
+The `TRUE` return means that the `jkt_st` space time cube has been created successfully.
+
+# Local Gi\* Analysis
+
+## Computing Gi\*
+
+Next, we will compute the local Gi\* statistics
+
+### Deriving Spatial Weights
+
+Using the code chunk below, we will be able to identify neighbours and derive inverse distance weights, which will be necessary to compute the local GI\* statistics.
+
+```{r}
+jkt_nb <- jkt_st %>%
+  activate("geometry") %>%
+  mutate(nb = include_self(st_contiguity(geometry)),
+         wt = st_inverse_distance(nb, geometry,
+                                  scale = 1,
+                                  alpha = 1),
+         .before = 1) %>%
+  set_nbs("nb") %>%
+  set_wts("wt")
+```
+
+Now, let us check the variable `jkt_nb`
+
+```{r}
+head(jkt_nb)
+```
+
+We can see that the neighbour (nb) and weights (wt) has been calculated.
+
+### Computing Gi\* Values
+
+Utilising the code chunk below, we use *local_gstar_perm()* of sfdep package and group by *period* to manually calculate the local GI\* statistic for each subdistrict. After which, we can use *unnest()* to unnest the gi_star column of the new dataframe.
+
+```{r}
+gistars <- jkt_nb %>%
+  group_by(period) %>%
+  mutate(gi_star = local_gstar_perm(
+    VaccinationRate, nb, wt)) %>%
+  tidyr::unnest(gi_star)
+```
+
+With the statistic, we can merge our geometry to be able to plot and see the statistical trends of the local GI\* statistic
+
+```{r}
+gistar_map <- left_join(jkt_geo, gistars,
+                          by = c("SubDistrictCode" = "SubDistrictCode"))
+```
+
+We create the tmap plot for gi_star statistic. Note we use `p_sim` to used the simulated values and used `fixed` style and breaks to plot the values that were P \< 0.05 which are areas that are significant.
+
+```{r}
+gistar_map <- gistar_map %>% mutate(`P-Value` = case_when(p_sim < 0.05 ~ '< 0.05',  p_sim >= 0.05 ~ 'Not-Significant'))
+
+gistar_tmap <-
+  tm_shape(gistar_map) + 
+    tm_fill("P-Value") +
+    tm_borders(lwd = 0.1) +
+    tm_facets(along = "period", free.coords = FALSE)
+```
+
+Now, we plot the tmap plot of areas where the Gi\* statistic is significant.
+
+```{r}
+gistar_tmap
+```
+
+What it means is that for values in yellow, since the P Value is \<0.05 which is significant, we know that the area is significantly either associated with higher or lower vaccination rate values than the surrounding areas.
+
+The Central Jarkata region consistently remained as significantly different from its surrounding regions throughout the 12 months. From about October 2021 onwards until May 2022, we can see most of Jarkata Selatan's subdistricts are significant. Part of Jarkata Timur's subdistricts, particularly those in the middle and south of the city area are significant too.
+
+Now, we will conduct a Emerging Hot Spot Analysis to conclusively tell if the area that is significant is a cold or hot spot.
+
+# Emerging Hot Spot Analysis (EHSA)
+
+## Mann-Kendall Test
+
+We utilise the *group_by* and *MannKendall()* function to perform the Mann-Kendall test to identify if the Vaccination Rates are increasing or decreasing over time.
+
+```{r}
+ehsa <- gistars %>%
+  group_by(SubDistrict) %>%
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>%
+  tidyr::unnest_wider(mk)
+```
+
+#### Selecting 3 Districts to Evaluate the Temporal Trends Revealed
+
+Hypothesis:
+
+H0: No monotonic trend in series
+
+H1: A trend exists, it can be positive, negative, or non-null
+
+1.  **KAPUK MUARA (3172011003)**
+
+    ```{r}
+    plotdata <- gistars %>% 
+      ungroup() %>% 
+      filter(SubDistrictCode == "3172011003") |> 
+      select(SubDistrict, period, gi_star)
+
+    ggplot(data = plotdata, 
+           aes(x = period, 
+               y = gi_star)) +
+      geom_line() +
+      theme_light()
+    ```
+
+    Firstly, we can see theres a sharp upward and then gradual downward trend.
+
+    ```{r}
+    #ehsa %>% filter(location == 3172011003) 
+    ```
+
+    Next, since the p_value \< 0.05, we can reject the null hypothesis that there is no monotonic trend. Hence, we can conclude that we can say that the vaccination rate for Kapuk Muara is significantly a osciliating hotspot trend.
+
+2.  **HALIM PERDANA KUSUMA (3175081004)**
+
+    ```{r}
+    plotdata <- gistars %>% 
+      ungroup() %>% 
+      filter(SubDistrictCode == 3175081004) |> 
+      select(SubDistrict, period, gi_star)
+
+    ggplot(data = plotdata, 
+           aes(x = period, 
+               y = gi_star)) +
+      geom_line() +
+      theme_light()
+    ```
+
+    Firstly, we can see theres mostly a general upward trend most of the time. Meaning that the vaccination rates are increasing.
+
+    ```{r}
+    #ehsa %>% filter(location == 3175081004) 
+    ```
+
+    Next, since the p_value \< 0.05, we can reject the null hypothesis that there is no monotonic trend. Hence, we can conclude that we can say that the vaccination rate for Halim Perdana Kusuma is significantly a osciliating hotspot trend.
+
+3.  **KEBON MELATI** **(3171071005)**
+
+    ```{r}
+    plotdata <- gistars %>% 
+      ungroup() %>% 
+      filter(SubDistrictCode == "3171071005") |> 
+      select(SubDistrict, period, gi_star)
+
+    ggplot(data = plotdata, 
+           aes(x = period, 
+               y = gi_star)) +
+      geom_line() +
+      theme_light()
+    ```
+
+    Firstly, we can see theres mostly a downward trend of vaccination most of the time.
+
+    ```{r}
+    #ehsa %>% filter(location == "3171071005") 
+    ```
+
+    Next, since the p-value is not \< 0.05, we cannot reject the null hypothesis. Hence, the trend is signifcant and there is no monotonic trend.
+
+### Arranging to Show Significant Emerging Hot/Cold Spots
+
+```{r}
+emerging <- ehsa %>%
+  arrange(sl, abs(tau)) %>%
+  slice(1:5)
+```
+
+### Performing Emerging Hotspot Analysis
+
+Utilising the *emerging_hotspot_analysis()* function of sfdep, it tasks a space time object `jkt_st` which we created before and the variable name which we are interested in `VaccinationRate`.
+
+By default we leave `k = 1` which is for time lag. `nsim` in this case is number of simulations to be performed, the more simulations the more stable the result.
+
+```{r}
+ehsa <- emerging_hotspot_analysis(
+  x = jkt_st, 
+  .var = "VaccinationRate", 
+  k = 1, 
+  nsim = 99
+)
+```
+
+### Visualising the Distribution of EHSA Classes
+
+Using the code chunk below, we use ggplot2 functions to see the distribution of EHSA classes in a bar chart.
+
+```{r}
+ggplot(data = ehsa,
+       aes(x = classification)) +
+  geom_bar()
+```
+
+Here, we can see most subdistricts are an `oscilating hotspot` meaning that statistically, many of these hotspots are a statistically significant cold spot during a prior month and less than 90% of the months, it has been a statistically significant hot spot. We can verify this as in the previous chloropleth map plotted, the vaccination rates changed at different rates, hence, a subdistrict's which is initially lower could become higher than other subdistricts surrounding it int he next month.
+
+Secondly, many of the subdistricts were `sporadic cold spots`, which means that they have these subdistricts have a history of being on and off-again cold spots, less than 90% of the months it has been statistically cold spots and it has never been a significant hot spot.
+
+By 90% of months, given that there are 12 months, 90% would mean requiring to be a significant hot or cold spot for at least 11 out of the 12 months.
+
+### Visualising EHSA
+
+Now, we will join the EHSA values with the geometry of Jarkata subdistrict map to see the distribution.
+
+```{r}
+jkt_ehsa <- left_join(jkt_geo, ehsa,
+                          by = c("SubDistrictCode" = "location"))
+```
+
+Next, we will plot the map, we utilise mutate to filter non-significant values out as `non-significant`. Significant values with P-value \< 0.05 will have its its hot or cold spot pattern indicated.
+
+```{r}
+ehsa_sig <- jkt_ehsa
+ehsa_sig <- ehsa_sig %>% mutate(classification = case_when(
+    `p_value` >= 0.05 ~ "not-Significant", 
+    TRUE ~ classification 
+))
+tmap_mode("plot")
+tm_shape(jkt_ehsa) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(ehsa_sig) +
+  tm_fill("classification") + 
+  tm_borders(alpha = 0.4)
+```
+
+From the EHSA Map, we can see that:
+
+-   There are three states where no pattern is detected. These means that they do not fall into any of the hot spot or cold spot categories.
+
+-   There are no subdistrict that is persistently hot or cold as compared to its surrounding subdistricts. This means that no one subdistrict has had a consistently higher vaccination rate than its neighbours
+
+-   Oscillating Hotspots, coldspots and sporadic coldspots subdistricts are interspersed between each other. These cause their patterns to change as one subdistrict affects the other.
+
+-   There are subdistricts where it is not significant to tell the EHSA patterns, these regions are commonly located around neighbours that are all some variant of coldspot or hotspot, hence, their vaccination rates might be similar to that of its neighbours.
 
 # References
 
 Special Thanks to:
 
-https://r.geocompx.org/adv-map.html
+-   Prof Kam Tin Seong for his slides and materials
+
+-   https://r.geocompx.org/adv-map.html
+
+-   https://sparkbyexamples.com/r-programming/replace-values-based-on-condition-in-r/
