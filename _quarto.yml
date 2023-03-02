@@ -45,6 +45,8 @@ website:
         menu: 
           - href: exercises/thex01.qmd
             text: Take-home Exercise 1
+          - href: exercises/thex02.qmd
+            text: Take-home Exercise 2
       - icon: github
         href: https://github.com/renjie-teo
       - icon: linkedin
@@ -52,7 +54,7 @@ website:
         
   page-footer:
     background: light
-    left: "Ren Jie's IS415 Journal" 
+    left: "Ren Jie's IS415 Geospatial Journal" 
     right: 
       - icon: github
         href: https://github.com/renjie-teo

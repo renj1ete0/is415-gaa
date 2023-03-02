@@ -29,16 +29,15 @@ In this hands-on exercise, you will learn how to compute Global and Local Measur
 
     -   compute and plot spatial correlogram using appropriate function of **spdep** package.
 
--   compute Local Indicator of Spatial Association (LISA) statistics for
-    detecting clusters and outliers by using appropriate functions **spdep** package;
+-   compute Local Indicator of Spatial Association (LISA) statistics for detecting clusters and outliers by using appropriate functions **spdep** package;
 
--   compute Getis-Ord\'s Gi-statistics for detecting hot spot or/and cold spot area by using appropriate functions of **spdep** package; and
+-   compute Getis-Ord's Gi-statistics for detecting hot spot or/and cold spot area by using appropriate functions of **spdep** package; and
 
 -   to visualise the analysis output by using **tmap** package.
 
 ## Research Questions
 
-In spatial policy, one of the main development objective of the local government and planners is to ensure equal distribution of development in the province. Our task in this study, hence, is to apply appropriate spatial statistical methods to discover if development are even distributed geographically. If the answer is **No**. Then, our next question will be \"is there sign of spatial clustering?\". And, if the answer for this question is yes, then our next question will be \"where are these clusters?\"
+In spatial policy, one of the main development objective of the local government and planners is to ensure equal distribution of development in the province. Our task in this study, hence, is to apply appropriate spatial statistical methods to discover if development are even distributed geographically. If the answer is **No**. Then, our next question will be "is there sign of spatial clustering?". And, if the answer for this question is yes, then our next question will be "where are these clusters?"
 
 In this case study, we are interested to examine the spatial pattern of a selected development indicator (i.e. GDP per capita) of Hunan Provice, People Republic of China.(https://en.wikipedia.org/wiki/Hunan)
 
@@ -77,6 +76,7 @@ hunan <- st_read(dsn = "Hands-on_Ex05/data/geospatial",
 ```
 
 ## 
+
 Importing Geospatial Data
 
 Using the code chunk below, we will import *Hunan_2012.csv* into R, which reults in a *R data frame*.
@@ -143,6 +143,7 @@ summary(wm_q)
 From the summary report, we can see that there are 88 area units, with the most connected area unit having 11 neighbours.
 
 ## 
+
 Global Spatial Correlation
 
 ### Moran's I Test

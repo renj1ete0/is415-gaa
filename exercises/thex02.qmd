@@ -1,0 +1,453 @@
+---
+title: "Take-Home Exercise 02: Spatio-Temporal Analysis of COVID-19 Vaccination Trends in Jarkata "
+description: "Conducting a Spatial-Temporal Analysis of COVID-19 trends at Sub-district level in Jarkata, Indonesia between June 2021 to May 2022"
+author: "Teo Ren Jie"
+date: "3/1/2023"
+number-sections: true
+categories: ["Take-Home Exercise", "sf", "funModeling", "tidyverse", "tmap", "maptools", "spatstat", "raster"]
+title-block-banner: true
+image: Take-Home_Ex02/preview.png
+execute:
+  message: false
+  warning: false
+---
+
+# Overview
+
+## Setting the Scene
+
+Since late December 2019, an outbreak of a novel coronavirus disease (COVID-19; previously known as 2019-nCoV) was reported in Wuhan, China, which had subsequently affected 210 countries worldwide. In general, COVID-19 is an acute resolved disease but it can also be deadly, with a 2% case fatality rate.
+
+The COVID-19 vaccination in Indonesia is an ongoing mass immunisation in response to the COVID-19 pandemic in Indonesia. On 13 January 2021, the program commenced when President Joko Widodo was vaccinated at the presidential palace. In terms of total doses given, Indonesia ranks third in Asia and fifth in the world.
+
+According to wikipedia, as of 5 February 2023 at 18:00 WIB (UTC+7), 204,266,655 people had received the first dose of the vaccine and 175,131,893 people had been fully vaccinated; 69,597,474 of them had been inoculated with the booster or the third dose, while 1,585,164 had received the fourth dose. Jakarta has the highest percentage of population fully vaccinated with 103.46%, followed by Bali and Special Region of Yogyakarta with 85.45% and 83.02% respectively.
+
+Despite its compactness, the cumulative vaccination rate are not evenly distributed within DKI Jakarta. The question is where are the sub-districts with relatively higher number of vaccination rate and how they changed over time.
+
+## Objectives
+
+Exploratory Spatial Data Analysis (ESDA) hold tremendous potential to address complex problems facing society. In this study, you are tasked to apply appropriate Local Indicators of Spatial Association (LISA) and Emerging Hot Spot Analysis (EHSA) to undercover the spatio-temporal trends of COVID-19 vaccination in DKI Jakarta.
+
+## Tasks
+
+The specific tasks of this take-home exercise are as follows:
+
+### Choropleth Mapping and Analysis
+
+-   Compute the monthly vaccination rate from July 2021 to June 2022 at sub-district (also known as kelurahan in Bahasa Indonesia) level,
+
+-   Prepare the monthly vaccination rate maps by using appropriate tmap functions,
+
+-   Describe the spatial patterns revealed by the choropleth maps (not more than 200 words).
+
+### Local Gi\* Analysis
+
+With reference to the vaccination rate maps prepared in ESDA:
+
+-   Compute local Gi\* values of the monthly vaccination rate,
+
+-   Display the Gi\* maps of the monthly vaccination rate. The maps should only display the significant (i.e. p-value \< 0.05)
+
+-   With reference to the analysis results, draw statistical conclusions (not more than 250 words).
+
+### Emerging Hot Spot Analysis(EHSA)
+
+With reference to the local Gi\* values of the vaccination rate maps prepared in the previous section:
+
+-   Perform Mann-Kendall Test by using the spatio-temporal local Gi\* values,
+
+-   Select three sub-districts and describe the temporal trends revealed (not more than 250 words), and
+
+-   Prepared a EHSA map of the Gi\* values of vaccination rate. The maps should only display the significant (i.e. p-value \< 0.05).
+
+-   With reference to the EHSA map prepared, describe the spatial patterns revelaed. (not more than 250 words).
+
+# Getting Started
+
+## Data Acquisition
+
+The following datasets would be used to study the spatial-temporal geographical distribution of vaccination rates in Jarkata, Indonesia, between June 2021 to May 2022.
+
+| Dataset Name                                                      | Source                                                                                                                           |
+|---------------------------|---------------------------------------------|
+| Vaccination Data from June 2021 to May 2022 in Jarkata, Indonesia | [Riwayat File Vaksinasi DKI Jakarta](https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/)                      |
+| DKI Jakarta Administration Boundary 2019                          | [[Indonesia Geospatial Portal]{.underline}](https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html) |
+
+## Installing and Loading Packages
+
+Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and funModeling.
+
+```{r}
+pacman::p_load(readxl,funModeling, sf, tidyverse, tmap, sfdep, gifski)
+```
+
+The following packages assists us to accomplish the following:
+
+-   *readxl* assists us in importing `.xlsx` aspatial data without having to convert to `.csv`
+
+-   *funModeling* helps us with performing quick Data Exploration in R
+
+-   *sf* helps to import, manage and process vector-based geospatial data in R
+
+-   *tidyverse* which includes *readr* to import delimited text file, *tidyr* for tidying data and *dplyr* for wrangling data
+
+-   *tmap* provides functions to allow us to plot high quality static or interactive maps using leaflet API
+
+-   *maptools* provides us a set of tools for manipulating geographic data
+
+-   *spatstat* has a wide range of functions for point pattern analysis
+
+-   *raster* reads, writes, manipulates, analyses and model of gridded spatial data (raster)
+
+## Context
+
+In Indonesia, the subdivisions in Indonesia is denoted as follows, this will be important for our analysis as we will be interested in looking at spatio-temporal data of COVID-19 vaccinations at sub-district level which will be mapped to Level 4, Rural or Urban Villages (Desa or Kelurahan).
+
+| Level of Administration | Name (English) / Name (Bahasa Indonesia)      |
+|-------------------------|-----------------------------------------------|
+| Level 1                 | Province / *Provinsi*                         |
+| Level 2                 | Cities / *Kota*                               |
+| Level 3                 | Districts / *Kecamantan*                      |
+| Level 4                 | Rural or Urban Villages / *Desa or Kelurahan* |
+
+# Importing and Preparing Geospatial Data
+
+## Geospatial Dataset
+
+### Importing Geospatial Dataset
+
+Firstly, in the code chunk below, we will import the geospatial dataset for Jarkata,
+
+In the code below, `dsn` specifies the filepath where the dataset is located and `layer` provides the filename of the dataset excluding the file extension.
+
+We will also convert the dataset from `WGS84` Geographic Coordinate System to `EPSG::23837` (DGN95) which is the national Projected Coordinate System for `Jarkata`.
+
+```{r}
+jkt = st_read(dsn = "Take-Home_Ex02/data/geospatial", layer = "BATAS_DESA_DESEMBER_2019_DUKCAPIL_DKI_JAKARTA") %>% st_transform(crs = 23837)
+```
+
+### Preparing Geospatial Dataset
+
+Let us view the dataset columns:
+
+```{r}
+head(jkt, 1)
+```
+
+The dataset above a variety of information, a breakdown by subdistrict level of the religion, demographic information, education, occupation etc.
+
+In our analysis, we only require information related to the population count, subdistrict and district information and geometry information. Hence, we will only filter and retain information from index 0 to 9.
+
+Keep 9 column cos impt bla bla and rest for proc
+
+```{r}
+jkt <- jkt[0:9]
+head(jkt, 1)
+```
+
+Next, we will recode information from Bahasa Indonesia to English for easier processing, using *rename()* of dplyr.
+
+```{r}
+jkt <- jkt %>% rename("SubDistrictCode" = "KODE_DESA",
+                      "SubDistrict" = "DESA",
+                      "Code" = "KODE",
+                       "Province" = "PROVINSI",
+                      "City" = "KAB_KOTA",
+                      "District" = "KECAMATAN",
+                      "SubDistrictName" = "DESA_KELUR",
+                      "TotalPop" = "JUMLAH_PEN")
+jkt
+```
+
+Next, let us quickly plot the `jkt` geospatial data
+
+```{r}
+tmap_mode("plot")
+tm_shape(jkt) +
+  tm_borders()
+```
+
+We can see there are many small dots to the top and left of the main Jarkata region. Those are outer islands. In this analysis, we will exclude the outer islands of Jarkata from our analysis.
+
+Now, let us try to identify how to identify and remove the outer islands. Below, we will plot `KAB_KOTA` which is the City District.
+
+```{r}
+tmap_mode("view")
+tm_shape(jkt) +
+  tm_fill("City", 
+          alpha = 0.2) +
+  tm_borders()
+```
+
+From our map above, we can tell that the outer islands are denoted by `KEPULAUAN SERIBU` which means `Thousand Islands`.
+
+However, we also spot some missing values. We will fill them in first before removing the outer islands.
+
+```{r}
+filter(jkt, is.na(jkt$City))
+```
+
+From the output above, we can gather that there are two `Villages` with `NA` values:
+
+1.  DANAU SUNTER (OBJECT_ID 25645)
+2.  DANAU SUNTER DLL (OBJECT_ID 25646)
+
+By comparing the information from the Geospatial Information Agency of Indonesia (Badan Informasi Geospasial), we now know that these two villages are part of `Pademangan Timur` based on the screenshot from the website below:
+
+![](Take-Home_Ex02/BadanInformasiGeospasial-PademanganTimur.png)
+
+Now, let find out what is the OBJECT_ID of the village `PADEMANGAN TIMUR` where we are supposed to merge the two other villages (DANAU SUNTER and DANAU SUNTER DLL) into.
+
+```{r}
+jkt %>% filter((jkt$SubDistrictName) == "PADEMANGAN TIMUR")
+```
+
+The OBJECT_ID is 25453.
+
+Let's plot a map of how the three states would look like before we merge them:
+
+```{r}
+tmap_mode("plot")
+tm_shape(filter(jkt, jkt$OBJECT_ID == 25453 | jkt$OBJECT_ID == 25645 | jkt$OBJECT_ID == 25646)) +
+  tm_fill("SubDistrict") +
+  tm_borders()
+```
+
+Now, let us merge the regions together using the code chunk below using the *st_union()* function of *sf:*
+
+```{r}
+merged_25453 <-
+st_union(filter(jkt,jkt$OBJECT_ID == 25453), filter(jkt,jkt$OBJECT_ID == 25645))[0:9]
+
+merged_25453 <- st_union(merged_25453, filter(jkt, jkt$OBJECT_ID == 25646))[0:9]
+
+list(merged_25453)
+```
+
+The attributes of `PADEMANGAN TIMUR` still matches the data from before.
+
+```{r}
+tmap_mode("plot")
+tm_shape(merged_25453) +
+  tm_fill("SubDistrict") +
+  tm_borders()
+```
+
+We have successfully merged the 3 geometries together.
+
+Now, let us remove the NA records (filtering by default will remove NA values), `KEPULAUAN SERIBU` which removes the outer islands before we delete and reinsert the `PADEMANGAN TIMUR` stored in *merged_25453* variable.
+
+We check how many outer islands are there to be removed:
+
+```{r}
+filter(jkt, jkt$City == "KEPULAUAN SERIBU")
+```
+
+There are 6 outer islands. Together with the 2 villages with NA city district and removing `PADEMANGAN TIMUR`, we should see 260 features remaining.
+
+```{r}
+jkt <- jkt %>% filter(jkt$City != "KEPULAUAN SERIBU" & jkt$OBJECT_ID != 25453)
+jkt
+```
+
+Yes, there are only 260 features remaining. Now, let us add the updated feature back into the `jkt` dataframe using *rbind()* which allows us to merge two sf dataframe objects together.
+
+```{r}
+jkt <- rbind(jkt, merged_25453)
+```
+
+Now, let us plot a map to see if the map has been properly fixed.
+
+```{r}
+tmap_mode("plot")
+tm_shape(jkt) +
+  tm_fill("City") +
+  tm_borders()
+```
+
+Now, we are ready to perform other tasks.
+
+## Aspatial Data
+
+### Importing Aspatial Datsets
+
+Next, we will import the aspatial datasets
+
+```{r}
+vac_202106 <- read_excel("Take-Home_Ex02/data/aspatial/20210630.xlsx")
+vac_202107 <- read_excel("Take-Home_Ex02/data/aspatial/20210731.xlsx")
+vac_202108 <- read_excel("Take-Home_Ex02/data/aspatial/20210831.xlsx")
+vac_202109 <- read_excel("Take-Home_Ex02/data/aspatial/20210930.xlsx")
+vac_202110 <- read_excel("Take-Home_Ex02/data/aspatial/20211031.xlsx")
+vac_202111 <- read_excel("Take-Home_Ex02/data/aspatial/20211130.xlsx")
+vac_202112 <- read_excel("Take-Home_Ex02/data/aspatial/20211231.xlsx")
+vac_202201 <- read_excel("Take-Home_Ex02/data/aspatial/20220131.xlsx")
+vac_202202 <- read_excel("Take-Home_Ex02/data/aspatial/20220227.xlsx")
+vac_202203 <- read_excel("Take-Home_Ex02/data/aspatial/20220331.xlsx")
+vac_202204 <- read_excel("Take-Home_Ex02/data/aspatial/20220430.xlsx")
+vac_202205 <- read_excel("Take-Home_Ex02/data/aspatial/20220531.xlsx")
+```
+
+### Preparing Aspatial Data
+
+Let's have a look at one of the asptial dataset files and it's columns:
+
+```{r}
+vac_202106
+```
+
+The dataset contains many columns, telling us about the specific breakdown of vaccinatation rates by targeted population (`SASARAN`), yet to be vaccinated (`BELUM VAKSIN`), breakdowns of vaccination and doses taken by different user groups and total number of vaccinations.
+
+Since we are only interested in visualising and analysing the monthly vaccination rate in Jarkata, we only require the targeted population (`SASARAN`) and yet to be vaccinated (`BELUM VAKSIN`) columns and derive the formula:
+
+::: {.callout-note icon="false"}
+Percentage of the cumulative vaccination rate = (targeted / total population)
+:::
+
+Let us also check what City Areas (`WILAYAH KOTA`) the dataset contains:
+
+```{r}
+unique(vac_202106$`WILAYAH KOTA`)
+```
+
+Since we do not want the outer islands, we should remove values with City Area `KAB.ADM.KEP.SERIBU`.
+
+Also, we can see there is an `NA` value, attributed to the first row which contains the Total count, which we want to remove.
+
+Let's check how many rows we should expect in our tidied dataframe per month:
+
+```{r}
+vac_202106 %>% filter(vac_202106$`WILAYAH KOTA` != "KAB.ADM.KEP.SERIBU")
+```
+
+::: {.callout-note icon="false"}
+Recall that the filter function will drop NA rows automatically. Hence, we are expecting 260 rows per month, for a total of 3130 rows for the whole 12 months
+:::
+
+The creates a function *proc_data()* which processes the imported dataset to do the following:
+
+-   Remove the "Total" row
+
+-   Remove the outer islands records
+
+-   Drop unnecessary columns not required for processing
+
+-   Recode Bahasa Indonesia column names to English for easy processing
+
+-   Add a `period` column which indicates the month
+
+-   Calculate vaccination rate (`VaccinationRate`) utilising formula stated above
+
+-   Merge the geometry from *jkt* into the new dataframe
+
+```{r}
+proc_data <- function(df, date){
+    df <- filter(df, df$KELURAHAN != "TOTAL")
+    df <- filter(df, df$`WILAYAH KOTA` != "KAB.ADM.KEP.SERIBU")
+    new_df <- left_join(jkt, df,
+                          by = c("SubDistrictCode" = "KODE KELURAHAN"))
+    
+    # recode column names to english
+    new_df <- new_df %>% rename(
+                      "CityArea" = "WILAYAH KOTA",
+                      "TargetPop" = "SASARAN",
+                      "YetToBeVac" = "BELUM VAKSIN")
+    
+    new_df <- new_df[,c("OBJECT_ID",
+                   "SubDistrictCode",
+                   "SubDistrict",
+                   "Code",
+                   "Province",
+                   "City",
+                   "District",
+                   "SubDistrictName",
+                   "TotalPop",
+                   "CityArea",
+                   "TargetPop",
+                   "YetToBeVac"
+                   )]
+    
+    new_df$period = date
+    
+    new_df <- new_df %>%
+      mutate(VaccinationRate = (new_df$TargetPop - new_df$YetToBeVac) / new_df$TargetPop)
+    
+    return (new_df)
+}
+```
+
+The code chunk below assists us in the vaccination processing the raw vaccination data to create an sf object with geometry using the *proc_data()* function we have created earlier above.
+
+```{r}
+
+proc2106 <- proc_data(vac_202106, 202106)
+proc2107 <- proc_data(vac_202107, 202107)
+proc2108 <- proc_data(vac_202108, 202108)
+proc2109 <- proc_data(vac_202109, 202109)
+proc2110 <- proc_data(vac_202110, 202110)
+proc2111 <- proc_data(vac_202111, 202111)
+proc2112 <- proc_data(vac_202112, 202112)
+proc2201 <- proc_data(vac_202201, 202201)
+proc2202 <- proc_data(vac_202202, 202202)
+proc2203 <- proc_data(vac_202203, 202203)
+proc2204 <- proc_data(vac_202204, 202204)
+proc2205 <- proc_data(vac_202205, 202205)
+
+```
+
+Using *rbind()* we merge all sf objects of each month into a singular sf object.
+
+```{r}
+combined_jkt_vac <- rbind(proc2106, proc2107, proc2108, proc2109, proc2110, proc2111, proc2112, proc2201, proc2202, proc2203, proc2204, proc2205)
+```
+
+Let us inspect the `combined_jkt_vac` sf object now.
+
+```{r}
+glimpse(combined_jkt_vac)
+```
+
+Yes, the, the data has been processed correctly with 3132 rows which was calculated earlier.
+
+# Chloropleth Mapping and Analysis
+
+We will now plot a choropleth map of vaccination rates with the help of *tmap* and tmap_animations (Reference: <https://r.geocompx.org/adv-map.html>)
+
+Since the combined_jkt_vac sf object contains vaccination data from all time periods, we will use *tm_facets()* to split them by the column `period`.
+
+```{r}
+vacrate_anim <-
+  tm_shape(combined_jkt_vac) + tm_fill("VaccinationRate",
+            palette = "Greens") +
+    tm_borders(lwd = 0.1) +
+  tm_facets(along = "period", free.coords = FALSE)
+```
+
+Utilising the *tmap_animations()* function, we can export a *gif* animation that we can insert into the quarto doc for better understanding of spatial point patterns between the different time periods.
+
+```{r}
+tmap_animation(vacrate_anim, filename = "Take-Home_Ex02/vacrate.gif", delay = 100, width = 1280, height = 720)
+```
+
+Here, we have generated an animation of the Vaccination rates from June 2021 to May 2022 using the tmap_animation to export it as a gif with the help of *gifski.*
+
+The data is coded in the form of YYYYMM (Year and Month)
+
+![](Take-Home_Ex02/vacrate.gif)\
+*Legend values are in terms of proportion (0.2 means 20% vaccination rate)*
+
+::: callout-note
+Vaccination Rate = Vaccinated Populaton / Target Population
+:::
+
+From the animation above, we can see that there is a rather steady and rapid increase in vaccination rate for most states between the months of June 2021 to September 2021 where vaccinations increased from "0.2 to 0.3" range and "0.3 to 0.4" range to "0.7 to 0.8" range.
+
+Thereafter, vaccination rates slowly increased to the "0.8 to 0.9" range around neighbouring regions who has previous achieved highest rates of vaccinations.
+
+# Local GI\* Analysis
+
+# References
+
+Special Thanks to:
+
+https://r.geocompx.org/adv-map.html
