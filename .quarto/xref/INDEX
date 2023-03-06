@@ -58,5 +58,11 @@
   },
   "rworkshop/test.qmd": {
     "test.html": "b763781f"
+  },
+  "exercises/hoex8.qmd": {
+    "hoex8.html": "82c69413"
+  },
+  "exercises/icex08.qmd": {
+    "icex08.html": "a3e92ead"
   }
 }

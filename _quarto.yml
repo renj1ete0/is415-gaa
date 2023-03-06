@@ -27,6 +27,8 @@ website:
             text: Hands-On Exercise 4
           - href: exercises/hoex5.qmd
             text: Hands-On Exercise 5
+          - href: exercises/hoex8.qmd
+            text: Hands-On Exercise 8
       - text: In-Class Exercise
         menu: 
           - href: exercises/icex02.qmd
@@ -41,6 +43,8 @@ website:
             text: In-Class Exercise 6
           - href: exercises/icex07.qmd
             text: In-Class Exercise 7
+          - href: exercises/icex08.qmd
+            text: In-Class Exercise 8
       - text: Take-home Exercise
         menu: 
           - href: exercises/thex01.qmd
@@ -63,7 +67,7 @@ website:
 
 format:
   html:
-    theme: flatly
+    theme: [flatly, dark.scss]
     css: styles.css
     toc: true
 
