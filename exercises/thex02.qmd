@@ -4,7 +4,7 @@ description: "Conducting a Spatial-Temporal Analysis of COVID-19 trends at Sub-d
 author: "Teo Ren Jie"
 date: "3/1/2023"
 number-sections: true
-categories: ["Take-Home Exercise", "sf", "readXL", "funModeling", "tidyverse", "tmap", "sfdep", "gifski"]
+categories: ["Take-Home Exercise", "sf", "readXL", "tidyverse", "tmap", "sfdep", "gifski"]
 title-block-banner: true
 image: Take-Home_Ex02/preview.png
 execute:
@@ -359,7 +359,7 @@ proc_data <- function(df, date){
                    "YetToBeVac"
                    )]
     
-    new_df$period = date
+    new_df$period = as.Date(date, "%Y-%m-%d") 
     
     new_df <- new_df %>%
       mutate(VaccinationRate = (new_df$TargetPop - new_df$YetToBeVac) / new_df$TargetPop)
@@ -372,18 +372,18 @@ The code chunk below assists us in the vaccination processing the raw vaccinatio
 
 ```{r}
 
-proc2106 <- proc_data(vac_202106, 202106)
-proc2107 <- proc_data(vac_202107, 202107)
-proc2108 <- proc_data(vac_202108, 202108)
-proc2109 <- proc_data(vac_202109, 202109)
-proc2110 <- proc_data(vac_202110, 202110)
-proc2111 <- proc_data(vac_202111, 202111)
-proc2112 <- proc_data(vac_202112, 202112)
-proc2201 <- proc_data(vac_202201, 202201)
-proc2202 <- proc_data(vac_202202, 202202)
-proc2203 <- proc_data(vac_202203, 202203)
-proc2204 <- proc_data(vac_202204, 202204)
-proc2205 <- proc_data(vac_202205, 202205)
+proc2106 <- proc_data(vac_202106, "2021-06-01")
+proc2107 <- proc_data(vac_202107, "2021-07-01")
+proc2108 <- proc_data(vac_202108, "2021-08-01")
+proc2109 <- proc_data(vac_202109, "2021-09-01")
+proc2110 <- proc_data(vac_202110, "2021-10-01")
+proc2111 <- proc_data(vac_202111, "2021-11-01")
+proc2112 <- proc_data(vac_202112, "2021-12-01")
+proc2201 <- proc_data(vac_202201, "2022-01-01")
+proc2202 <- proc_data(vac_202202, "2022-02-01")
+proc2203 <- proc_data(vac_202203, "2022-03-01")
+proc2204 <- proc_data(vac_202204, "2022-04-01")
+proc2205 <- proc_data(vac_202205, "2022-05-01")
 
 ```
 
@@ -485,7 +485,7 @@ proc_timeseries_raw_data <- function(df, date){
                    "YetToBeVac"
                    )]
     
-    new_df$period = date
+    new_df$period = as.Date(date, "%Y-%m-%d") 
     
     new_df <- new_df %>%
       mutate(VaccinationRate = (new_df$TargetPop - new_df$YetToBeVac) / new_df$TargetPop)
@@ -498,18 +498,18 @@ The code chunk below uses the *proc_timeseries_raw_data()* function to process t
 
 ```{r}
 jkt_vac <-
-rbind(proc_timeseries_raw_data(vac_202106, 202106),
-      proc_timeseries_raw_data(vac_202107, 202107),
-      proc_timeseries_raw_data(vac_202108, 202108),
-      proc_timeseries_raw_data(vac_202109, 202109),
-      proc_timeseries_raw_data(vac_202110, 202110),
-      proc_timeseries_raw_data(vac_202111, 202111),
-      proc_timeseries_raw_data(vac_202112, 202112),
-      proc_timeseries_raw_data(vac_202201, 202201),
-      proc_timeseries_raw_data(vac_202202, 202202),
-      proc_timeseries_raw_data(vac_202203, 202203),
-      proc_timeseries_raw_data(vac_202204, 202204),
-      proc_timeseries_raw_data(vac_202205, 202205)
+rbind(proc_timeseries_raw_data(vac_202106, "2021-06-01"),
+      proc_timeseries_raw_data(vac_202107, "2021-07-01"),
+      proc_timeseries_raw_data(vac_202108, "2021-08-01"),
+      proc_timeseries_raw_data(vac_202109, "2021-09-01"),
+      proc_timeseries_raw_data(vac_202110, "2021-10-01"),
+      proc_timeseries_raw_data(vac_202111, "2021-11-01"),
+      proc_timeseries_raw_data(vac_202112, "2021-12-01"),
+      proc_timeseries_raw_data(vac_202201, "2022-01-01"),
+      proc_timeseries_raw_data(vac_202202, "2022-02-01"),
+      proc_timeseries_raw_data(vac_202203, "2022-03-01"),
+      proc_timeseries_raw_data(vac_202204, "2022-04-01"),
+      proc_timeseries_raw_data(vac_202205, "2022-05-01")
       )
           
 ```
@@ -717,7 +717,7 @@ H1: A trend exists, it can be positive, negative, or non-null
     ehsa %>% filter(SubDistrict == "KEBON MELATI") 
     ```
 
-    Next, since the p-value is not \< 0.05, we cannot reject the null hypothesis. Hence, the trend is signifcant and there is no monotonic trend.
+    Next, since the p-value is \< 0.05, we reject the null hypothesis that there is no monotonic trend. Hence, we can conclude that we can say that the vaccination rate for Kebon Melati is significantly a osciliating hotspot trend.
 
 ### Arranging to Show Significant Emerging Hot/Cold Spots
 
