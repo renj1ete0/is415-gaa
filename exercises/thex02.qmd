@@ -69,7 +69,7 @@ With reference to the local Gi\* values of the vaccination rate maps prepared in
 The following datasets would be used to study the spatial-temporal geographical distribution of vaccination rates in Jarkata, Indonesia, between June 2021 to May 2022.
 
 | Dataset Name                                                      | Source                                                                                                                           |
-|---------------------------|---------------------------------------------|
+|-------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | Vaccination Data from June 2021 to May 2022 in Jarkata, Indonesia | [Riwayat File Vaksinasi DKI Jakarta](https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/)                      |
 | DKI Jakarta Administration Boundary 2019                          | [[Indonesia Geospatial Portal]{.underline}](https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html) |
 
@@ -670,17 +670,17 @@ H1: A trend exists, it can be positive, negative, or non-null
     Firstly, we can see theres a sharp upward and then gradual downward trend.
 
     ```{r}
-    #ehsa %>% filter(location == 3172011003) 
+    ehsa %>% filter(SubDistrict == "KAPUK MUARA") 
     ```
 
     Next, since the p_value \< 0.05, we can reject the null hypothesis that there is no monotonic trend. Hence, we can conclude that we can say that the vaccination rate for Kapuk Muara is significantly a osciliating hotspot trend.
 
-2.  **HALIM PERDANA KUSUMA (3175081004)**
+2.  **HALIM PERDANA KUSUMAH (3175081004)**
 
     ```{r}
     plotdata <- gistars %>% 
       ungroup() %>% 
-      filter(SubDistrictCode == 3175081004) |> 
+      filter(SubDistrictCode == "3175081004") |> 
       select(SubDistrict, period, gi_star)
 
     ggplot(data = plotdata, 
@@ -693,7 +693,7 @@ H1: A trend exists, it can be positive, negative, or non-null
     Firstly, we can see theres mostly a general upward trend most of the time. Meaning that the vaccination rates are increasing.
 
     ```{r}
-    #ehsa %>% filter(location == 3175081004) 
+    ehsa %>% filter(SubDistrict == "HALIM PERDANA KUSUMAH") 
     ```
 
     Next, since the p_value \< 0.05, we can reject the null hypothesis that there is no monotonic trend. Hence, we can conclude that we can say that the vaccination rate for Halim Perdana Kusuma is significantly a osciliating hotspot trend.
@@ -716,7 +716,7 @@ H1: A trend exists, it can be positive, negative, or non-null
     Firstly, we can see theres mostly a downward trend of vaccination most of the time.
 
     ```{r}
-    #ehsa %>% filter(location == "3171071005") 
+    ehsa %>% filter(SubDistrict == "KEBON MELATI") 
     ```
 
     Next, since the p-value is not \< 0.05, we cannot reject the null hypothesis. Hence, the trend is signifcant and there is no monotonic trend.
