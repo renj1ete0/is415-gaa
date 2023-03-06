@@ -4,7 +4,7 @@ description: "Conducting a Spatial-Temporal Analysis of COVID-19 trends at Sub-d
 author: "Teo Ren Jie"
 date: "3/1/2023"
 number-sections: true
-categories: ["Take-Home Exercise", "sf", "funModeling", "tidyverse", "tmap", "maptools", "spatstat", "raster"]
+categories: ["Take-Home Exercise", "sf", "readXL", "funModeling", "tidyverse", "tmap", "sfdep", "gifski"]
 title-block-banner: true
 image: Take-Home_Ex02/preview.png
 execute:
@@ -69,7 +69,7 @@ With reference to the local Gi\* values of the vaccination rate maps prepared in
 The following datasets would be used to study the spatial-temporal geographical distribution of vaccination rates in Jarkata, Indonesia, between June 2021 to May 2022.
 
 | Dataset Name                                                      | Source                                                                                                                           |
-|-------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+|-------------------------|-----------------------------------------------|
 | Vaccination Data from June 2021 to May 2022 in Jarkata, Indonesia | [Riwayat File Vaksinasi DKI Jakarta](https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/)                      |
 | DKI Jakarta Administration Boundary 2019                          | [[Indonesia Geospatial Portal]{.underline}](https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html) |
 
@@ -78,14 +78,12 @@ The following datasets would be used to study the spatial-temporal geographical 
 Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and funModeling.
 
 ```{r}
-pacman::p_load(readxl,funModeling, sf, tidyverse, tmap, sfdep, gifski)
+pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski)
 ```
 
 The following packages assists us to accomplish the following:
 
 -   *readxl* assists us in importing `.xlsx` aspatial data without having to convert to `.csv`
-
--   *funModeling* helps us with performing quick Data Exploration in R
 
 -   *sf* helps to import, manage and process vector-based geospatial data in R
 
