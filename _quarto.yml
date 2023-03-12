@@ -51,6 +51,8 @@ website:
             text: Take-home Exercise 1
           - href: exercises/thex02.qmd
             text: Take-home Exercise 2
+          - href: exercises/thex03.qmd
+            text: Take-home Exercise 3
       - icon: github
         href: https://github.com/renjie-teo
       - icon: linkedin

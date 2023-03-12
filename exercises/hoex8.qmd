@@ -42,7 +42,7 @@ The following packages assists us to accomplish the following:
 The following datasets are used:
 
 | Dataset Name                                                        | Source                                                                           |
-|---------------------------------|---------------------------------------|
+|---------------------------------------------------------------------|----------------------------------------------------------------------------------|
 | Master Plan 2014 Subzone Boundary (Web) *(MP14_SUBZONE_WEB_PL.shp)* | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web) |
 | condo_resale_2015 *(condo_resale_2015.csv)*                         | Prof Kam                                                                         |
 

@@ -178,6 +178,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../exercises/hoex5.html">
  <span class="dropdown-text">Hands-On Exercise 5</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../exercises/hoex8.html">
+ <span class="dropdown-text">Hands-On Exercise 8</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -209,6 +213,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../exercises/icex07.html">
  <span class="dropdown-text">In-Class Exercise 7</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../exercises/icex08.html">
+ <span class="dropdown-text">In-Class Exercise 8</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -223,6 +231,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>
     <a class="dropdown-item" href="../exercises/thex02.html">
  <span class="dropdown-text">Take-home Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercises/thex03.html">
+ <span class="dropdown-text">Take-home Exercise 3</span></a>
   </li>  
     </ul>
   </li>
@@ -407,7 +419,7 @@ dbl (27): avg_wage, deposite, FAI, Gov_Rev, Gov_Exp, GDP, GDPPC, GIO, Loan, ...
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>hunan_GDPPC <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan, hunan_2012) <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Joining, by = "County"</code></pre>
+<pre><code>Joining with `by = join_by(County)`</code></pre>
 </div>
 </div>
 <p>If two columns have the same name, they will automatically be joined, else, the following code has to be specified after the dataframes to be joined. <code>A == B</code></p>
@@ -717,8 +729,10 @@ correct results for longitude/latitude data</code></pre>
 <pre><code>! Polygon provided. Using point on surface.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning in st_point_on_surface.sfc(geometry): st_point_on_surface may not give
-correct results for longitude/latitude data</code></pre>
+<pre><code>Warning: There was 1 warning in `stopifnot()`.
+ℹ In argument: `nb = st_dist_band(geometry, upper = 66)`.
+Caused by warning in `st_point_on_surface.sfc()`:
+! st_point_on_surface may not give correct results for longitude/latitude data</code></pre>
 </div>
 </div>
 <p>From the code above, we can know that:</p>
@@ -786,8 +800,10 @@ First 10 features:
 <pre><code>! Polygon provided. Using point on surface.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning in st_point_on_surface.sfc(geometry): st_point_on_surface may not give
-correct results for longitude/latitude data</code></pre>
+<pre><code>Warning: There was 1 warning in `stopifnot()`.
+ℹ In argument: `nb = st_knn(geometry, k = 8)`.
+Caused by warning in `st_point_on_surface.sfc()`:
+! st_point_on_surface may not give correct results for longitude/latitude data</code></pre>
 </div>
 </div>
 <p>From the code above, we can learn that:</p>
@@ -855,8 +871,10 @@ First 10 features:
 <pre><code>! Polygon provided. Using point on surface.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning in st_point_on_surface.sfc(geometry): st_point_on_surface may not give
-correct results for longitude/latitude data</code></pre>
+<pre><code>Warning: There was 1 warning in `stopifnot()`.
+ℹ In argument: `wts = st_inverse_distance(nb, geometry, scale = 1, alpha = 1)`.
+Caused by warning in `st_point_on_surface.sfc()`:
+! st_point_on_surface may not give correct results for longitude/latitude data</code></pre>
 </div>
 </div>
 <p>From the code above, we can learn that:</p>

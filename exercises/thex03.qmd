@@ -1,0 +1,60 @@
+---
+title: "Take-Home Exercise 03: Predicting HDB Public Housing Resale Prices Using Geographically Weighted Methods"
+description: "Conducting a Spatial-Temporal Analysis of COVID-19 trends at Sub-district level in Jarkata, Indonesia between June 2021 to May 2022"
+author: "Teo Ren Jie"
+date: "3/12/2023"
+number-sections: true
+categories: ["Take-Home Exercise", "sf", "readXL", "tidyverse", "tmap", "sfdep", "gifski"]
+title-block-banner: true
+image: Take-Home_Ex03/preview.png
+execute:
+  message: false
+  warning: false
+---
+
+# Overview
+
+## Setting the Scene
+
+\<add context\>
+
+## Objectives
+
+Exploratory Spatial Data Analysis (ESDA) hold tremendous potential to address complex problems facing society. In this study, you are tasked to apply appropriate Local Indicators of Spatial Association (LISA) and Emerging Hot Spot Analysis (EHSA) to undercover the spatio-temporal trends of COVID-19 vaccination in DKI Jakarta.
+
+## Tasks
+
+In this take-home exercise, you are tasked to predict HDB resale prices at the sub-market level (i.e. HDB 3-room, HDB 4-room and HDB 5-room) for the month of January and February 2023 in Singapore. The predictive models must be built by using by using conventional OLS method and GWR methods. You are also required to compare the performance of the conventional OLS method versus the geographical weighted methods.
+
+# Getting Started
+
+## Data Acquisition
+
+The following datasets would be used to study the spatial-temporal geographical distribution of vaccination rates in Jarkata, Indonesia, between June 2021 to May 2022.
+
+| Dataset Name                                                      | Remarks | Source                                                                                                                           |
+|-------------------------|-----------------------|---------------------------|
+| Vaccination Data from June 2021 to May 2022 in Jarkata, Indonesia |         | [Riwayat File Vaksinasi DKI Jakarta](https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/)                      |
+| DKI Jakarta Administration Boundary 2019                          |         | [[Indonesia Geospatial Portal]{.underline}](https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html) |
+
+## Installing and Loading Packages
+
+Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and funModeling.
+
+```{r}
+pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski)
+```
+
+The following packages assists us to accomplish the following:
+
+-   *readxl* assists us in importing `.xlsx` aspatial data without having to convert to `.csv`
+
+-   *sf* helps to import, manage and process vector-based geospatial data in R
+
+-   *tidyverse* which includes *readr* to import delimited text file, *tidyr* for tidying data and *dplyr* for wrangling data
+
+-   *tmap* provides functions to allow us to plot high quality static or interactive maps using leaflet API
+
+-   *gifski* helps us to handle the GIF animation for tmap
+
+## 
