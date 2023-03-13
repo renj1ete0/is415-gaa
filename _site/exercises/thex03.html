@@ -320,9 +320,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </ul></li>
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started"><span class="toc-section-number">2</span>  Getting Started</a>
   <ul class="collapse">
-  <li><a href="#data-acquisition" id="toc-data-acquisition" class="nav-link" data-scroll-target="#data-acquisition"><span class="toc-section-number">2.1</span>  Data Acquisition</a></li>
-  <li><a href="#installing-and-loading-packages" id="toc-installing-and-loading-packages" class="nav-link" data-scroll-target="#installing-and-loading-packages"><span class="toc-section-number">2.2</span>  Installing and Loading Packages</a></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"><span class="toc-section-number">2.3</span>  </a></li>
+  <li><a href="#installing-and-loading-packages" id="toc-installing-and-loading-packages" class="nav-link" data-scroll-target="#installing-and-loading-packages"><span class="toc-section-number">2.1</span>  Installing and Loading Packages</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"><span class="toc-section-number">2.2</span>  </a></li>
+  <li><a href="#data-acquisition" id="toc-data-acquisition" class="nav-link" data-scroll-target="#data-acquisition"><span class="toc-section-number">2.3</span>  Data Acquisition</a></li>
+  <li><a href="#data-fields" id="toc-data-fields" class="nav-link" data-scroll-target="#data-fields"><span class="toc-section-number">2.4</span>  Data Fields</a></li>
+  <li><a href="#data-preparation-geocoding-data" id="toc-data-preparation-geocoding-data" class="nav-link" data-scroll-target="#data-preparation-geocoding-data"><span class="toc-section-number">2.5</span>  Data Preparation: Geocoding Data</a></li>
+  </ul></li>
+  <li><a href="#data-wrangling-aspatial-data" id="toc-data-wrangling-aspatial-data" class="nav-link" data-scroll-target="#data-wrangling-aspatial-data"><span class="toc-section-number">3</span>  Data Wrangling: Aspatial Data</a>
+  <ul class="collapse">
+  <li><a href="#importing-aspatial-data" id="toc-importing-aspatial-data" class="nav-link" data-scroll-target="#importing-aspatial-data"><span class="toc-section-number">3.1</span>  Importing Aspatial Data</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -338,6 +344,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="setting-the-scene" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="setting-the-scene"><span class="header-section-number">1.1</span> Setting the Scene</h2>
 <p>&lt;add context&gt;</p>
+<p>bal bla we are lookign at 5 storey HDB bla bla</p>
 </section>
 <section id="objectives" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="objectives"><span class="header-section-number">1.2</span> Objectives</h2>
@@ -350,36 +357,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="getting-started" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Getting Started</h1>
-<section id="data-acquisition" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="data-acquisition"><span class="header-section-number">2.1</span> Data Acquisition</h2>
-<p>The following datasets would be used to study the spatial-temporal geographical distribution of vaccination rates in Jarkata, Indonesia, between June 2021 to May 2022.</p>
-<table class="table">
-<thead>
-<tr class="header">
-<th>Dataset Name</th>
-<th>Remarks</th>
-<th>Source</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Vaccination Data from June 2021 to May 2022 in Jarkata, Indonesia</td>
-<td></td>
-<td><a href="https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/">Riwayat File Vaksinasi DKI Jakarta</a></td>
-</tr>
-<tr class="even">
-<td>DKI Jakarta Administration Boundary 2019</td>
-<td></td>
-<td><a href="https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html"><u>Indonesia Geospatial Portal</u></a></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="installing-and-loading-packages" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="installing-and-loading-packages"><span class="header-section-number">2.2</span> Installing and Loading Packages</h2>
+<section id="installing-and-loading-packages" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="installing-and-loading-packages"><span class="header-section-number">2.1</span> Installing and Loading Packages</h2>
 <p>Next, pacman assists us by helping us load R packages that we require, <code>sf</code>, <code>tidyverse</code> and funModeling.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(readxl, sf, tidyverse, tmap, sfdep, gifski)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The following packages assists us to accomplish the following:</p>
 <ul>
@@ -390,8 +372,247 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p><em>gifski</em> helps us to handle the GIF animation for tmap</p></li>
 </ul>
 </section>
-<section id="section" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="section"><span class="header-section-number">2.3</span> </h2>
+<section id="section" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="section"><span class="header-section-number">2.2</span> </h2>
+</section>
+<section id="data-acquisition" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="data-acquisition"><span class="header-section-number">2.3</span> Data Acquisition</h2>
+<p>The following datasets would be used to create the predictive models using conventional OLS and GWR methods for HDB Resale Prices.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Dataset Name</th>
+<th>Remarks</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>URA Master Plan 2019 Subzone Boundary</td>
+<td>For visualisation purposes</td>
+<td><a href="https://data.gov.sg/dataset/master-plan-2019-subzone-boundary-no-sea">data.gov.sg</a></td>
+</tr>
+<tr class="even">
+<td>URA Master Plan 2019 Planning Area Boundary</td>
+<td>For visualisation purposes and extract Central AreW</td>
+<td>Prof Kam</td>
+</tr>
+<tr class="odd">
+<td>HDB Resale Flat Prices</td>
+<td></td>
+<td><a href="https://data.gov.sg/dataset/resale-flat-prices">data.gov.sg</a></td>
+</tr>
+<tr class="even">
+<td>HDB MUP/HIP Status</td>
+<td>Manual Web Scraping</td>
+<td><a href="https://services2.hdb.gov.sg/webapp/BB33RESLSTATUS/BB33PReslStatusEnq.jsp">hdb.gov.sg</a></td>
+</tr>
+<tr class="odd">
+<td>Childcare</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Kindergartens</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Eldercare</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Foodcourt/Hawker</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Supermarket</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Current and Future MRT/LRT Stations</td>
+<td>Excludes Cross Region Line Punggol Branch</td>
+<td><a href="https://data.gov.sg/dataset/master-plan-2019-rail-line-layer">data.gov.sg</a></td>
+</tr>
+<tr class="odd">
+<td>Future MRT Station (CRL Punggol Branch)</td>
+<td>Manually merge into MRT/LRT Station Dataset</td>
+<td><a href="https://en.wikipedia.org/wiki/Elias_MRT_station">wikipedia.org : Elias MRT Stn</a><br>
+<a href="https://en.wikipedia.org/wiki/Riviera_MRT/LRT_station">wikipedia.org : Riveria MRT Stn</a></td>
+</tr>
+<tr class="even">
+<td>MRT/LRT Railway Line</td>
+<td>Filter elevated sections of MRT line</td>
+<td><a href="https://data.gov.sg/dataset/master-plan-2019-rail-line-layer">data.gov.sg</a></td>
+</tr>
+<tr class="odd">
+<td>Bus Stops</td>
+<td></td>
+<td><a href="https://datamall.lta.gov.sg/content/dam/datamall/datasets/Geospatial/BusStopLocation.zip">datamall.lta.gov.sg</a></td>
+</tr>
+<tr class="even">
+<td>Parks</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Primary Schools</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>CHAS Clinics</td>
+<td>Extracted using Excel from PDF</td>
+<td><a href="https://www.chas.sg/clinic-locator">chas.sg</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="data-fields" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="data-fields"><span class="header-section-number">2.4</span> Data Fields</h2>
+<p>The data fields we are looking to incorporate and work with in our predictive models includes:</p>
+<p><strong>Structural factors:</strong></p>
+<ul>
+<li><p>Area of the unit</p></li>
+<li><p>Floor level</p></li>
+<li><p>Remaining lease</p></li>
+<li><p>Age of the unit</p></li>
+<li><p>Main Upgrading Program (MUP) completed</p>
+<ul>
+<li><p>Extracted MUP and Home Improvment Programme (HIP) data from HDB website</p></li>
+<li><p>For HDB units that has received HIP, their home value may be affected positively than a similar aged flat that has not received it</p></li>
+</ul></li>
+<li><p>Relative Age of Remaining Lead to Mean of Remaining Lease Left within 1km (+ if newer, - if older than area)</p>
+<ul>
+<li>If a HDB estate is relatively newer than HDBs in the area, homeowners might be enticed to buy newer HDB units in the area</li>
+</ul></li>
+<li><p>Apartment Type (eg. DBSS/Standard/Premium)</p>
+<ul>
+<li><p>Design Build Sell Scheme (DBSS) flats may call for a higher value than regular HDB flats as they are designed, build and sold by 3rd party developers although they are still HDB Flats. They are supposed to be better than premium flats</p></li>
+<li><p>Premium flats which come with pre-installed fittings and furnishings over standard apartments which comes with none</p></li>
+<li><p>Reference: https://www.teoalida.com/singapore/hdbflattypes/</p></li>
+</ul></li>
+<li><p>Apartment Multi-story (Maisonette or Loft)</p>
+<ul>
+<li>Some homeowners may prefer multi-story HDBs over single-story ones</li>
+</ul></li>
+</ul>
+<p><strong>Vocational factors:</strong></p>
+<ul>
+<li><p>Proximity to CBD</p></li>
+<li><p>Proximity to eldercare</p></li>
+<li><p>Proximity to foodcourt/hawker centres</p></li>
+<li><p>Proximity to MRT</p></li>
+<li><p>Proximity to park</p></li>
+<li><p>Proximity to good primary school</p></li>
+<li><p>Proximity to shopping mall</p></li>
+<li><p>Proximity to supermarket</p></li>
+<li><p>Numbers of kindergartens within 350m</p></li>
+<li><p>Numbers of childcare centres within 350m</p></li>
+<li><p>Numbers of bus stop within 350m</p></li>
+<li><p>Numbers of primary school within 1km</p></li>
+<li><p>Proximity to Overhead MRT Line [noise concern] (if &lt;300m)</p>
+<ul>
+<li>The closer a HDB unit is to the MRT track, the home value might be affected due to noise concerns. We measure the proximity of HDB units using its euclidean distance to the closest part of the MRT track if it is less than 300metres away.</li>
+</ul></li>
+<li><p>Number of Future MRT stops within 800m (10min walk)</p>
+<ul>
+<li>Here, I want to explore how the resale values of HDBs could be affected by future MRT stations that are announced but not yet built. Home owners may be enticed to buy houses near future MRT lines in hopes that the house values will increase and also due to increased connectivity</li>
+</ul></li>
+<li><p>Number of LRT Stops within 350m</p>
+<ul>
+<li>The metric is necessary as LRT serves as a feeder within the town and is typically used short-haul vs MRT which is between various towns. The 350m metric is derived from Bus Stops differentiates the weight between a LRT stop and MRT stop especially if the LRT stop is far away from the MRT stop in towns such as Sengkang, Punggol and Pasir Ris</li>
+</ul></li>
+</ul>
+</section>
+<section id="data-preparation-geocoding-data" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="data-preparation-geocoding-data"><span class="header-section-number">2.5</span> Data Preparation: Geocoding Data</h2>
+<p>Some geospatial data come with addresses in the form of Block Number, Street Name and/or Postal code. However, these attributes are insufficient to plot out the spatial points onto a <em>tmap</em>. Hence, we need to convert these ‘text-based’ addresses into <code>SVY21</code> Projected Coordinate System to be able to plot and analyse the data.</p>
+<p>Below, we have written a script in <code>python</code> that takes an excel file and uses the OneMap Search API to parse an address which returns use the <code>X</code> and <code>Y</code> required in <code>SVY21</code>. We save them as a list in <code>X</code> and <code>Y</code> variables before merging them back to the main DataFrame as <code>X</code> and <code>Y</code> columns before reexporting it.</p>
+<pre class="{#{python}"><code>import requests
+import pandas as pd
+import time
+
+ONEMAP = "https://developers.onemap.sg"
+INPUT_FILE = "HDB_HIP-MUP-20230312.xlsx"
+
+args = {"email": "&lt;REDACTED&gt;",
+        "password": "&lt;REDACTED&gt;"}
+resp = requests.post("https://developers.onemap.sg/privateapi/auth/post/getToken", args)
+
+print(resp.status_code)
+print(resp.content)
+
+access_token = resp.json()["access_token"]
+search_url = ONEMAP + "/commonapi/search" 
+
+df = pd.read_excel(INPUT_FILE)
+
+max_rows = len(df)
+            
+x = []
+y = []
+errors = []
+
+for i in range (0, max_rows):
+    
+    row_df = df.loc[i]
+    addr = row_df["COMBINED_BLK_STREET"]
+    
+    searchtxt = "searchVal=" + addr
+    returngeom = "&amp;returnGeom=Y"
+    getaaddr = "&amp;getAddrDetails=N"
+    
+    api_url = search_url + "?" + searchtxt + returngeom + getaaddr
+    
+    stuff = requests.get(api_url)
+    
+    data = stuff.json()
+    
+    try:
+        x.append(data['results'][0]['X'])
+        y.append(data['results'][0]['Y'])
+    except:
+        x.append("Not Found")
+        y.append("Not Found")
+        erorrs.append(addr)
+
+    time.sleep(0.3)
+
+df['x'] = x
+df['y'] = y
+
+df.to_excel('geocode' + INPUT_FILE)</code></pre>
+<p>Note that when the <code>X</code> or <code>Y</code> values cannot be found for any reason (eg. address not found), <code>Not Found</code> is appended in place, where we can manually fix those values later on.</p>
+<p>Also note that <code>time.sleep(0.3)</code> is used to reduce the number of API Calls as OneMap restricts a maximum of 250 API Calls per min.</p>
+</section>
+</section>
+<section id="data-wrangling-aspatial-data" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Data Wrangling: Aspatial Data</h1>
+<p>&lt;list of datasets to import and handle&gt; and type of treatment</p>
+<section id="importing-aspatial-data" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="importing-aspatial-data"><span class="header-section-number">3.1</span> Importing Aspatial Data</h2>
+<p>In the various tabs below, we will import each individual dataset from its respective folders, with a brief explanation of the use cases of each dataset.</p>
+<div class="panel-tabset">
+<p>CHAS Clinics</p>
+<p>D</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hdb_resale_raw <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"Take-Home_Ex03/aspatial/resale-flat-prices-based-on-registration-date-from-jan-2017-onwards.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>HDB HIP MUP</p>
+<p>HDB Resale Flat Pricing</p>
+<p>Importing CHAS Clinics</p>
+</div>
+<pre><code></code></pre>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tmap_mode("view")</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#tm_shape(hdb_resale) +</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  tm_dots("resale_price",</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#          popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
 </section>

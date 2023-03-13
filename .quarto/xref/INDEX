@@ -67,5 +67,14 @@
   },
   "exercises/thex03.qmd": {
     "thex03.html": "6184d7a5"
+  },
+  "exercises/icex09.qmd": {
+    "icex09.html": "a3cf9126"
+  },
+  "exercises/In-Class_Ex09/data/geospatial/MPSZ-2019.qmd": {
+    "MPSZ-2019.html": "ebf3d342"
+  },
+  "exercises/Take-Home_Ex03/geospatial/MPSZ-2019.qmd": {
+    "MPSZ-2019.html": "aad4cd42"
   }
 }
