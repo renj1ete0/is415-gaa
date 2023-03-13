@@ -290,6 +290,19 @@ hdb_resale_trans <- hdb_resale %>%
   mutate(hdb_resale, address = paste(block, street_name)) %>%
   mutate(hdb_resale, remaining_lease_mths = (as.integer(str_sub(remaining_lease, 0, 2)) * 12 + ifelse(is.na(as.integer(str_sub(remaining_lease, 9, 11))), 0,  as.integer(str_sub(remaining_lease, 9, 11)))))
 ```
+
+Next, let us left join the HDB HIP MUP data into HDB Resale Transactions so that we know which HDB units have already completed their upgrading.
+
+```{r}
+hdb_resale_trans <- left_join(hdb_resale_trans, hdb_hip_mup_trans)
+glimpse(hdb_resale_trans)
+```
+
+Then we'll select only the unnecessary columns:
+
+```{r}
+hdb_resale_trans <- hdb_resale_trans %>% select(c(1:13, 16))
+```
 :::
 
 ## Retrieving SVY21 Coordinate of Addresses
@@ -314,13 +327,6 @@ Here, we will obtain a list of unique addresses/postal codes for each data set.
 ```{r}
 addr_lst.chas <- sort(unique(CHAS_raw$Postal))
 glimpse(addr_lst.chas)
-```
-
-## HDB HIP MUP
-
-```{r}
-addr_lst.hipmup <- sort(unique(hdb_hip_mup_trans$address))
-glimpse(addr_lst.hipmup)
 ```
 
 ## HDB Resale Flat Pricing
@@ -411,12 +417,6 @@ CHAS Clinics
 coords_chas <- get_coordinates(addr_lst.chas)
 ```
 
-HDB HIP MUP
-
-```{r eval=FALSE}
-coords_hipmup <- get_coordinates(addr_lst.hipmup)
-```
-
 HDB Resale Flat Pricing
 
 ```{r eval=FALSE}
@@ -429,7 +429,6 @@ Writing RDS
 
 ```{r eval=FALSE}
 write_rds(coords_chas, "Take-Home_Ex03/rds/coords_chas.rds")
-write_rds(coords_hipmup, "Take-Home_Ex03/rds/coords_hipmup.rds")
 write_rds(coords_resale, "Take-Home_Ex03/rds/coords_resale.rds")
 ```
 
@@ -437,7 +436,6 @@ Reading RDS
 
 ```{r}
 coords_chas <- read_rds("Take-Home_Ex03/rds/coords_chas.rds")
-coords_hipmup <- read_rds("Take-Home_Ex03/rds/coords_hipmup.rds")
 coords_resale <- read_rds("Take-Home_Ex03/rds/coords_resale.rds")
 ```
 
@@ -447,12 +445,6 @@ CHAS Clinics
 
 ```{r}
 glimpse(coords_chas)
-```
-
-HDB HIP MUP
-
-```{r}
-glimpse(coords_hipmup)
 ```
 
 HDB Resale Flat Pricing
@@ -490,25 +482,16 @@ At any step if there are issues, we will detail steps to fix or recover from it.
 
     Here, using *filter()* and *is.na()*, we find out which records do not have a valid location assigned to it. Now, let us manually check through the records and fix the issue.
 
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | CHAS Clinic Address                                                     | Issue                                                                        |
-    +=========================================================================+==============================================================================+
+    |-------------------------------------------------------------------------|------------------------------------------------------------------------------|
     | 189, Selegie Road, Selegie Centre, #01- 05, Singapore 188332            | No longer exists based on Onemap and Google Map, we will remove it           |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 140, Corporation Drive, #01- 03                                         | Postal Code number **610140** according to OneMap, we will amend accordingly |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 6, Gemmill Lane                                                         | Postal Code number **069249** according to OneMap, we will amend accordingly |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 102, Yishun Avenue 5, #01- 133, Singapore\\r\\n760102                   | No longer exists based on Onemap and Google Map, we will remove it           |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 34, Craig Road, Chinatown Plaza, #01- 04,\\r\\nSingapore 089673         | No longer exists based on Onemap and Google Map, we will remove it           |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 1, Rochor Road, Rochor Centre, #03- 516,\\r\\nSingapore 180001          | No longer exists based on Onemap and Google Map, we will remove it           |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 51, TAMPINES AVENUE 4, OUR TAMPINES\\r\\nHUB, #B1- 04/05                | Records are appended as **528523** on OneMap, we will amend accordingly      |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 50, Market Street, Golden Shoe Car Park,\\r\\n#01- 30, Singapore 048940 | No longer exists based on OneMap and Google Map, we will remove it           |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
 
     Now, let us update
 
@@ -595,113 +578,6 @@ At any step if there are issues, we will detail steps to fix or recover from it.
     tm_shape(chas_sf) +
       tm_dots("Type",
               popup.vars=c("Name"="Name", "Address"="Address", "Type" = "Type", "Telephone" = "Telephone"))
-    ```
-
-    From our analysis, the points looks to be correctly located.
-
-### HDB HIP MUP
-
-1.  Merge Coordinate Data and Original Dataframe
-
-    ```{r}
-    temp_hdb_hip_mup <- left_join(hdb_hip_mup_trans, coords_hipmup, by=c("address" = "address"))
-    ```
-
-2.  Check for `NA` X/Y values and manually amend if required
-
-    ```{r}
-    filter(temp_hdb_hip_mup, is.na(x) == TRUE)
-    ```
-
-    Here, using *filter()* and *is.na()*, we find out which records do not have a valid location assigned to it. Now, let us manually check through the records and fix the issue.
-
-    +--------------------+-------------------------------------------------------------------+
-    | HDB Address        | Issue                                                             |
-    +====================+===================================================================+
-    | 5 BANDA ST         | OneMap recognises it as 5 BANDA STREET, we will amend accordingly |
-    +--------------------+-------------------------------------------------------------------+
-    | 116 ALJUNIED AVE 4 | Address is **116 ALJUNIED AVE 2**, we will amend accordingly      |
-    +--------------------+-------------------------------------------------------------------+
-    | 119 ALJUNIED AVE 5 | Address is **119 ALJUNIED AVE 2**, we will amend accordingly      |
-    +--------------------+-------------------------------------------------------------------+
-
-    : Now, let us update
-
-    ::: panel-tabset
-    ## 1. Update Records
-
-    We use *mutate()* and *ifelse()* condition to update the Postal Codes of the clinics at the relavant addresses.
-
-    ```{r}
-    hdb_hip_mup_trans_upd <- hdb_hip_mup_trans %>% 
-      mutate(address = ifelse(address == "5 BANDA ST", "5 BANDA STREET", address)) %>%
-      mutate(STREET = ifelse(STREET == "BANDA ST", "BANDA STREET", STREET)) %>%
-      mutate(STREET = ifelse(STREET == "ALJUNIED AVE 4" & BLK == "116", "ALJUNIED AVE 4", STREET)) %>%
-      mutate(address = ifelse(address == "116 ALJUNIED AVE 4", "116 ALJUNIED AVE 2", address)) %>%
-      mutate(address = ifelse(address == "119 ALJUNIED AVE 5", "119 ALJUNIED AVE 2", address)) %>%
-      mutate(street_name = ifelse(STREET == "ALJUNIED AVE 5" & BLK == "119", "ALJUNIED AVE 2", STREET))
-    ```
-
-    Lastly, we regenerate the list of unique Postal Codes to be geocoded.
-
-    ```{r}
-    addr_lst.hipmup_upd <- sort(unique(hdb_hip_mup_trans_upd$address))
-    glimpse(addr_lst.hipmup_upd)
-    ```
-
-    ## 2. Rerun get_coordinates()
-
-    We get the SVY21 X,Y coordinates using our *get_coordinates()* function
-
-    ```{r eval=FALSE}
-    coords_hipmup_upd <- get_coordinates(addr_lst.hipmup_upd)
-    ```
-
-    Saving the DataFrame as .rds for future use to prevent rerunning *get_coordinates()* GET API everytime a render is run
-
-    ```{r eval=FALSE}
-    write_rds(coords_hipmup_upd, "Take-Home_Ex03/rds/coords_hipmup_upd.rds")
-
-    ```
-
-    Load the DataFrame from .rds
-
-    ```{r}
-    coords_hipmup_upd <- read_rds("Take-Home_Ex03/rds/coords_hipmup_upd.rds")
-
-    ```
-
-    ## 3. Combine DataFrame and verify
-
-    We left join the `hdb_hip_mup_trans_upd` main table and coordinates and filter the `x` column for any null values
-
-    ```{r}
-    temp_hdb_hip_mup <- left_join(hdb_hip_mup_trans_upd, coords_hipmup_upd, by=c("address" = "address"))
-    filter(temp_hdb_hip_mup, is.na(x) == TRUE)
-    ```
-
-    No null values found, we have completed this step!
-    :::
-
-3.  Convert a DataFrame into a sf Object
-
-    We specify the SVY21 X and Y coordinates to be used as the coordinate geometry. The `crs` specified is `3414` which refers to `SVY21`.
-
-    ```{r}
-    hdb_hip_mup_sf <- st_as_sf(temp_hdb_hip_mup,
-                            coords = c("x", "y"),
-                            crs = 3414)
-    ```
-
-4.  Plot a tmap and check if points are plotted in the correct regions
-
-    Now, we will plot an interactive tmap to check if our points are correct.
-
-    ```{r}
-    tmap_mode("view")
-    tm_shape(hdb_hip_mup_sf) +
-      tm_dots("TYPE",
-              popup.vars=c("BLK"="BLK", "STREET"="STREET", "TYPE" = "TYPE", "TOWN" = "TOWN"))
     ```
 
     From our analysis, the points looks to be correctly located.
