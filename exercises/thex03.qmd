@@ -482,18 +482,29 @@ At any step if there are issues, we will detail steps to fix or recover from it.
 
     Here, using *filter()* and *is.na()*, we find out which records do not have a valid location assigned to it. Now, let us manually check through the records and fix the issue.
 
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | CHAS Clinic Address                                                     | Issue                                                                        |
-    |-------------------------------------------------------------------------|------------------------------------------------------------------------------|
+    +=========================================================================+==============================================================================+
     | 189, Selegie Road, Selegie Centre, #01- 05, Singapore 188332            | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 140, Corporation Drive, #01- 03                                         | Postal Code number **610140** according to OneMap, we will amend accordingly |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 6, Gemmill Lane                                                         | Postal Code number **069249** according to OneMap, we will amend accordingly |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 102, Yishun Avenue 5, #01- 133, Singapore\\r\\n760102                   | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 34, Craig Road, Chinatown Plaza, #01- 04,\\r\\nSingapore 089673         | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 1, Rochor Road, Rochor Centre, #03- 516,\\r\\nSingapore 180001          | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 51, TAMPINES AVENUE 4, OUR TAMPINES\\r\\nHUB, #B1- 04/05                | Records are appended as **528523** on OneMap, we will amend accordingly      |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 50, Market Street, Golden Shoe Car Park,\\r\\n#01- 30, Singapore 048940 | No longer exists based on OneMap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
 
-    Now, let us update
+    Now, let us update:
+
+    #### Fixing Data
 
     ::: panel-tabset
     ## 1. Update Records
@@ -624,6 +635,8 @@ At any step if there are issues, we will detail steps to fix or recover from it.
     ```
 
     Oddly, 27 Marine Cres appeared as a point on Sembcorp Marine Tuas Crescent and 54 Kent Rd somehow appeared on 54J SOUTH BUONA VISTA ROAD KENT RIDGE HILL RESIDENCES. There are also some other differences, so let us now recode some of the addresses to get them to the right locations:
+
+    #### Fixing Data
 
     ::: panel-tabset
     ## 1. Update Records
