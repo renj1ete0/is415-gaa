@@ -97,7 +97,8 @@ The following datasets would be used to create the predictive models using conve
 
 The data fields we are looking to incorporate and work with in our predictive models includes:
 
-**Structural factors:**
+::: panel-tabset
+## Structural Factors
 
 -   Area of the unit
 
@@ -129,7 +130,7 @@ The data fields we are looking to incorporate and work with in our predictive mo
 
     -   Some homeowners may prefer multi-story HDBs over single-story ones
 
-**Vocational factors:**
+## Vocational Factors
 
 -   Proximity to CBD
 
@@ -166,73 +167,7 @@ The data fields we are looking to incorporate and work with in our predictive mo
 -   Number of LRT Stops within 350m
 
     -   The metric is necessary as LRT serves as a feeder within the town and is typically used short-haul vs MRT which is between various towns. The 350m metric is derived from Bus Stops differentiates the weight between a LRT stop and MRT stop especially if the LRT stop is far away from the MRT stop in towns such as Sengkang, Punggol and Pasir Ris
-
-## Data Preparation: Geocoding Data
-
-Some geospatial data come with addresses in the form of Block Number, Street Name and/or Postal code. However, these attributes are insufficient to plot out the spatial points onto a *tmap*. Hence, we need to convert these 'text-based' addresses into `SVY21` Projected Coordinate System to be able to plot and analyse the data.
-
-Below, we have written a script in `python` that takes an excel file and uses the OneMap Search API to parse an address which returns use the `X` and `Y` required in `SVY21`. We save them as a list in `X` and `Y` variables before merging them back to the main DataFrame as `X` and `Y` columns before reexporting it.
-
-``` {#{python}
-import requests
-import pandas as pd
-import time
-
-ONEMAP = "https://developers.onemap.sg"
-INPUT_FILE = "HDB_HIP-MUP-20230312.xlsx"
-
-args = {"email": "<REDACTED>",
-        "password": "<REDACTED>"}
-resp = requests.post("https://developers.onemap.sg/privateapi/auth/post/getToken", args)
-
-print(resp.status_code)
-print(resp.content)
-
-access_token = resp.json()["access_token"]
-search_url = ONEMAP + "/commonapi/search" 
-
-df = pd.read_excel(INPUT_FILE)
-
-max_rows = len(df)
-            
-x = []
-y = []
-errors = []
-
-for i in range (0, max_rows):
-    
-    row_df = df.loc[i]
-    addr = row_df["COMBINED_BLK_STREET"]
-    
-    searchtxt = "searchVal=" + addr
-    returngeom = "&returnGeom=Y"
-    getaaddr = "&getAddrDetails=N"
-    
-    api_url = search_url + "?" + searchtxt + returngeom + getaaddr
-    
-    stuff = requests.get(api_url)
-    
-    data = stuff.json()
-    
-    try:
-        x.append(data['results'][0]['X'])
-        y.append(data['results'][0]['Y'])
-    except:
-        x.append("Not Found")
-        y.append("Not Found")
-        erorrs.append(addr)
-
-    time.sleep(0.3)
-
-df['x'] = x
-df['y'] = y
-
-df.to_excel('geocode' + INPUT_FILE)
-```
-
-Note that when the `X` or `Y` values cannot be found for any reason (eg. address not found), `Not Found` is appended in place, where we can manually fix those values later on.
-
-Also note that `time.sleep(0.3)` is used to reduce the number of API Calls as OneMap restricts a maximum of 250 API Calls per min.
+:::
 
 # Data Wrangling: Aspatial Data
 
@@ -243,27 +178,151 @@ Also note that `time.sleep(0.3)` is used to reduce the number of API Calls as On
 In the various tabs below, we will import each individual dataset from its respective folders, with a brief explanation of the use cases of each dataset.
 
 ::: panel-tabset
-CHAS Clinics
+## CHAS Clinics
 
-D
+```{r}
+CHAS_raw = read_xlsx("Take-Home_Ex03/aspatial/CHAS.xlsx") 
+glimpse(CHAS_raw)
+```
+
+## HDB HIP MUP
+
+```{r}
+hdb_hip_mup_raw = read_xlsx("Take-Home_Ex03/aspatial/HDB_HIP-MUP-20230312.xlsx")
+glimpse(hdb_hip_mup_raw)
+```
+
+## HDB Resale Flat Pricing
 
 ```{r}
 hdb_resale_raw = read_csv("Take-Home_Ex03/aspatial/resale-flat-prices-based-on-registration-date-from-jan-2017-onwards.csv")
+glimpse(hdb_resale_raw)
 ```
-
-HDB HIP MUP
-
-HDB Resale Flat Pricing
-
-Importing CHAS Clinics
 :::
 
-```{}
+## Filtering HDB Resale Flat Data
+
+We will now filter the HDB Resale to focus on the target months, Jan 2020 to Feb 2023, and 5 Room HDBs to construct the predictive model. We will use:
+
+-   *filter()* to filter out the desired room type and months
+
+-   *unique()* to check if the desired room type and months has been filtered correctly
+
+-   *glimpse()* to check the data structure of the filtered dataset
+
+::: panel-tabset
+## Filter Code
+
+```{r}
+hdb_resale <- filter(hdb_resale_raw, flat_type == "5 ROOM") %>%
+              filter(month >= "2020-01" & month <= "2023-02")
 ```
+
+## Glimpse Variables
+
+```{r}
+glimpse(hdb_resale)
+```
+
+## Unique Month and Flat_Type
+
+```{r}
+unique(hdb_resale$month)
+```
+
+```{r}
+unique(hdb_resale$flat_type)
+```
+:::
+
+From the code and results in the respective tabs (Glimpse Variables and Unique Month and Flat Type), we can see that:
+
+-   There are **21,500 transactions** between Jan 2020 to Feb 2023.
+
+-   The `month` and `flat_type` has been extracted correctly.
+
+## Transforming Aspatial Data - Create New Columns with Values
+
+Next, we transform the Aspatial Datasets into more meaningful values:
+
+1.  CHAS Clinics - There is nothing to transform, since as noted earlier, there is already a `postal` column provided
+2.  HDB HIP MUP - We need to obtain the address for geocoding (obtaining the SVY21 `X` and `Y` coordinates) by combining the `BLK` and `STREET` fields
+3.  HDB Resale Flat Pricing - We need to obtain the address for geocoding (obtaining the SVY21 `X` and `Y` coordinates) by combining the `block` and `street_name` fields, and also convert the remaining lease from the form of `YY years MM months` to a more machine-readable format (ie. `MM` months)
+
+The code chunks will assist with the transformation using *mutate()* further explained below:
+
+::: panel-tabset
+## HDB HIP MUP
+
+We *mutate()* the `hdb_hip_mup_raw` dataset by pasting the `BLK` and `STREET` columns together into the `address` column to a new sf dataframe called `hdb_hip_mup_trans`
+
+```{r}
+hdb_hip_mup_trans <- hdb_hip_mup_raw %>%
+  mutate(hdb_hip_mup_raw, address = paste(BLK, STREET))
+```
+
+## HDB Resale Flat Pricing
+
+We *mutate()* the `hdb_resale` dataset by pasting the `block` and `street_name` columns together into the `address` column to a new variable called `hdb_hip_mup_trans`. We also used *mutate()* to modify the existing `remaining_lease` data to the form of `MM`.
+
+The first section of the code `as.integer(str_sub(remaining_lease, 0, 2)) * 12` extracts the year numbers as `YY` and converts it into string and then multiplying it by 12 to convert it to number of months.
+
+The next part of the code checks if there is any numerical `MM` (month) present, if there is no month present, the value will be `NA` and 0 will be assigned in place of `NA`. Else, if present, we take the `MM`.
+
+The integer month is summed with the year in months to form this column `remaining_lease_mths` in the new sf dataframe `hdb_resale_trans`
+
+```{r}
+hdb_resale_trans <- hdb_resale %>%
+  mutate(hdb_resale, address = paste(block, street_name)) %>%
+  mutate(hdb_resale, remaining_lease_mths = (as.integer(str_sub(remaining_lease, 0, 2)) * 12 + ifelse(is.na(as.integer(str_sub(remaining_lease, 9, 11))), 0,  as.integer(str_sub(remaining_lease, 9, 11)))))
+```
+:::
+
+## Retrieving SVY21 Coordinate of Addresses
+
+This section will focus on retrieving relavant data such as coordinates of the address which we could use in further spatial analysis to obtain proximity to locational factors later.
+
+We are interested in obtaining the `SVY21` `X` and `Y` coordinates as they are in the Projected Coordinate System, which allows us to perform measure directly without any additional transformations.
+
+### Create a List Storing Unique Addresses/Postal Codes
+
+Since some addresses/postal codes are duplicated, we store and check unique addresses to reduce the amount of `GET` requests sent to the OneMap API:
+
+1.  Faster
+2.  OneMap API has a rate limit of 250 API calls a minute
+3.  It makes it easier for us to locate errors and correct it
+
+Here, we will obtain a list of unique addresses/postal codes for each data set.
+
+::: panel-tabset
+## CHAS Clinics
+
+```{r}
+addr_lst.chas <- sort(unique(CHAS_raw$Postal))
+```
+
+## HDB HIP MUP
+
+```{r}
+addr_lst.hipmup <- sort(unique(hdb_hip_mup_trans$address))
+```
+
+## HDB Resale Flat Pricing
+
+```{r}
+addr_lst.resale <- sort(unique(hdb_resale_trans$address))
+```
+:::
+
+## 
 
 ```{r}
 #tmap_mode("view")
 #tm_shape(hdb_resale) +
 #  tm_dots("resale_price",
 #          popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))
+```
+
+```{r}
+mpsz = st_read(dsn = "Take-Home_Ex03/geospatial", layer="MPSZ-2019")
 ```

@@ -324,11 +324,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"><span class="toc-section-number">2.2</span>  </a></li>
   <li><a href="#data-acquisition" id="toc-data-acquisition" class="nav-link" data-scroll-target="#data-acquisition"><span class="toc-section-number">2.3</span>  Data Acquisition</a></li>
   <li><a href="#data-fields" id="toc-data-fields" class="nav-link" data-scroll-target="#data-fields"><span class="toc-section-number">2.4</span>  Data Fields</a></li>
-  <li><a href="#data-preparation-geocoding-data" id="toc-data-preparation-geocoding-data" class="nav-link" data-scroll-target="#data-preparation-geocoding-data"><span class="toc-section-number">2.5</span>  Data Preparation: Geocoding Data</a></li>
   </ul></li>
   <li><a href="#data-wrangling-aspatial-data" id="toc-data-wrangling-aspatial-data" class="nav-link" data-scroll-target="#data-wrangling-aspatial-data"><span class="toc-section-number">3</span>  Data Wrangling: Aspatial Data</a>
   <ul class="collapse">
   <li><a href="#importing-aspatial-data" id="toc-importing-aspatial-data" class="nav-link" data-scroll-target="#importing-aspatial-data"><span class="toc-section-number">3.1</span>  Importing Aspatial Data</a></li>
+  <li><a href="#filtering-hdb-resale-flat-data" id="toc-filtering-hdb-resale-flat-data" class="nav-link" data-scroll-target="#filtering-hdb-resale-flat-data"><span class="toc-section-number">3.2</span>  Filtering HDB Resale Flat Data</a></li>
+  <li><a href="#transforming-aspatial-data---create-new-columns-with-values" id="toc-transforming-aspatial-data---create-new-columns-with-values" class="nav-link" data-scroll-target="#transforming-aspatial-data---create-new-columns-with-values"><span class="toc-section-number">3.3</span>  Transforming Aspatial Data - Create New Columns with Values</a></li>
+  <li><a href="#retrieving-svy21-coordinate-of-addresses" id="toc-retrieving-svy21-coordinate-of-addresses" class="nav-link" data-scroll-target="#retrieving-svy21-coordinate-of-addresses"><span class="toc-section-number">3.4</span>  Retrieving SVY21 Coordinate of Addresses</a>
+  <ul class="collapse">
+  <li><a href="#create-a-list-storing-unique-addressespostal-codes" id="toc-create-a-list-storing-unique-addressespostal-codes" class="nav-link" data-scroll-target="#create-a-list-storing-unique-addressespostal-codes"><span class="toc-section-number">3.4.1</span>  Create a List Storing Unique Addresses/Postal Codes</a></li>
+  </ul></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"><span class="toc-section-number">3.5</span>  </a></li>
   </ul></li>
   </ul>
 </nav>
@@ -474,7 +480,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="data-fields" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="data-fields"><span class="header-section-number">2.4</span> Data Fields</h2>
 <p>The data fields we are looking to incorporate and work with in our predictive models includes:</p>
-<p><strong>Structural factors:</strong></p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Structural Factors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Vocational Factors</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <ul>
 <li><p>Area of the unit</p></li>
 <li><p>Floor level</p></li>
@@ -500,7 +509,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Some homeowners may prefer multi-story HDBs over single-story ones</li>
 </ul></li>
 </ul>
-<p><strong>Vocational factors:</strong></p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <ul>
 <li><p>Proximity to CBD</p></li>
 <li><p>Proximity to eldercare</p></li>
@@ -527,67 +537,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>The metric is necessary as LRT serves as a feeder within the town and is typically used short-haul vs MRT which is between various towns. The 350m metric is derived from Bus Stops differentiates the weight between a LRT stop and MRT stop especially if the LRT stop is far away from the MRT stop in towns such as Sengkang, Punggol and Pasir Ris</li>
 </ul></li>
 </ul>
-</section>
-<section id="data-preparation-geocoding-data" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="data-preparation-geocoding-data"><span class="header-section-number">2.5</span> Data Preparation: Geocoding Data</h2>
-<p>Some geospatial data come with addresses in the form of Block Number, Street Name and/or Postal code. However, these attributes are insufficient to plot out the spatial points onto a <em>tmap</em>. Hence, we need to convert these ‘text-based’ addresses into <code>SVY21</code> Projected Coordinate System to be able to plot and analyse the data.</p>
-<p>Below, we have written a script in <code>python</code> that takes an excel file and uses the OneMap Search API to parse an address which returns use the <code>X</code> and <code>Y</code> required in <code>SVY21</code>. We save them as a list in <code>X</code> and <code>Y</code> variables before merging them back to the main DataFrame as <code>X</code> and <code>Y</code> columns before reexporting it.</p>
-<pre class="{#{python}"><code>import requests
-import pandas as pd
-import time
-
-ONEMAP = "https://developers.onemap.sg"
-INPUT_FILE = "HDB_HIP-MUP-20230312.xlsx"
-
-args = {"email": "&lt;REDACTED&gt;",
-        "password": "&lt;REDACTED&gt;"}
-resp = requests.post("https://developers.onemap.sg/privateapi/auth/post/getToken", args)
-
-print(resp.status_code)
-print(resp.content)
-
-access_token = resp.json()["access_token"]
-search_url = ONEMAP + "/commonapi/search" 
-
-df = pd.read_excel(INPUT_FILE)
-
-max_rows = len(df)
-            
-x = []
-y = []
-errors = []
-
-for i in range (0, max_rows):
-    
-    row_df = df.loc[i]
-    addr = row_df["COMBINED_BLK_STREET"]
-    
-    searchtxt = "searchVal=" + addr
-    returngeom = "&amp;returnGeom=Y"
-    getaaddr = "&amp;getAddrDetails=N"
-    
-    api_url = search_url + "?" + searchtxt + returngeom + getaaddr
-    
-    stuff = requests.get(api_url)
-    
-    data = stuff.json()
-    
-    try:
-        x.append(data['results'][0]['X'])
-        y.append(data['results'][0]['Y'])
-    except:
-        x.append("Not Found")
-        y.append("Not Found")
-        erorrs.append(addr)
-
-    time.sleep(0.3)
-
-df['x'] = x
-df['y'] = y
-
-df.to_excel('geocode' + INPUT_FILE)</code></pre>
-<p>Note that when the <code>X</code> or <code>Y</code> values cannot be found for any reason (eg. address not found), <code>Not Found</code> is appended in place, where we can manually fix those values later on.</p>
-<p>Also note that <code>time.sleep(0.3)</code> is used to reduce the number of API Calls as OneMap restricts a maximum of 250 API Calls per min.</p>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="data-wrangling-aspatial-data" class="level1" data-number="3">
@@ -597,21 +549,215 @@ df.to_excel('geocode' + INPUT_FILE)</code></pre>
 <h2 data-number="3.1" class="anchored" data-anchor-id="importing-aspatial-data"><span class="header-section-number">3.1</span> Importing Aspatial Data</h2>
 <p>In the various tabs below, we will import each individual dataset from its respective folders, with a brief explanation of the use cases of each dataset.</p>
 <div class="panel-tabset">
-<p>CHAS Clinics</p>
-<p>D</p>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">CHAS Clinics</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">HDB HIP MUP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">HDB Resale Flat Pricing</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hdb_resale_raw <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"Take-Home_Ex03/aspatial/resale-flat-prices-based-on-registration-date-from-jan-2017-onwards.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>CHAS_raw <span class="ot">=</span> <span class="fu">read_xlsx</span>(<span class="st">"Take-Home_Ex03/aspatial/CHAS.xlsx"</span>) </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(CHAS_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 1,910
+Columns: 7
+$ Name                   &lt;chr&gt; "1 Aljunied Medical", "1 BISHAN MEDICAL", "1 ME…
+$ Address                &lt;chr&gt; "Singapore 367874", "283, Bishan Street, #01- 1…
+$ Postal                 &lt;chr&gt; "367874", "570283", "560410", "560704", "600135…
+$ Telephone              &lt;chr&gt; NA, "64561600", "62517030", "96311728", "977017…
+$ Type                   &lt;chr&gt; "Medical", "Medical, Cervical\r\nCancer Screen"…
+$ Website                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `Pap Test\r\nServices` &lt;chr&gt; "No", "Yes", "No", "No", "No", "No", "No", "No"…</code></pre>
 </div>
-<p>HDB HIP MUP</p>
-<p>HDB Resale Flat Pricing</p>
-<p>Importing CHAS Clinics</p>
 </div>
-<pre><code></code></pre>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tmap_mode("view")</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#tm_shape(hdb_resale) +</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  tm_dots("resale_price",</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#          popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>hdb_hip_mup_raw <span class="ot">=</span> <span class="fu">read_xlsx</span>(<span class="st">"Take-Home_Ex03/aspatial/HDB_HIP-MUP-20230312.xlsx"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(hdb_hip_mup_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 2,769
+Columns: 4
+$ BLK    &lt;chr&gt; "218", "219", "220", "221", "222", "223", "225", "226", "226B",…
+$ STREET &lt;chr&gt; "ANG MO KIO AVE 1", "ANG MO KIO AVE 1", "ANG MO KIO AVE 1", "AN…
+$ TYPE   &lt;chr&gt; "HIP", "HIP", "HIP", "HIP", "HIP", "HIP", "HIP", "HIP", "HIP", …
+$ TOWN   &lt;chr&gt; "ANG MO KIO", "ANG MO KIO", "ANG MO KIO", "ANG MO KIO", "ANG MO…</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>hdb_resale_raw <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"Take-Home_Ex03/aspatial/resale-flat-prices-based-on-registration-date-from-jan-2017-onwards.csv"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(hdb_resale_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 148,373
+Columns: 11
+$ month               &lt;chr&gt; "2017-01", "2017-01", "2017-01", "2017-01", "2017-…
+$ town                &lt;chr&gt; "ANG MO KIO", "ANG MO KIO", "ANG MO KIO", "ANG MO …
+$ flat_type           &lt;chr&gt; "2 ROOM", "3 ROOM", "3 ROOM", "3 ROOM", "3 ROOM", …
+$ block               &lt;chr&gt; "406", "108", "602", "465", "601", "150", "447", "…
+$ street_name         &lt;chr&gt; "ANG MO KIO AVE 10", "ANG MO KIO AVE 4", "ANG MO K…
+$ storey_range        &lt;chr&gt; "10 TO 12", "01 TO 03", "01 TO 03", "04 TO 06", "0…
+$ floor_area_sqm      &lt;dbl&gt; 44, 67, 67, 68, 67, 68, 68, 67, 68, 67, 68, 67, 67…
+$ flat_model          &lt;chr&gt; "Improved", "New Generation", "New Generation", "N…
+$ lease_commence_date &lt;dbl&gt; 1979, 1978, 1980, 1980, 1980, 1981, 1979, 1976, 19…
+$ remaining_lease     &lt;chr&gt; "61 years 04 months", "60 years 07 months", "62 ye…
+$ resale_price        &lt;dbl&gt; 232000, 250000, 262000, 265000, 265000, 275000, 28…</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="filtering-hdb-resale-flat-data" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="filtering-hdb-resale-flat-data"><span class="header-section-number">3.2</span> Filtering HDB Resale Flat Data</h2>
+<p>We will now filter the HDB Resale to focus on the target months, Jan 2020 to Feb 2023, and 5 Room HDBs to construct the predictive model. We will use:</p>
+<ul>
+<li><p><em>filter()</em> to filter out the desired room type and months</p></li>
+<li><p><em>unique()</em> to check if the desired room type and months has been filtered correctly</p></li>
+<li><p><em>glimpse()</em> to check the data structure of the filtered dataset</p></li>
+</ul>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Filter Code</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Glimpse Variables</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">Unique Month and Flat_Type</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hdb_resale <span class="ot">&lt;-</span> <span class="fu">filter</span>(hdb_resale_raw, flat_type <span class="sc">==</span> <span class="st">"5 ROOM"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>              <span class="fu">filter</span>(month <span class="sc">&gt;=</span> <span class="st">"2020-01"</span> <span class="sc">&amp;</span> month <span class="sc">&lt;=</span> <span class="st">"2023-02"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(hdb_resale)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 21,500
+Columns: 11
+$ month               &lt;chr&gt; "2020-01", "2020-01", "2020-01", "2020-01", "2020-…
+$ town                &lt;chr&gt; "ANG MO KIO", "ANG MO KIO", "ANG MO KIO", "ANG MO …
+$ flat_type           &lt;chr&gt; "5 ROOM", "5 ROOM", "5 ROOM", "5 ROOM", "5 ROOM", …
+$ block               &lt;chr&gt; "439", "401", "439", "458", "101", "423", "501", "…
+$ street_name         &lt;chr&gt; "ANG MO KIO AVE 10", "ANG MO KIO AVE 10", "ANG MO …
+$ storey_range        &lt;chr&gt; "01 TO 03", "01 TO 03", "10 TO 12", "16 TO 18", "0…
+$ floor_area_sqm      &lt;dbl&gt; 119, 119, 119, 120, 117, 133, 121, 118, 117, 110, …
+$ flat_model          &lt;chr&gt; "Improved", "Improved", "Improved", "Improved", "S…
+$ lease_commence_date &lt;dbl&gt; 1979, 1979, 1979, 1980, 1978, 1993, 1981, 1980, 19…
+$ remaining_lease     &lt;chr&gt; "58 years 01 month", "58 years 04 months", "58 yea…
+$ resale_price        &lt;dbl&gt; 485000, 465000, 535000, 580000, 450000, 700000, 53…</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(hdb_resale<span class="sc">$</span>month)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "2020-01" "2020-02" "2020-03" "2020-04" "2020-05" "2020-06" "2020-07"
+ [8] "2020-08" "2020-09" "2020-10" "2020-11" "2020-12" "2021-01" "2021-02"
+[15] "2021-03" "2021-04" "2021-05" "2021-06" "2021-07" "2021-08" "2021-09"
+[22] "2021-10" "2021-11" "2021-12" "2022-01" "2022-02" "2022-03" "2022-04"
+[29] "2022-05" "2022-06" "2022-07" "2022-08" "2022-09" "2022-10" "2022-11"
+[36] "2022-12" "2023-01" "2023-02"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(hdb_resale<span class="sc">$</span>flat_type)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "5 ROOM"</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>From the code and results in the respective tabs (Glimpse Variables and Unique Month and Flat Type), we can see that:</p>
+<ul>
+<li><p>There are <strong>21,500 transactions</strong> between Jan 2020 to Feb 2023.</p></li>
+<li><p>The <code>month</code> and <code>flat_type</code> has been extracted correctly.</p></li>
+</ul>
+</section>
+<section id="transforming-aspatial-data---create-new-columns-with-values" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="transforming-aspatial-data---create-new-columns-with-values"><span class="header-section-number">3.3</span> Transforming Aspatial Data - Create New Columns with Values</h2>
+<p>Next, we transform the Aspatial Datasets into more meaningful values:</p>
+<ol type="1">
+<li>CHAS Clinics - There is nothing to transform, since as noted earlier, there is already a <code>postal</code> column provided</li>
+<li>HDB HIP MUP - We need to obtain the address for geocoding (obtaining the SVY21 <code>X</code> and <code>Y</code> coordinates) by combining the <code>BLK</code> and <code>STREET</code> fields</li>
+<li>HDB Resale Flat Pricing - We need to obtain the address for geocoding (obtaining the SVY21 <code>X</code> and <code>Y</code> coordinates) by combining the <code>block</code> and <code>street_name</code> fields, and also convert the remaining lease from the form of <code>YY years MM months</code> to a more machine-readable format (ie. <code>MM</code> months)</li>
+</ol>
+<p>The code chunks will assist with the transformation using <em>mutate()</em>&nbsp;further explained below:</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">HDB HIP MUP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">HDB Resale Flat Pricing</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<p>We <em>mutate()</em> the <code>hdb_hip_mup_raw</code> dataset by pasting the <code>BLK</code> and <code>STREET</code> columns together into the <code>address</code> column to a new sf dataframe called <code>hdb_hip_mup_trans</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>hdb_hip_mup_trans <span class="ot">&lt;-</span> hdb_hip_mup_raw <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(hdb_hip_mup_raw, <span class="at">address =</span> <span class="fu">paste</span>(BLK, STREET))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<p>We <em>mutate()</em> the <code>hdb_resale</code> dataset by pasting the <code>block</code> and <code>street_name</code> columns together into the <code>address</code> column to a new variable called <code>hdb_hip_mup_trans</code>. We also used <em>mutate()</em> to modify the existing <code>remaining_lease</code> data to the form of <code>MM</code>.</p>
+<p>The first section of the code <code>as.integer(str_sub(remaining_lease, 0, 2)) * 12</code> extracts the year numbers as <code>YY</code> and converts it into string and then multiplying it by 12 to convert it to number of months.</p>
+<p>The next part of the code checks if there is any numerical <code>MM</code> (month) present, if there is no month present, the value will be <code>NA</code> and 0 will be assigned in place of <code>NA</code>. Else, if present, we take the <code>MM</code>.</p>
+<p>The integer month is summed with the year in months to form this column <code>remaining_lease_mths</code> in the new sf dataframe <code>hdb_resale_trans</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>hdb_resale_trans <span class="ot">&lt;-</span> hdb_resale <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(hdb_resale, <span class="at">address =</span> <span class="fu">paste</span>(block, street_name)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(hdb_resale, <span class="at">remaining_lease_mths =</span> (<span class="fu">as.integer</span>(<span class="fu">str_sub</span>(remaining_lease, <span class="dv">0</span>, <span class="dv">2</span>)) <span class="sc">*</span> <span class="dv">12</span> <span class="sc">+</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(<span class="fu">as.integer</span>(<span class="fu">str_sub</span>(remaining_lease, <span class="dv">9</span>, <span class="dv">11</span>))), <span class="dv">0</span>,  <span class="fu">as.integer</span>(<span class="fu">str_sub</span>(remaining_lease, <span class="dv">9</span>, <span class="dv">11</span>)))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="retrieving-svy21-coordinate-of-addresses" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="retrieving-svy21-coordinate-of-addresses"><span class="header-section-number">3.4</span> Retrieving SVY21 Coordinate of Addresses</h2>
+<p>This section will focus on retrieving relavant data such as coordinates of the address which we could use in further spatial analysis to obtain proximity to locational factors later.</p>
+<p>We are interested in obtaining the <code>SVY21</code> <code>X</code> and <code>Y</code> coordinates as they are in the Projected Coordinate System, which allows us to perform measure directly without any additional transformations.</p>
+<section id="create-a-list-storing-unique-addressespostal-codes" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="create-a-list-storing-unique-addressespostal-codes"><span class="header-section-number">3.4.1</span> Create a List Storing Unique Addresses/Postal Codes</h3>
+<p>Since some addresses/postal codes are duplicated, we store and check unique addresses to reduce the amount of <code>GET</code> requests sent to the OneMap API:</p>
+<ol type="1">
+<li>Faster</li>
+<li>OneMap API has a rate limit of 250 API calls a minute</li>
+<li>It makes it easier for us to locate errors and correct it</li>
+</ol>
+<p>Here, we will obtain a list of unique addresses/postal codes for each data set.</p>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">CHAS Clinics</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">HDB HIP MUP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-3" role="tab" aria-controls="tabset-5-3" aria-selected="false">HDB Resale Flat Pricing</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>addr_lst.chas <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(CHAS_raw<span class="sc">$</span>Postal))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>addr_lst.hipmup <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(hdb_hip_mup_trans<span class="sc">$</span>address))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>addr_lst.resale <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(hdb_resale_trans<span class="sc">$</span>address))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="section-1" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="section-1"><span class="header-section-number">3.5</span> </h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tmap_mode("view")</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co">#tm_shape(hdb_resale) +</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  tm_dots("resale_price",</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#          popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mpsz <span class="ot">=</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"Take-Home_Ex03/geospatial"</span>, <span class="at">layer=</span><span class="st">"MPSZ-2019"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `MPSZ-2019' from data source 
+  `C:\renjie-teo\IS415-GAA\exercises\Take-Home_Ex03\geospatial' 
+  using driver `ESRI Shapefile'
+Simple feature collection with 332 features and 6 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775
+Geodetic CRS:  WGS 84</code></pre>
+</div>
 </div>
 
 
