@@ -18,6 +18,8 @@ execute:
 
 \<add context\>
 
+bal bla we are lookign at 5 storey HDB bla bla
+
 ## Objectives
 
 Exploratory Spatial Data Analysis (ESDA) hold tremendous potential to address complex problems facing society. In this study, you are tasked to apply appropriate Local Indicators of Spatial Association (LISA) and Emerging Hot Spot Analysis (EHSA) to undercover the spatio-temporal trends of COVID-19 vaccination in DKI Jakarta.
@@ -28,21 +30,12 @@ In this take-home exercise, you are tasked to predict HDB resale prices at the s
 
 # Getting Started
 
-## Data Acquisition
-
-The following datasets would be used to study the spatial-temporal geographical distribution of vaccination rates in Jarkata, Indonesia, between June 2021 to May 2022.
-
-| Dataset Name                                                      | Remarks | Source                                                                                                                           |
-|-------------------------|-----------------------|---------------------------|
-| Vaccination Data from June 2021 to May 2022 in Jarkata, Indonesia |         | [Riwayat File Vaksinasi DKI Jakarta](https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/)                      |
-| DKI Jakarta Administration Boundary 2019                          |         | [[Indonesia Geospatial Portal]{.underline}](https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html) |
-
 ## Installing and Loading Packages
 
 Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and funModeling.
 
 ```{r}
-pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski)
+pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite)
 ```
 
 The following packages assists us to accomplish the following:
@@ -58,3 +51,219 @@ The following packages assists us to accomplish the following:
 -   *gifski* helps us to handle the GIF animation for tmap
 
 ## 
+
+## Data Acquisition
+
+The following datasets would be used to create the predictive models using conventional OLS and GWR methods for HDB Resale Prices.
+
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Dataset Name                                | Remarks                                             | Source                                                                                                          |
++=============================================+=====================================================+=================================================================================================================+
+| URA Master Plan 2019 Subzone Boundary       | For visualisation purposes                          | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-subzone-boundary-no-sea)                             |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| URA Master Plan 2019 Planning Area Boundary | For visualisation purposes and extract Central AreW | Prof Kam                                                                                                        |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| HDB Resale Flat Prices                      |                                                     | [data.gov.sg](https://data.gov.sg/dataset/resale-flat-prices)                                                   |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| HDB MUP/HIP Status                          | Manual Web Scraping                                 | [hdb.gov.sg](https://services2.hdb.gov.sg/webapp/BB33RESLSTATUS/BB33PReslStatusEnq.jsp)                         |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Childcare                                   |                                                     |                                                                                                                 |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Kindergartens                               |                                                     |                                                                                                                 |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Eldercare                                   |                                                     |                                                                                                                 |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Foodcourt/Hawker                            |                                                     |                                                                                                                 |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Supermarket                                 |                                                     |                                                                                                                 |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Current and Future MRT/LRT Stations         | Excludes Cross Region Line Punggol Branch           | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-rail-line-layer)                                     |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Future MRT Station (CRL Punggol Branch)     | Manually merge into MRT/LRT Station Dataset         | [wikipedia.org : Elias MRT Stn](https://en.wikipedia.org/wiki/Elias_MRT_station)\                               |
+|                                             |                                                     | [wikipedia.org : Riveria MRT Stn](https://en.wikipedia.org/wiki/Riviera_MRT/LRT_station)                        |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| MRT/LRT Railway Line                        | Filter elevated sections of MRT line                | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-rail-line-layer)                                     |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Bus Stops                                   |                                                     | [datamall.lta.gov.sg](https://datamall.lta.gov.sg/content/dam/datamall/datasets/Geospatial/BusStopLocation.zip) |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Parks                                       |                                                     |                                                                                                                 |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Primary Schools                             |                                                     |                                                                                                                 |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| CHAS Clinics                                | Extracted using Excel from PDF                      | [chas.sg](https://www.chas.sg/clinic-locator)                                                                   |
++---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+
+## Data Fields
+
+The data fields we are looking to incorporate and work with in our predictive models includes:
+
+**Structural factors:**
+
+-   Area of the unit
+
+-   Floor level
+
+-   Remaining lease
+
+-   Age of the unit
+
+-   Main Upgrading Program (MUP) completed
+
+    -   Extracted MUP and Home Improvment Programme (HIP) data from HDB website
+
+    -   For HDB units that has received HIP, their home value may be affected positively than a similar aged flat that has not received it
+
+-   Relative Age of Remaining Lead to Mean of Remaining Lease Left within 1km (+ if newer, - if older than area)
+
+    -   If a HDB estate is relatively newer than HDBs in the area, homeowners might be enticed to buy newer HDB units in the area
+
+-   Apartment Type (eg. DBSS/Standard/Premium)
+
+    -   Design Build Sell Scheme (DBSS) flats may call for a higher value than regular HDB flats as they are designed, build and sold by 3rd party developers although they are still HDB Flats. They are supposed to be better than premium flats
+
+    -   Premium flats which come with pre-installed fittings and furnishings over standard apartments which comes with none
+
+    -   Reference: https://www.teoalida.com/singapore/hdbflattypes/
+
+-   Apartment Multi-story (Maisonette or Loft)
+
+    -   Some homeowners may prefer multi-story HDBs over single-story ones
+
+**Vocational factors:**
+
+-   Proximity to CBD
+
+-   Proximity to eldercare
+
+-   Proximity to foodcourt/hawker centres
+
+-   Proximity to MRT
+
+-   Proximity to park
+
+-   Proximity to good primary school
+
+-   Proximity to shopping mall
+
+-   Proximity to supermarket
+
+-   Numbers of kindergartens within 350m
+
+-   Numbers of childcare centres within 350m
+
+-   Numbers of bus stop within 350m
+
+-   Numbers of primary school within 1km
+
+-   Proximity to Overhead MRT Line \[noise concern\] (if \<300m)
+
+    -   The closer a HDB unit is to the MRT track, the home value might be affected due to noise concerns. We measure the proximity of HDB units using its euclidean distance to the closest part of the MRT track if it is less than 300metres away.
+
+-   Number of Future MRT stops within 800m (10min walk)
+
+    -   Here, I want to explore how the resale values of HDBs could be affected by future MRT stations that are announced but not yet built. Home owners may be enticed to buy houses near future MRT lines in hopes that the house values will increase and also due to increased connectivity
+
+-   Number of LRT Stops within 350m
+
+    -   The metric is necessary as LRT serves as a feeder within the town and is typically used short-haul vs MRT which is between various towns. The 350m metric is derived from Bus Stops differentiates the weight between a LRT stop and MRT stop especially if the LRT stop is far away from the MRT stop in towns such as Sengkang, Punggol and Pasir Ris
+
+## Data Preparation: Geocoding Data
+
+Some geospatial data come with addresses in the form of Block Number, Street Name and/or Postal code. However, these attributes are insufficient to plot out the spatial points onto a *tmap*. Hence, we need to convert these 'text-based' addresses into `SVY21` Projected Coordinate System to be able to plot and analyse the data.
+
+Below, we have written a script in `python` that takes an excel file and uses the OneMap Search API to parse an address which returns use the `X` and `Y` required in `SVY21`. We save them as a list in `X` and `Y` variables before merging them back to the main DataFrame as `X` and `Y` columns before reexporting it.
+
+``` {#{python}
+import requests
+import pandas as pd
+import time
+
+ONEMAP = "https://developers.onemap.sg"
+INPUT_FILE = "HDB_HIP-MUP-20230312.xlsx"
+
+args = {"email": "<REDACTED>",
+        "password": "<REDACTED>"}
+resp = requests.post("https://developers.onemap.sg/privateapi/auth/post/getToken", args)
+
+print(resp.status_code)
+print(resp.content)
+
+access_token = resp.json()["access_token"]
+search_url = ONEMAP + "/commonapi/search" 
+
+df = pd.read_excel(INPUT_FILE)
+
+max_rows = len(df)
+            
+x = []
+y = []
+errors = []
+
+for i in range (0, max_rows):
+    
+    row_df = df.loc[i]
+    addr = row_df["COMBINED_BLK_STREET"]
+    
+    searchtxt = "searchVal=" + addr
+    returngeom = "&returnGeom=Y"
+    getaaddr = "&getAddrDetails=N"
+    
+    api_url = search_url + "?" + searchtxt + returngeom + getaaddr
+    
+    stuff = requests.get(api_url)
+    
+    data = stuff.json()
+    
+    try:
+        x.append(data['results'][0]['X'])
+        y.append(data['results'][0]['Y'])
+    except:
+        x.append("Not Found")
+        y.append("Not Found")
+        erorrs.append(addr)
+
+    time.sleep(0.3)
+
+df['x'] = x
+df['y'] = y
+
+df.to_excel('geocode' + INPUT_FILE)
+```
+
+Note that when the `X` or `Y` values cannot be found for any reason (eg. address not found), `Not Found` is appended in place, where we can manually fix those values later on.
+
+Also note that `time.sleep(0.3)` is used to reduce the number of API Calls as OneMap restricts a maximum of 250 API Calls per min.
+
+# Data Wrangling: Aspatial Data
+
+\<list of datasets to import and handle\> and type of treatment
+
+## Importing Aspatial Data
+
+In the various tabs below, we will import each individual dataset from its respective folders, with a brief explanation of the use cases of each dataset.
+
+::: panel-tabset
+CHAS Clinics
+
+D
+
+```{r}
+hdb_resale_raw = read_csv("Take-Home_Ex03/aspatial/resale-flat-prices-based-on-registration-date-from-jan-2017-onwards.csv")
+```
+
+HDB HIP MUP
+
+HDB Resale Flat Pricing
+
+Importing CHAS Clinics
+:::
+
+```{}
+```
+
+```{r}
+#tmap_mode("view")
+#tm_shape(hdb_resale) +
+#  tm_dots("resale_price",
+#          popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))
+```

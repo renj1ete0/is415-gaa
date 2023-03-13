@@ -1,0 +1,233 @@
+---
+title: "In-Class Exercise 9: XXX"
+description: "XXX"
+author: "Teo Ren Jie"
+date: "03/13/2023"
+number-sections: true
+categories: ["In-Class Exercise", "sf", "sfdep", "tidyverse", "tmap"]
+title-block-banner: true
+image: In-Class_Ex09/preview.png
+execute:
+  message: true
+  warning: true
+---
+
+# Getting Started
+
+## Installing and Loading Packages
+
+Pacman assists us by helping us load R packages that we require, `sf`, `sfdep`, `tidyverse, plotly` and `tmap`.
+
+```{r}
+pacman::p_load(sf, GWmodel, SpatialML, tidyverse, tmap, ggpubr, olsrr, evtools, tidymodels)
+```
+
+Plotly helps to make our charts interactive.
+
+## Data Acquisition
+
+The following datasets are used:
+
+| Dataset Name                  | Source   |
+|-------------------------------|----------|
+| Hunan *(Hunan.shp)*           | Prof Kam |
+| Hunan 2021 *(Hunan-2021.csv)* | Prof Kam |
+
+# Spatial Data Wrangling
+
+## Reading data file from rds
+
+```{r}
+mdata <- read_rds("In-Class_Ex09/data/aspatial/mdata.rds")
+```
+
+## Data Sampling
+
+```{r}
+set.seed(1234)
+resale_split <- initial_split(mdata,
+                              prop = 6.5/10)
+train_data <- training(resale_split)
+test_data <- testing(resale_split)
+```
+
+```{r}
+write_rds(train_data, "In-Class_Ex09/data/aspatial/train.rds")
+write_rds(test_data, "In-Class_Ex09/data/aspatial/test.rds")
+```
+
+```{r}
+train_data <- read_rds("In-Class_Ex09/data/aspatial/train.rds")
+test_data <- read_rds("In-Class_Ex09/data/aspatial/test.rds")
+```
+
+## Building a non-spatial multiple linear regression
+
+```{r}
+price_mlr <- lm(resale_price ~ floor_area_sqm + storey_order + 
+                remaining_lease_mths + PROX_CBD + PROX_ELDERLYCARE + 
+                PROX_HAWKER + PROX_MRT + PROX_PARK + PROX_MALL + 
+                PROX_SUPERMARKET + WITHIN_350M_KINDERGARTEN + 
+                WITHIN_350M_CHILDCARE + WITHIN_350M_BUS + 
+                WITHIN_1KM_PRISCH , data = train_data)
+
+summary(price_mlr)
+```
+
+```{r}
+write_rds(price_mlr, "In-Class_Ex09/data/aspatial/price-mlr.rds")
+```
+
+# GWR Predictive Method
+
+In this section, gwr method will be used to calibrate a model to predict the HDB resale prices.
+
+## Converting the sf DataFrame to Sptial Point Data Frame
+
+```{r}
+train_data_sp <- as_Spatial(train_data)
+train_data_sp
+```
+
+## Building Adaptive Bandwidth GWR Model
+
+### Computing the adaptive bandwidth
+
+```{r eval=FALSE}
+bw.adaptive <- bw.gwr(formula = resale_price ~ floor_area_sqm + storey_order + 
+                remaining_lease_mths + PROX_CBD + PROX_ELDERLYCARE + 
+                PROX_HAWKER + PROX_MRT + PROX_PARK + PROX_MALL + 
+                PROX_SUPERMARKET + WITHIN_350M_KINDERGARTEN + 
+                WITHIN_350M_CHILDCARE + WITHIN_350M_BUS + 
+                WITHIN_1KM_PRISCH, 
+                      data=train_data_sp, 
+                      approach="CV", 
+                      kernel="gaussian", 
+                      adaptive=TRUE, 
+                      longlat=FALSE)
+```
+
+### Constructing the adaptive bandwidth gwr model
+
+```{r eval=FALSE}
+gwr.adaptive <- gwr.basic(formula = resale_price ~ floor_area_sqm + storey_order + 
+                remaining_lease_mths + PROX_CBD + PROX_ELDERLYCARE + 
+                PROX_HAWKER + PROX_MRT + PROX_PARK + PROX_MALL + 
+                PROX_SUPERMARKET + WITHIN_350M_KINDERGARTEN + 
+                WITHIN_350M_CHILDCARE + WITHIN_350M_BUS + 
+                WITHIN_1KM_PRISCH, 
+                          data=train_data_sp, bw=bw.adaptive, 
+                          kernel = 'gaussian', 
+                          adaptive=TRUE, 
+                          longlat = FALSE)
+```
+
+```{r eval=FALSE}
+gwr.adaptive
+```
+
+# Preparing Coordinates Data
+
+Extracting the Coordinates Data
+
+The code chunk below extract the x,y coordinates of the full, training and test data sets
+
+```{r}
+coords <- st_coordinates(mdata)
+coords_train <- st_coordinates(train_data)
+coords_test <- st_coordinates(test_data)
+```
+
+Before continuing, we write all output into rds for future use
+
+```{r}
+write_rds (coords_train, "In-Class_Ex09/data/aspatial/coords_train.rds")
+write_rds(coords_test, "In-Class_Ex09/data/aspatial/coords_test.rds")
+```
+
+```{r}
+coords_train <- read_rds("In-Class_Ex09/data/aspatial/coords_train.rds")
+coords_test <- read_rds("In-Class_Ex09/data/aspatial/coords_test.rds")
+```
+
+Firstly, we will drop geometry column of the sf DataFrame using st-drop_gemetry() of the sf package
+
+```{r}
+train_data <- train_data %>% 
+  st_drop_geometry()
+```
+
+Calibrating Random Forest
+
+Performing random forest calibration using ranger package.
+
+```{r eval = FALSE}
+set.seed(1234)
+rf <- ranger(resale_price ~floor_area_sqm + storey_order + remaining_lease_mths + PROX_CBD + PROX_ELDERLYCARE + PROX_HAWKER + PROX_MRT + PROX_PARK + PROX_MALL + PROX_SUPERMARKET + WITHIN_350M_KINDERGARTEN + WITHIN_350M_CHILDCARE + WITHIN_350M_BUS + WITHIN_1KM_PRISCH, data = train_data)
+```
+
+Calibrating geographic random forest model using grf of spatialML package
+
+```{r eval=FALSE}
+set.seed(1234)
+gwRF_adaptive <- grf(resale_price ~floor_area_sqm + storey_order + remaining_lease_mths + PROX_CBD + PROX_ELDERLYCARE + PROX_HAWKER + PROX_MRT + PROX_PARK + PROX_MALL + PROX_SUPERMARKET + WITHIN_350M_KINDERGARTEN + WITHIN_350M_CHILDCARE + WITHIN_350M_BUS + WITHIN_1KM_PRISCH, dframe = train_data,
+             bw = 55,
+             kernel = "adaptive",
+             coords = coords_train)
+```
+
+```{r eval=FALSE}
+write_rds(gwRF_adaptive, "In-Class_Ex09/data/aspatial/gwRF_adaptive.rds")
+```
+
+```{r}
+gwRF_adaptive <- read_rds("In-Class_Ex09/data/aspatial/gwRF_adaptive.rds")
+```
+
+```{r}
+#gwRF_adaptive$Global.Model$variable.importance
+#vi_df <- as.data.frame(gwRF_adaptive$Global.Model$variable.importance)
+```
+
+Predicting by using test data
+
+Preparing the test data
+
+The code chunk below will be used to combine the test data with its corresponding coordinates data.
+
+```{r}
+test_data <- cbind(test_data, coords_test) %>% 
+  st_drop_geometry()
+```
+
+Next, preedict.grf of spatialML willbe used to predict the resale value by using the test data and gwRF_adaptive model calibrated earlier
+
+```{r eval=FALSE}
+gwRF_pred <- predict.grf(gwRF_adaptive, test_data, x.var.name="X", y.var.name="Y", local.w = 1, global.w = 0)
+```
+
+```{r eval=FALSE}
+gwRF_pred_df <- as.data.frame(gwRF_pred)
+```
+
+```{r eval=FALSE}
+write_rds(test_predict, "In-Class_Ex09/data/aspatial/gwRF_pred.rds")
+```
+
+```{r eval=FALSE}
+gwRF_pred <- read_rds("In-Class_Ex09/data/aspatial/gwRF_pred.rds")
+```
+
+```{r eval=FALSE}
+ggplot(data = test_predict,
+       aes(x = predict_grf,
+           y = resale_price)) +
+  geom_point()
+
+#should plot function line to compare
+```
+
+```{r eval=FALSE}
+sqrt(mean((test_predict$resale_price - test_predict$predict_grf)^2))
+# on average the error in predict and actual value of pricing
+```
