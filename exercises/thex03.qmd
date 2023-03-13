@@ -1,6 +1,6 @@
 ---
 title: "Take-Home Exercise 03: Predicting HDB Public Housing Resale Prices Using Geographically Weighted Methods"
-description: "Conducting a Spatial-Temporal Analysis of COVID-19 trends at Sub-district level in Jarkata, Indonesia between June 2021 to May 2022"
+description: "Predicting HDB Public Housing Resale Prices Using Geographically Weighted Methods trained using Jan 2020 to Dec 2022 and tested with Jan to Feb 2023"
 author: "Teo Ren Jie"
 date: "3/12/2023"
 number-sections: true
@@ -169,6 +169,20 @@ The data fields we are looking to incorporate and work with in our predictive mo
     -   The metric is necessary as LRT serves as a feeder within the town and is typically used short-haul vs MRT which is between various towns. The 350m metric is derived from Bus Stops differentiates the weight between a LRT stop and MRT stop especially if the LRT stop is far away from the MRT stop in towns such as Sengkang, Punggol and Pasir Ris
 :::
 
+# Master Plan Subzone Geospatial Data
+
+## Importing Master Plan Subzone 2019
+
+```{r}
+mpsz = st_read(dsn = "Take-Home_Ex03/geospatial", layer="MPSZ-2019")
+```
+
+## Transforming Master Plan Subzone 2019
+
+```{r}
+mpsz <- st_transform(mpsz,3414)
+```
+
 # Data Wrangling: Aspatial Data
 
 \<list of datasets to import and handle\> and type of treatment
@@ -299,30 +313,524 @@ Here, we will obtain a list of unique addresses/postal codes for each data set.
 
 ```{r}
 addr_lst.chas <- sort(unique(CHAS_raw$Postal))
+glimpse(addr_lst.chas)
 ```
 
 ## HDB HIP MUP
 
 ```{r}
 addr_lst.hipmup <- sort(unique(hdb_hip_mup_trans$address))
+glimpse(addr_lst.hipmup)
 ```
 
 ## HDB Resale Flat Pricing
 
 ```{r}
 addr_lst.resale <- sort(unique(hdb_resale_trans$address))
+glimpse(addr_lst.resale)
 ```
 :::
 
-## 
+### Create Function to Retrieve Coordinates from OneMap.sg API
+
+The following function uses OneMap.sg Search API to obtain coordinates (SVY21 X, Y) using part of an address or postal code.
+
+This is how the function `get_coordinates()` below will work:
+
+1.  `new_coords` datafame is created to store all the new coordinate data and its original address that is input to the GET request API
+2.  for each `addr` in `addr_lst` where `addr_lst` is the list passed into the function, we will query each record and append accordingly:
+    1.  If there is 1 or more records, we append the top record's SVY21 X, Y coordinates and `addr` to a temporary dataframe called `new_row`,
+
+    2.  Else, `NA` for it's `X` and `Y` columns and the `addr` is stored in `new_row`.
+3.  The GET Request has various parameters:
+    1.  `searchVal` - the value to pass to OneMap Search to obtain the Geocode (in this case we are interested in SVY21 X, Y coordinates)
+
+    2.  `returnGeom` - return details about geometry (ie. SVY21 X, Y or Lat Lon), `Y` in this case as we want SVY21 X, Y coordinates
+
+    3.  `getAddrDetails` - get more details about the address, `N` in this case as we don't require further information.
+4.  fromJSON() helps us convert the JSON format to a list format for manipulation
+    1.  the function rawToChar() was used as the received type for `reply$content` is RAW, which requires conversion before we can read the values
+5.  Lastly, we will combine the `new_row` data into the main `new_coords` dataframe using *rbind()* as they are both dataframes.
+
+<div>
+
+```{r}
+get_coordinates <- function(addr_lst){
+  
+  # Create a data frame to store all retrieved coordinates
+  new_coords <- data.frame()
+    
+  for (addr in addr_lst){
+    #print(i)
+
+    reply <- GET('https://developers.onemap.sg/commonapi/search?',
+           query = list(searchVal = addr,
+                        returnGeom = 'Y',
+                        getAddrDetails = 'N'))
+    
+    output <- fromJSON(rawToChar(reply$content))
+    found <- output$found
+    res <- output$results
+    
+    # Create a new data frame for each address
+    new_row <- data.frame()
+    
+    # If single result, append 
+    if (found >= 1){
+      res_1 <- head(res, n = 1)
+      x <- res_1$X
+      y <- res_1$Y
+      new_row <- data.frame(address = addr, x = x, y = y)
+    }
+
+    else {
+      new_row <- data.frame(address = addr, x = NA, y = NA)
+    }
+    
+    # Add the row
+    new_coords <- rbind(new_coords, new_row)
+  }
+  return(new_coords)
+}
+```
+
+</div>
+
+### Call get_coordinates() Function to Obtain Coordinates
+
+We use *get_coordinates()* function created earlier to obtain the coordinates of the address. *glimpse()* allows us to view and check if the data has been properly created.
+
+RDS Scripts contains scripts to import/export the coordinates R objects to RDS file format (R Data Serialisation) prevent having to call the API each time on every render.
+
+::: panel-tabset
+## get_coordinates() Function
+
+CHAS Clinics
+
+```{r eval=FALSE}
+coords_chas <- get_coordinates(addr_lst.chas)
+```
+
+HDB HIP MUP
+
+```{r eval=FALSE}
+coords_hipmup <- get_coordinates(addr_lst.hipmup)
+```
+
+HDB Resale Flat Pricing
+
+```{r eval=FALSE}
+coords_resale <- get_coordinates(addr_lst.resale)
+```
+
+## RDS Scripts
+
+Writing RDS
+
+```{r eval=FALSE}
+write_rds(coords_chas, "Take-Home_Ex03/rds/coords_chas.rds")
+write_rds(coords_hipmup, "Take-Home_Ex03/rds/coords_hipmup.rds")
+write_rds(coords_resale, "Take-Home_Ex03/rds/coords_resale.rds")
+```
+
+Reading RDS
+
+```{r}
+coords_chas <- read_rds("Take-Home_Ex03/rds/coords_chas.rds")
+coords_hipmup <- read_rds("Take-Home_Ex03/rds/coords_hipmup.rds")
+coords_resale <- read_rds("Take-Home_Ex03/rds/coords_resale.rds")
+```
+
+## Glimpse Records
+
+CHAS Clinics
+
+```{r}
+glimpse(coords_chas)
+```
+
+HDB HIP MUP
+
+```{r}
+glimpse(coords_hipmup)
+```
+
+HDB Resale Flat Pricing
+
+```{r}
+glimpse(coords_resale)
+```
+:::
+
+## Data Verification for Coordinate Data
+
+With the retrieved data, we need to inspect and verify the data received and correct any errors made along the way. We will do all the steps in parallel for each dataset, outlined in step format below:
+
+1.  Merge coordinate data and original dataframe
+    -   We do this as the CHAS Clinics coordinates are derived from Postal Code and it might be hard to figure out which place are we looking at by looking at just the postal code
+2.  Check for `NA` X/Y values and manually amend if required
+3.  Convert DataFrame into a sf Object
+4.  Plot a tmap and check if points are plotted in the correct regions
+
+At any step if there are issues, we will detail steps to fix or recover from it.
+
+### CHAS Clinics
+
+1.  Merge Coordinate Data and Original Dataframe
+
+    ```{r}
+    temp_chas <- left_join(CHAS_raw, coords_chas, by=c("Postal" = "address"))
+    ```
+
+2.  Check for `NA` X/Y values and manually amend if required
+
+    ```{r}
+    filter(temp_chas, is.na(x) == TRUE)
+    ```
+
+    Here, using *filter()* and *is.na()*, we find out which records do not have a valid location assigned to it. Now, let us manually check through the records and fix the issue.
+
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
+    | CHAS Clinic Address                                                     | Issue                                                                        |
+    +=========================================================================+==============================================================================+
+    | 189, Selegie Road, Selegie Centre, #01- 05, Singapore 188332            | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
+    | 140, Corporation Drive, #01- 03                                         | Postal Code number **610140** according to OneMap, we will amend accordingly |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
+    | 6, Gemmill Lane                                                         | Postal Code number **069249** according to OneMap, we will amend accordingly |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
+    | 102, Yishun Avenue 5, #01- 133, Singapore\\r\\n760102                   | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
+    | 34, Craig Road, Chinatown Plaza, #01- 04,\\r\\nSingapore 089673         | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
+    | 1, Rochor Road, Rochor Centre, #03- 516,\\r\\nSingapore 180001          | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
+    | 51, TAMPINES AVENUE 4, OUR TAMPINES\\r\\nHUB, #B1- 04/05                | Records are appended as **528523** on OneMap, we will amend accordingly      |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
+    | 50, Market Street, Golden Shoe Car Park,\\r\\n#01- 30, Singapore 048940 | No longer exists based on OneMap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
+
+    Now, let us update
+
+    ::: panel-tabset
+    ## 1. Update Records
+
+    We remove the clinics that are non-existent using *filter()*
+
+    ```{r}
+    chas_updated <- filter(CHAS_raw, !Address %in%
+      c("189, Selegie Road, Selegie Centre, #01- 05,\r\nSingapore 188332",
+        "102, Yishun Avenue 5, #01- 133, Singapore\r\n760102",
+        "34, Craig Road, Chinatown Plaza, #01- 04,\r\nSingapore 089673",
+        "1, Rochor Road, Rochor Centre, #03- 516,\r\nSingapore 180001",
+        "50, Market Street, Golden Shoe Car Park,\r\n#01- 30, Singapore 048940"))
+    ```
+
+    Next, we use *mutate()* and *ifelse()* condition to update the Postal Codes of the clinics at the relavant addresses.
+
+    ```{r}
+    chas_updated <- chas_updated %>% 
+      mutate(Postal = ifelse(Address == "140, Corporation Drive, #01- 03", "610140", Postal)) %>%
+      mutate(Postal = ifelse(Address == "6, Gemmill Lane", "069249", Postal)) %>%
+      mutate(Postal = ifelse(Address == "51, TAMPINES AVENUE 4, OUR TAMPINES\r\nHUB, #B1- 04/05", "528523", Postal))
+    ```
+
+    Lastly, we regenerate the list of unique Postal Codes to be geocoded.
+
+    ```{r}
+    addr_lst.chas_upd <- sort(unique(chas_updated$Postal))
+    glimpse(addr_lst.chas_upd)
+    ```
+
+    ## 2. Rerun get_coordinates()
+
+    We get the SVY21 X,Y coordinates using our *get_coordinates()* function
+
+    ```{r eval=FALSE}
+    coords_chas_upd <- get_coordinates(addr_lst.chas_upd)
+    ```
+
+    Saving the DataFrame as .rds for future use to prevent rerunning *get_coordinates()* GET API everytime a render is run
+
+    ```{r eval=FALSE}
+    write_rds(coords_chas_upd, "Take-Home_Ex03/rds/coords_chas_upd.rds")
+
+    ```
+
+    Load the DataFrame from .rds
+
+    ```{r}
+    coords_chas_upd <- read_rds("Take-Home_Ex03/rds/coords_chas_upd.rds")
+
+    ```
+
+    ## 3. Combine DataFrame and verify
+
+    We left join the `chas_updated` main table and coordinates and filter the `x` column for any null values
+
+    ```{r}
+    temp_chas <- left_join(chas_updated, coords_chas_upd, by=c("Postal" = "address"))
+    filter(temp_chas, is.na(x) == TRUE)
+    ```
+
+    No null values found, we have completed this step!
+    :::
+
+3.  Convert a DataFrame into a sf Object
+
+    We specify the SVY21 X and Y coordinates to be used as the coordinate geometry. The `crs` specified is `3414` which refers to `SVY21`.
+
+    ```{r}
+    chas_sf <- st_as_sf(temp_chas,
+                            coords = c("x", "y"),
+                            crs = 3414)
+    ```
+
+4.  Plot a tmap and check if points are plotted in the correct regions
+
+    Now, we will plot an interactive tmap to check if our points are correct.
+
+    ```{r}
+    tmap_mode("view")
+    tm_shape(chas_sf) +
+      tm_dots("Type",
+              popup.vars=c("Name"="Name", "Address"="Address", "Type" = "Type", "Telephone" = "Telephone"))
+    ```
+
+    From our analysis, the points looks to be correctly located.
+
+### HDB HIP MUP
+
+1.  Merge Coordinate Data and Original Dataframe
+
+    ```{r}
+    temp_hdb_hip_mup <- left_join(hdb_hip_mup_trans, coords_hipmup, by=c("address" = "address"))
+    ```
+
+2.  Check for `NA` X/Y values and manually amend if required
+
+    ```{r}
+    filter(temp_hdb_hip_mup, is.na(x) == TRUE)
+    ```
+
+    Here, using *filter()* and *is.na()*, we find out which records do not have a valid location assigned to it. Now, let us manually check through the records and fix the issue.
+
+    +--------------------+-------------------------------------------------------------------+
+    | HDB Address        | Issue                                                             |
+    +====================+===================================================================+
+    | 5 BANDA ST         | OneMap recognises it as 5 BANDA STREET, we will amend accordingly |
+    +--------------------+-------------------------------------------------------------------+
+    | 116 ALJUNIED AVE 4 | Address is **116 ALJUNIED AVE 2**, we will amend accordingly      |
+    +--------------------+-------------------------------------------------------------------+
+    | 119 ALJUNIED AVE 5 | Address is **119 ALJUNIED AVE 2**, we will amend accordingly      |
+    +--------------------+-------------------------------------------------------------------+
+
+    : Now, let us update
+
+    ::: panel-tabset
+    ## 1. Update Records
+
+    We use *mutate()* and *ifelse()* condition to update the Postal Codes of the clinics at the relavant addresses.
+
+    ```{r}
+    hdb_hip_mup_trans_upd <- hdb_hip_mup_trans %>% 
+      mutate(address = ifelse(address == "5 BANDA ST", "5 BANDA STREET", address)) %>%
+      mutate(STREET = ifelse(STREET == "BANDA ST", "BANDA STREET", STREET)) %>%
+      mutate(STREET = ifelse(STREET == "ALJUNIED AVE 4" & BLK == "116", "ALJUNIED AVE 4", STREET)) %>%
+      mutate(address = ifelse(address == "116 ALJUNIED AVE 4", "116 ALJUNIED AVE 2", address)) %>%
+      mutate(address = ifelse(address == "119 ALJUNIED AVE 5", "119 ALJUNIED AVE 2", address)) %>%
+      mutate(street_name = ifelse(STREET == "ALJUNIED AVE 5" & BLK == "119", "ALJUNIED AVE 2", STREET))
+    ```
+
+    Lastly, we regenerate the list of unique Postal Codes to be geocoded.
+
+    ```{r}
+    addr_lst.hipmup_upd <- sort(unique(hdb_hip_mup_trans_upd$address))
+    glimpse(addr_lst.hipmup_upd)
+    ```
+
+    ## 2. Rerun get_coordinates()
+
+    We get the SVY21 X,Y coordinates using our *get_coordinates()* function
+
+    ```{r eval=FALSE}
+    coords_hipmup_upd <- get_coordinates(addr_lst.hipmup_upd)
+    ```
+
+    Saving the DataFrame as .rds for future use to prevent rerunning *get_coordinates()* GET API everytime a render is run
+
+    ```{r eval=FALSE}
+    write_rds(coords_hipmup_upd, "Take-Home_Ex03/rds/coords_hipmup_upd.rds")
+
+    ```
+
+    Load the DataFrame from .rds
+
+    ```{r}
+    coords_hipmup_upd <- read_rds("Take-Home_Ex03/rds/coords_hipmup_upd.rds")
+
+    ```
+
+    ## 3. Combine DataFrame and verify
+
+    We left join the `hdb_hip_mup_trans_upd` main table and coordinates and filter the `x` column for any null values
+
+    ```{r}
+    temp_hdb_hip_mup <- left_join(hdb_hip_mup_trans_upd, coords_hipmup_upd, by=c("address" = "address"))
+    filter(temp_hdb_hip_mup, is.na(x) == TRUE)
+    ```
+
+    No null values found, we have completed this step!
+    :::
+
+3.  Convert a DataFrame into a sf Object
+
+    We specify the SVY21 X and Y coordinates to be used as the coordinate geometry. The `crs` specified is `3414` which refers to `SVY21`.
+
+    ```{r}
+    hdb_hip_mup_sf <- st_as_sf(temp_hdb_hip_mup,
+                            coords = c("x", "y"),
+                            crs = 3414)
+    ```
+
+4.  Plot a tmap and check if points are plotted in the correct regions
+
+    Now, we will plot an interactive tmap to check if our points are correct.
+
+    ```{r}
+    tmap_mode("view")
+    tm_shape(hdb_hip_mup_sf) +
+      tm_dots("TYPE",
+              popup.vars=c("BLK"="BLK", "STREET"="STREET", "TYPE" = "TYPE", "TOWN" = "TOWN"))
+    ```
+
+    From our analysis, the points looks to be correctly located.
+
+### HDB Resale Flat Pricing
+
+1.  Merge Coordinate Data and Original Dataframe
+
+    ```{r}
+    temp_hdb_resale_trans <- left_join(hdb_resale_trans, coords_resale, by=c("address" = "address"))
+    ```
+
+2.  Check for `NA` X/Y values and manually amend if required
+
+    ```{r}
+    filter(temp_hdb_resale_trans, is.na(x) == TRUE)
+    ```
+
+    No `NA` values, great!
+
+3.  Convert a DataFrame into a sf Object
+
+    We specify the SVY21 X and Y coordinates to be used as the coordinate geometry. The `crs` specified is `3414` which refers to `SVY21`.
+
+    ```{r}
+    hdb_resale_sf <- st_as_sf(temp_hdb_resale_trans,
+                            coords = c("x", "y"),
+                            crs = 3414)
+    ```
+
+4.  Plot a tmap and check if points are plotted in the correct regions
+
+    Now, we will plot an interactive tmap to check if our points are correct. We overlay the URA Master Plan Regions for a quick overlay to roughly check if the HDBs are located in the correct areas. Do note that HDB Towns differ from URA Planning Areas.
+
+    ```{r}
+    tmap_mode("view")
+    tmap_options(check.and.fix = TRUE)
+    tm_shape(mpsz) +
+      tm_polygons("REGION_N",
+                  alpha = 0.5) +
+    tm_shape(hdb_resale_sf) +
+      tm_dots("town",
+              popup.vars=c("block"="block", "street_name"="street_name", "flat_model" = "flat_model", "town" = "town", "resale_price" = "resale_price", "remaining_lease_mths", "remaining_lease_mths"))
+    ```
+
+    Oddly, 27 Marine Cres appeared as a point on Sembcorp Marine Tuas Crescent and 54 Kent Rd somehow appeared on 54J SOUTH BUONA VISTA ROAD KENT RIDGE HILL RESIDENCES. There are also some other differences, so let us now recode some of the addresses to get them to the right locations:
+
+    ::: panel-tabset
+    ## 1. Update Records
+
+    We use *mutate()* to replace the existing addresses with more specific ones that we found on OneMap.
+
+    ```{r}
+    mod_hdb_resale_trans <- hdb_resale_trans %>% 
+      mutate(address = ifelse(address == "10 JLN BATU", "10 JALAN BATU DI TANJONG RHU", address)) %>%
+      mutate(address = ifelse(address == "11 JLN BATU", "11 JALAN BATU DI TANJONG RHU", address)) %>%     
+      mutate(address = ifelse(address == "54 KENT RD", "54 KENT ROAD KENT VILLE", address)) %>%    
+      mutate(address = ifelse(address == "27 MARINE CRES", "27 MARINE CRESCENT MARINE CRESCENT VILLE", address))
+    ```
+
+    ```{r}
+    temp_hdb_resale_trans <- left_join(mod_hdb_resale_trans, coords_resale, by=c("address" = "address"))
+    ```
+
+    Lastly, we regenerate the list of unique Postal Codes to be geocoded.
+
+    ```{r}
+    addr_lst.resale_upd <- sort(unique(mod_hdb_resale_trans$address))
+    glimpse(addr_lst.resale_upd)
+    ```
+
+    ## 2. Rerun get_coordinates()
+
+    We get the SVY21 X,Y coordinates using our *get_coordinates()* function
+
+    ```{r eval=FALSE}
+    coords_resale_upd <- get_coordinates(addr_lst.resale_upd)
+    ```
+
+    Saving the DataFrame as .rds for future use to prevent rerunning *get_coordinates()* GET API everytime a render is run
+
+    ```{r eval=FALSE}
+    write_rds(coords_resale_upd, "Take-Home_Ex03/rds/coords_resale_upd.rds")
+
+    ```
+
+    Load the DataFrame from .rds
+
+    ```{r}
+    coords_resale_upd <- read_rds("Take-Home_Ex03/rds/coords_resale_upd.rds")
+
+    ```
+
+    ## 3. Combine DataFrame and verify
+
+    We left join the `hdb_hip_mup_trans_upd` main table and coordinates and filter the `x` column for any null values
+
+    ```{r}
+    temp_hdb_resale_trans <- left_join(mod_hdb_resale_trans, coords_resale_upd, by=c("address" = "address"))
+    filter(temp_hdb_resale_trans, is.na(x) == TRUE)
+    ```
+
+    No null values found, we have completed this step!
+
+    ## 4. Convert a DataFrame into a sf Object
+
+    ```{r}
+    hdb_resale_sf <- st_as_sf(temp_hdb_resale_trans,
+                            coords = c("x", "y"),
+                            crs = 3414)
+    ```
+
+    ## 5. Plot a tmap and check if points are plotted in the correct regions
+
+    ```{r}
+    tmap_mode("view")
+    tmap_options(check.and.fix = TRUE)
+    tm_shape(mpsz) +
+      tm_polygons("REGION_N",
+                  alpha = 0.5) +
+    tm_shape(hdb_resale_sf) +
+      tm_dots("town",
+              popup.vars=c("block"="block", "street_name"="street_name", "flat_model" = "flat_model", "town" = "town", "resale_price" = "resale_price", "remaining_lease_mths", "remaining_lease_mths"))
+    ```
+    :::
 
 ```{r}
 #tmap_mode("view")
 #tm_shape(hdb_resale) +
 #  tm_dots("resale_price",
 #          popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))
-```
-
-```{r}
-mpsz = st_read(dsn = "Take-Home_Ex03/geospatial", layer="MPSZ-2019")
 ```
