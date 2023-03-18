@@ -3,6 +3,7 @@ title: "Take-Home Exercise 03: Predicting HDB Public Housing Resale Prices Using
 description: "Predicting HDB Public Housing Resale Prices Using Geographically Weighted Methods trained using Jan 2020 to Dec 2022 and tested with Jan to Feb 2023"
 author: "Teo Ren Jie"
 date: "3/12/2023"
+date-modified: "3/19/2023"
 number-sections: true
 categories: ["Take-Home Exercise", "sf", "readXL", "tidyverse", "tmap", "sfdep", "gifski"]
 title-block-banner: true
@@ -22,7 +23,7 @@ bal bla we are lookign at 5 storey HDB bla bla
 
 ## Objectives
 
-Exploratory Spatial Data Analysis (ESDA) hold tremendous potential to address complex problems facing society. In this study, you are tasked to apply appropriate Local Indicators of Spatial Association (LISA) and Emerging Hot Spot Analysis (EHSA) to undercover the spatio-temporal trends of COVID-19 vaccination in DKI Jakarta.
+ABC
 
 ## Tasks
 
@@ -35,7 +36,7 @@ In this take-home exercise, you are tasked to predict HDB resale prices at the s
 Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and funModeling.
 
 ```{r}
-pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite)
+pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite, onemapsgapi, rvest)
 ```
 
 The following packages assists us to accomplish the following:
@@ -56,42 +57,42 @@ The following packages assists us to accomplish the following:
 
 The following datasets would be used to create the predictive models using conventional OLS and GWR methods for HDB Resale Prices.
 
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Dataset Name                                | Remarks                                             | Source                                                                                                          |
-+=============================================+=====================================================+=================================================================================================================+
-| URA Master Plan 2019 Subzone Boundary       | For visualisation purposes                          | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-subzone-boundary-no-sea)                             |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| URA Master Plan 2019 Planning Area Boundary | For visualisation purposes and extract Central AreW | Prof Kam                                                                                                        |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| HDB Resale Flat Prices                      |                                                     | [data.gov.sg](https://data.gov.sg/dataset/resale-flat-prices)                                                   |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| HDB MUP/HIP Status                          | Manual Web Scraping                                 | [hdb.gov.sg](https://services2.hdb.gov.sg/webapp/BB33RESLSTATUS/BB33PReslStatusEnq.jsp)                         |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Childcare                                   |                                                     |                                                                                                                 |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Kindergartens                               |                                                     |                                                                                                                 |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Eldercare                                   |                                                     |                                                                                                                 |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Foodcourt/Hawker                            |                                                     |                                                                                                                 |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Supermarket                                 |                                                     |                                                                                                                 |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Current and Future MRT/LRT Stations         | Excludes Cross Region Line Punggol Branch           | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-rail-line-layer)                                     |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Future MRT Station (CRL Punggol Branch)     | Manually merge into MRT/LRT Station Dataset         | [wikipedia.org : Elias MRT Stn](https://en.wikipedia.org/wiki/Elias_MRT_station)\                               |
-|                                             |                                                     | [wikipedia.org : Riveria MRT Stn](https://en.wikipedia.org/wiki/Riviera_MRT/LRT_station)                        |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| MRT/LRT Railway Line                        | Filter elevated sections of MRT line                | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-rail-line-layer)                                     |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Bus Stops                                   |                                                     | [datamall.lta.gov.sg](https://datamall.lta.gov.sg/content/dam/datamall/datasets/Geospatial/BusStopLocation.zip) |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Parks                                       |                                                     |                                                                                                                 |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Primary Schools                             |                                                     |                                                                                                                 |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| CHAS Clinics                                | Extracted using Excel from PDF                      | [chas.sg](https://www.chas.sg/clinic-locator)                                                                   |
-+---------------------------------------------+-----------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Dataset Type | Dataset Name                            | Remarks                                                                                                                                                              | Source                                                                                                          |
++==============+=========================================+======================================================================================================================================================================+=================================================================================================================+
+| Geospatial   | URA Master Plan 2019 Subzone Boundary   | For visualisation purposes and extract Central Area                                                                                                                  | Prof Kam                                                                                                        |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Aspatial     | HDB Resale Flat Prices                  |                                                                                                                                                                      | [data.gov.sg](https://data.gov.sg/dataset/resale-flat-prices)                                                   |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Aspatial     | HDB MUP/HIP Status                      | Manual Web Scraping                                                                                                                                                  | [hdb.gov.sg](https://services2.hdb.gov.sg/webapp/BB33RESLSTATUS/BB33PReslStatusEnq.jsp)                         |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Childcare                               |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                      |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Kindergartens                           |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                      |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Eldercare                               |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                      |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Foodcourt/Hawker                        |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                      |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Supermarket                             |                                                                                                                                                                      | [onemap.sg](onemap.sg)                                                                                          |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Current and Future MRT/LRT Stations     | Excludes Cross Region Line Punggol Branch                                                                                                                            | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-rail-line-layer)                                     |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| \-           | Future MRT Station (CRL Punggol Branch) | Manually merge into MRT/LRT Station Dataset                                                                                                                          | [wikipedia.org : Elias MRT Stn](https://en.wikipedia.org/wiki/Elias_MRT_station)\                               |
+|              |                                         |                                                                                                                                                                      | [wikipedia.org : Riveria MRT Stn](https://en.wikipedia.org/wiki/Riviera_MRT/LRT_station)                        |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Geospatial   | MRT/LRT Railway Line                    | Filter elevated sections of MRT line                                                                                                                                 | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-rail-line-layer)                                     |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Bus Stops                               |                                                                                                                                                                      | [datamall.lta.gov.sg](https://datamall.lta.gov.sg/content/dam/datamall/datasets/Geospatial/BusStopLocation.zip) |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Parks                                   | We consider the rail corridor, nature reserves and parks as parks as they are for leisure purposes.                                                                  | [data.gov.sg](https://data.gov.sg/dataset/nparks-parks-and-nature-reserves)                                     |
+|              |                                         |                                                                                                                                                                      |                                                                                                                 |
+|              |                                         | Also, we will prefer polygons of parks as we can calculate the actual proximity to the edges of the parks instead of to an arbitary point in the centre of the park. |                                                                                                                 |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Primary Schools                         | Requires special handling                                                                                                                                            | onemap.sg json                                                                                                  |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
+| Aspatial     | CHAS Clinics                            | Extracted using Excel from PDF                                                                                                                                       | [chas.sg](https://www.chas.sg/clinic-locator)                                                                   |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
 
 ## Data Fields
 
@@ -169,23 +170,321 @@ The data fields we are looking to incorporate and work with in our predictive mo
     -   The metric is necessary as LRT serves as a feeder within the town and is typically used short-haul vs MRT which is between various towns. The 350m metric is derived from Bus Stops differentiates the weight between a LRT stop and MRT stop especially if the LRT stop is far away from the MRT stop in towns such as Sengkang, Punggol and Pasir Ris
 :::
 
-# Master Plan Subzone Geospatial Data
+# Data Wrangling: Geospatial Data
 
-## Importing Master Plan Subzone 2019
+There are two categories of datasets we will need for our analysis, these includes:
+
+-   Datasets that has been downloaded - These files are already downloaded into a local location
+
+-   Datasets that are retrieved over API - We need to obtain the datasets using API Calls
+
+## Retrieving Data from API Calls
+
+There are some data that we need to retreive using API calls from [onemap.sg](onemap.sg). OneMap offers additional data from different government agencies through [Themes](https://www.onemap.gov.sg/docs/#themes). For R, the [onemapsgapi](https://cran.r-project.org/web/packages/onemapsgapi/onemapsgapi.pdf) package helps us with the API calls with onemap.sg servers to obtain the data we require.
+
+Using onemapsgapi is pretty simple as shown below:
+
+```{r eval=FALSE}
+token <- "" # enter authentication token obtained from onemap
+search_themes(token, "<searchterm>") %>% print(n=Inf)
+tibble <- get_theme(token, "<queryname>")
+sf <- st_as_sf(tibble, coords=c("Lng", "Lat"), crs=4326)
+```
+
+-   *search_themes()* - Search for various thematic layers provided by onemap (eg. Parks). A tibble dataframe will be provided with more details of the layer, such as the `THEMENAME`, `QUERYNAME`, `ICON`, `CATEGORY` and `THEME_OWNER`
+
+-   *get_theme()* - Using the desired theme's `QUERYNAME` obtained from *search_themes()*, we can obtain the thematic data in a tibble dataframe. We will need to use st_as_sf to specify the `Lat`, `Lng` and crs to obtain it as a sf dataframe.
+
+Listed below are a list of layers we need to obtain:
+
+-   Childcare
+
+-   Kindergartens
+
+-   Eldercare
+
+-   Foodcourt/Hawker Centres
+
+In the code block below, we will assume to have used *search_themes()* to pick the specific themes we want, to load them. The justification will be listed below.
+
+::: panel-tabset
+## Obtain Data
+
+Childcare
+
+```{r eval=FALSE}
+childcare_tibble <- get_theme(token, "childcare")
+childcare_sf <- st_as_sf(childcare_tibble, coords=c("Lng", "Lat"), crs=4326)
+```
+
+Kindergartens
+
+```{r eval=FALSE}
+kindergartens_tibble <- get_theme(token, "kindergartens")
+kindergartens_sf <- st_as_sf(kindergartens_tibble, coords=c("Lng", "Lat"), crs=4326)
+```
+
+Eldercare
+
+```{r eval=FALSE}
+eldercare_tibble <- get_theme(token, "eldercare")
+eldercare_sf <- st_as_sf(eldercare_tibble, coords=c("Lng", "Lat"), crs=4326)
+```
+
+Foodcourt/Hawker Centre
+
+```{r eval=FALSE}
+hawker_tibble <- get_theme(token, "hawkercentre_new")
+hawker_sf <- st_as_sf(hawker_tibble, coords=c("Lng", "Lat"), crs=4326)
+```
+
+## RDS Scripts (Save)
+
+```{r eval=FALSE}
+write_rds(childcare_sf, "Take-Home_Ex03/rds/childcare_sf.rds")
+write_rds(kindergartens_sf, "Take-Home_Ex03/rds/kindergartens_sf.rds")
+write_rds(eldercare_sf, "Take-Home_Ex03/rds/eldercare_sf.rds")
+write_rds(hawker_sf, "Take-Home_Ex03/rds/hawker_sf.rds")
+```
+:::
+
+## Obtaining Schools Data
+
+Obtaining school data from OneMap is a bit tricky, it was not available through OneMap themes or a download link through the OneMap website. However, through clicking through the Query Schools function on the map using using 'Inspect Element', we could see that a GET request is called to obtain the map data as json (as seen in the screenshot below):
+
+![](Take-Home_Ex03/geospatial/onemap-schools-1.png)
+
+By opening the link, we could see that it is an undocumented public API that OneMap uses to retrieve map data regarding Primary Schools. The results are in json as shown below:
+
+![](Take-Home_Ex03/geospatial/onemap-schools-2.png)
+
+The data has been downloaded and will be processed into tibble format using *json_lite* *fromJSON()* which will import the JSON file and convert it into tibble dataframe.
+
+```{r}
+schools_tibble <- fromJSON("Take-Home_Ex03/geospatial/retrieveAllSchools.json")[["SearchResults"]]
+glimpse(schools_tibble)
+```
+
+As we can see the want to exclude the column `PageCount` and the first row as it is not relavant to our dataset. The code chunk below will perform the above for us:
+
+```{r}
+schools_tibble <- select(schools_tibble,-"PageCount")
+schools_tibble <- schools_tibble[-1,]
+```
+
+Next, we will convert the tibble dataframe to sf dataframe. Since X and Y coordinates are provided for us (SVY21) in the columns `SCH_Y_ADDR` and `SCH_X_ADDR`, we will use them instead of the `Lng` and `Lat` as SVY21 (Projected Coordinate System) will allow us to perform our analysis directly.
+
+```{r}
+schools_sf_3414 <- st_as_sf(schools_tibble, coords=c("SCH_X_ADDR", "SCH_Y_ADDR"), crs=3414)
+```
+
+Now, we will save the data imported as RDS file format (R Data Serialisation).
+
+```{r eval=FALSE}
+write_rds(schools_sf_3414, "Take-Home_Ex03/rds/schools_sf_3414.rds")
+```
+
+## Importing Geospatial Data
+
+::: panel-tabset
+## Downloaded
+
+Master Plan Subzone 2019
 
 ```{r}
 mpsz = st_read(dsn = "Take-Home_Ex03/geospatial", layer="MPSZ-2019")
 ```
 
-## Transforming Master Plan Subzone 2019
+Current and Future MRT/LRT Stations
+
+```{r}
+geo_mrt_lrt_stn = st_read(dsn = "Take-Home_Ex03/geospatial/master-plan-2019-rail-station-layer-kml.kml")
+```
+
+MRT/LRT Railway Line
+
+```{r}
+geo_railway_line = st_read(dsn = "Take-Home_Ex03/geospatial/rail-line.kml")
+```
+
+Bus Stops
+
+```{r}
+geo_bus_stop = st_read(dsn = "Take-Home_Ex03/geospatial", layer="BusStop")
+```
+
+Parks
+
+```{r}
+geo_parks = st_read(dsn = "Take-Home_Ex03/geospatial/nparks-parks-and-nature-reserves-kml.kml")
+```
+
+Supermarket
+
+```{r}
+geo_supermarkets = st_read(dsn = "Take-Home_Ex03/geospatial", layer="Supermarkets")
+```
+
+## Other Data (RDS)
+
+```{r}
+geo_schools <- read_rds("Take-Home_Ex03/rds/schools_sf_3414.rds")
+geo_childcare <- read_rds("Take-Home_Ex03/rds/childcare_sf.rds")
+geo_eldercare <- read_rds("Take-Home_Ex03/rds/eldercare_sf.rds")
+geo_hawker <- read_rds("Take-Home_Ex03/rds/hawker_sf.rds")
+geo_kindergartens <- read_rds("Take-Home_Ex03/rds/kindergartens_sf.rds")
+```
+:::
+
+## Transforming Coordinate Systems
+
+For datasets in `WGS84` Geodetic Coordinate System, we need to convert them to `SVY21` Projected Coordinate System to perform our analysis. Inferring form the information above, we will use the code chunk below to confirm all of them.
+
+::: panel-tabset
+## Transform
 
 ```{r}
 mpsz <- st_transform(mpsz,3414)
+geo_mrt_lrt_stn <- st_transform(geo_mrt_lrt_stn,3414)
+geo_railway_line <- st_transform(geo_railway_line,3414)
+geo_parks <- st_transform(geo_parks,3414)
+geo_supermarkets <- st_transform(geo_supermarkets,3414)
+geo_childcare <- st_transform(geo_childcare,3414)
+geo_eldercare <- st_transform(geo_eldercare,3414)
+geo_hawker <- st_transform(geo_hawker,3414)
+geo_kindergartens <- st_transform(geo_kindergartens,3414)
 ```
+
+## Check
+
+Master Plan Subzone 2019
+
+```{r}
+mpsz
+```
+
+Current and Future MRT/LRT Stations
+
+```{r}
+geo_mrt_lrt_stn
+```
+
+MRT/LRT Railway Line
+
+```{r}
+geo_railway_line
+```
+
+Parks
+
+```{r}
+geo_parks
+```
+
+Supermarkets
+
+```{r}
+geo_supermarkets
+```
+
+Childcare
+
+```{r}
+geo_childcare
+```
+
+Eldercare
+
+```{r}
+geo_eldercare
+```
+
+Hawker
+
+```{r}
+geo_hawker
+```
+
+Kindergartens
+
+```{r}
+geo_kindergartens
+```
+:::
+
+Great! Now everything is in `SVY21` Projected Coordinate System.
+
+## Fixing KML Data
+
+When we look at the MRT/LRT Station and Railway Line stations, we find that the labels are `KML_1`, `KML_2`, etc which are not useful for our analysis.
+
+```{r}
+glimpse(geo_mrt_lrt_stn)
+```
+
+```{r}
+glimpse(geo_railway_line)
+```
+
+Here, we can see that many of the attributes are nested in a HTML format under the `description` column, We will now fix the `KML` imported data for MRT/LRT Station and Railway Line datasets so we can access the attributes to filter it effectively for our further analysis. The code referenced is from [StackOverflow](https://stackoverflow.com/questions/50775357/how-to-read-in-kml-file-properly-in-r-or-separate-out-lumped-variables-into-col):
+
+```{r}
+attributes <- lapply(X = 1:nrow(geo_mrt_lrt_stn), 
+                     FUN = function(x) {
+
+                       geo_mrt_lrt_stn %>% 
+                         slice(x) %>%
+                         pull(Description) %>%
+                         read_html() %>%
+                         html_node("table") %>%
+                         html_table(header = TRUE, trim = TRUE, dec = ".", fill = TRUE) %>%
+                         as_tibble(.name_repair = ~ make.names(c("Attribute", "Value"))) %>% 
+                         pivot_wider(names_from = Attribute, values_from = Value)
+
+                     })
+geo_mrt_lrt_stn <- 
+  geo_mrt_lrt_stn %>%
+  bind_cols(bind_rows(attributes)) %>%
+  select(-Description)
+
+glimpse(geo_mrt_lrt_stn)
+```
+
+```{r}
+attributes <- lapply(X = 1:nrow(geo_railway_line), 
+                     FUN = function(x) {
+
+                       geo_railway_line %>% 
+                         slice(x) %>%
+                         pull(Description) %>%
+                         read_html() %>%
+                         html_node("table") %>%
+                         html_table(header = TRUE, trim = TRUE, dec = ".", fill = TRUE) %>%
+                         as_tibble(.name_repair = ~ make.names(c("Attribute", "Value"))) %>% 
+                         pivot_wider(names_from = Attribute, values_from = Value)
+
+                     })
+geo_railway_line <- 
+  geo_railway_line %>%
+  bind_cols(bind_rows(attributes)) %>%
+  select(-Description)
+
+glimpse(geo_railway_line)
+```
+
+Great now we have extracted the attributes into its own columns where we can use it for further analysis.
 
 # Data Wrangling: Aspatial Data
 
-\<list of datasets to import and handle\> and type of treatment
+We have three datasets that are Aspatial Data which only contains addresses of the locations. However, we cannot perform analysis without the coordinates of the datasets without its coordinates, hence, we need to geocode the data to retrieve its coordinates using onemap.
+
+These are the datasets that require further processing:
+
+-   CHAS Clinics
+
+-   HDB HIP MUP
+
+-   HDB Resale Flat Pricing
 
 ## Importing Aspatial Data
 
@@ -634,11 +933,11 @@ At any step if there are issues, we will detail steps to fix or recover from it.
               popup.vars=c("block"="block", "street_name"="street_name", "flat_model" = "flat_model", "town" = "town", "resale_price" = "resale_price", "remaining_lease_mths", "remaining_lease_mths"))
     ```
 
-    Oddly, 27 Marine Cres appeared as a point on Sembcorp Marine Tuas Crescent and 54 Kent Rd somehow appeared on 54J SOUTH BUONA VISTA ROAD KENT RIDGE HILL RESIDENCES. There are also some other differences, so let us now recode some of the addresses to get them to the right locations:
+    Oddly, 27 Marine Cres appeared as a point on Sembcorp Marine Tuas Crescent and 54 Kent Rd somehow appeared as a point on 54J SOUTH BUONA VISTA ROAD KENT RIDGE HILL RESIDENCES. There are also some other differences, so let us now recode some of the addresses to get them to the right locations:
 
     #### Fixing Data
 
-    ::: panel-tabset
+    ::: {.panel-tabset .column-screen-inset-left}
     ## 1. Update Records
 
     We use *mutate()* to replace the existing addresses with more specific ones that we found on OneMap.
@@ -723,3 +1022,7 @@ At any step if there are issues, we will detail steps to fix or recover from it.
 #  tm_dots("resale_price",
 #          popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))
 ```
+
+# Credits
+
+https://stackoverflow.com/questions/50775357/how-to-read-in-kml-file-properly-in-r-or-separate-out-lumped-variables-into-col
