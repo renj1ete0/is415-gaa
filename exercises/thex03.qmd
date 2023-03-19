@@ -1316,15 +1316,25 @@ At any step if there are issues, we will detail steps to fix or recover from it.
     Now, we will plot an interactive tmap to check if our points are correct. We overlay the URA Master Plan Regions for a quick overlay to roughly check if the HDBs are located in the correct areas. Do note that HDB Towns differ from URA Planning Areas.
 
     ```{r}
-    tmap_mode("view")
+    tmap_mode("plot")
     tmap_options(check.and.fix = TRUE)
-    tm_shape(mpsz) +
+    hdb_plot1 <- tm_shape(mpsz) +
       tm_polygons("REGION_N",
                   alpha = 0.5) +
     tm_shape(hdb_resale_sf) +
       tm_dots("town",
               popup.vars=c("block"="block", "street_name"="street_name", "flat_model" = "flat_model", "town" = "town", "resale_price" = "resale_price", "remaining_lease_mths", "remaining_lease_mths"))
+    tmap_save(hdb_plot1, "thex03_hdbplot1.html")
+
+    tmap_options(check.and.fix = TRUE)
+    tm_shape(mpsz) +
+      tm_polygons("REGION_N",
+                  alpha = 0.5) +
+    tm_shape(hdb_resale_sf) +
+      tm_dots("town")
     ```
+
+    [View Interactive Version of Map here](thex03_hdbplot1.html)!
 
     Oddly, 27 Marine Cres appeared as a point on Sembcorp Marine Tuas Crescent and 54 Kent Rd somehow appeared as a point on 54J SOUTH BUONA VISTA ROAD KENT RIDGE HILL RESIDENCES. There are also some other differences, so let us now recode some of the addresses to get them to the right locations:
 
@@ -1398,22 +1408,34 @@ At any step if there are issues, we will detail steps to fix or recover from it.
     ## 5. Plot a tmap and check if points are plotted in the correct regions
 
     ```{r}
-    tmap_mode("view")
+    tmap_mode("plot")
     tmap_options(check.and.fix = TRUE)
-    tm_shape(mpsz) +
+    hdb_plot2 <- tm_shape(mpsz) +
       tm_polygons("REGION_N",
                   alpha = 0.5) +
     tm_shape(hdb_resale_sf) +
       tm_dots("town",
               popup.vars=c("block"="block", "street_name"="street_name", "flat_model" = "flat_model", "town" = "town", "resale_price" = "resale_price", "remaining_lease_mths", "remaining_lease_mths"))
+    tmap_save(hdb_plot2, "thex03_hdbplot2.html")
+
+    tm_shape(mpsz) +
+      tm_polygons("REGION_N",
+                  alpha = 0.5) +
+    tm_shape(hdb_resale_sf) +
+      tm_dots("town")
     ```
+
+    [View Interactive Version of Map here](thex03_hdbplot2.html)!
+
+    Great! All the blocks looks to be plotted in the correct locations!
     :::
 
 ```{r}
 #tmap_mode("view")
 #tm_shape(hdb_resale) +
 #  tm_dots("resale_price",
-#          popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))
+#      
+#popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))
 ```
 
 # Credits
