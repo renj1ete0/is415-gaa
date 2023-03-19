@@ -343,11 +343,13 @@ For datasets in `WGS84` Geodetic Coordinate System, we need to convert them to `
 ::: panel-tabset
 ## Transform
 
+We use *st_zm()* on the kml datasets to remove the Z dimensions which will cause issues with analysis later as XY and XYZ data do not work well with one another.
+
 ```{r}
 mpsz <- st_transform(mpsz,3414)
-geo_mrt_lrt_stn <- st_transform(geo_mrt_lrt_stn,3414)
-geo_railway_line <- st_transform(geo_railway_line,3414)
-geo_parks <- st_transform(geo_parks,3414)
+geo_mrt_lrt_stn <- st_transform(st_zm(geo_mrt_lrt_stn),3414)
+geo_railway_line <- st_transform(st_zm(geo_railway_line),3414)
+geo_parks <- st_transform(st_zm(geo_parks),3414)
 geo_supermarkets <- st_transform(geo_supermarkets,3414)
 geo_childcare <- st_transform(geo_childcare,3414)
 geo_eldercare <- st_transform(geo_eldercare,3414)
@@ -473,6 +475,397 @@ glimpse(geo_railway_line)
 ```
 
 Great now we have extracted the attributes into its own columns where we can use it for further analysis.
+
+## Transforming and Modifying MRT/LRT Station Data
+
+Let us view `geo_mrt_lrt_stn` data on a map and the table and fix any NA values we might find:
+
+::: panel-tabset
+## Map
+
+```{r}
+tmap_mode("plot") +
+  tm_shape(mpsz) +
+  tm_polygons("REGION_N", alpha = 0.1, border.alpha = 0.1) +
+  tm_shape(geo_mrt_lrt_stn) +
+  tm_fill("RAIL_TYPE", palette =c("red", "blue")) +
+  tm_layout(legend.position = c("right", "bottom"), 
+          title= 'MRT/LRT Stations in Singapore', 
+          title.position = c('right', 'top'))
+```
+
+## Glimpse
+
+```{r}
+glimpse(geo_mrt_lrt_stn)
+```
+
+## Checking and fixing NA Values
+
+Filter and view data
+
+```{r}
+geo_stn_na <- filter(geo_mrt_lrt_stn,NAME == "")
+geo_stn_na
+```
+
+View on a map
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+tmap_mode("view") +
+  tm_shape(mpsz) +
+  tm_polygons("REGION_N", alpha = 0.1, border.alpha = 0.1) +
+  tm_shape(geo_stn_na) +
+  tm_fill("Name", palette =c("red", "blue"), popup.vars=c("NAME" = "NAME"))
+```
+
+From the map and data above, we can see 9 stations has its names missing as shown below:
+
+| Name (KML Name) | NAME (Station Name)          |
+|-----------------|------------------------------|
+| kml_74          | Imbiah (Sentosa Express)     |
+| kml_75          | Beach (Sentosa Express)      |
+| kml_77          | Downtown (DTL)               |
+| kml_80          | Chinatown (DTL)              |
+| kml_92          | Newton (DTL)                 |
+| kml_97          | Maxwell (TEL)                |
+| kml_107         | Waterfront (Sentosa Express) |
+| kml_150         | Marina East (TEL)            |
+| kml_203         | Orchard Boulevard (TEL)      |
+
+We don't want the Sentosa Express data as it serves more for leisure purpose. We will drop it from the dataframe later.
+
+Fixing Data
+
+```{r}
+geo_mrt_lrt_stn[geo_mrt_lrt_stn$Name == "kml_74", "NAME"] <- "IMBIAH"
+geo_mrt_lrt_stn[geo_mrt_lrt_stn$Name == "kml_75", "NAME"] <- "BEACH"
+geo_mrt_lrt_stn[geo_mrt_lrt_stn$Name == "kml_77", "NAME"] <- "DOWNTOWN"
+geo_mrt_lrt_stn[geo_mrt_lrt_stn$Name == "kml_80", "NAME"] <- "CHINATOWN"
+geo_mrt_lrt_stn[geo_mrt_lrt_stn$Name == "kml_92", "NAME"] <- "NEWTON"
+geo_mrt_lrt_stn[geo_mrt_lrt_stn$Name == "kml_97", "NAME"] <- "MAXWELL"
+geo_mrt_lrt_stn[geo_mrt_lrt_stn$Name == "kml_107", "NAME"] <- "WATERFRONT"
+geo_mrt_lrt_stn[geo_mrt_lrt_stn$Name == "kml_150", "NAME"] <- "MARINA SOUTH"
+geo_mrt_lrt_stn[geo_mrt_lrt_stn$Name == "kml_203", "NAME"] <- "ORCHARD BOULEVARD"
+```
+:::
+
+There are a few steps to obtaining the data in the format we want.
+
+We want the data in three dataframes:
+
+1.  Existing MRT stations - North South Line, East West Line, Changi Airport Line, North East Line, Circle Line, Downtown Line, Thomson East Coast Line 1, 2 and 3
+2.  Existing LRT stations - Bukit Panjang LRT, Sengkang LRT, Punggol LRT
+3.  Future MRT stations - Thomson East Coast Line 4, 5, Jurong Region Line, Cross Island Line 1, Punggol Extension (we need to manually insert the stations)
+
+The reason why Cross Island Line 2 was not included is that it is only [announced on 20 Sep 2022](https://www.lta.gov.sg/content/ltagov/en/newsroom/2022/9/news-releases/cross-island-line-phase-2.html) which is outside of our model data range. Hence, those stations would not have affected the housing prices in any way. We also want to exclude stations that do not have a definite opening date (Bukit Brown, Marina South and Mount Pleasant).
+
+There are also a few other hurdles we need to go through:
+
+1.  Interchange MRT stations have multiple polygons and records, we need to merge them
+2.  For our analysis, we want to convert the polygons to points to be able to perform our analysis.
+
+## Extraction of Data into Different DataFrames
+
+::: panel-tabset
+## Future MRT
+
+```{r}
+FUTURE_MRT = c("CHOA CHU KANG WEST", "TENGAH", "TENGAH PLANTATION", "TENGAH PARK", "BUKIT BATOK WEST", "TOH GUAN", "JURONG TOWN HALL", "PANDAN RESERVOIR", "HONG KAH", "CORPORATION", "JURONG WEST", "BAHAR JUNCTION", "GEK POH", "TAWAS", "NANYANG GATEWAY", "NANYANG CRESCENT", "PENG KANG HILL", "ENTERPRISE", "TUKANG", "JURONG HILL", "JURONG PIER", "FOUNDERS' MEMORIAL", "TANJONG RHU", "KATONG PARK", "TANJONG KATONG", "MARINE PARADE", "MARINE TERRACE", "SIGLAP", "BAYSHORE", "BEDOK SOUTH", "SUNGEI BEDOK", "XILIN", "AVIATION PARK", "LOYANG", "PASIR RIS EAST", "TAMPINES NORTH", "DEFU", "SERANGOON NORTH", "TAVISTOCK", "TECK GHEE", "HUME", "KEPPEL", "CANTONMENT", "PRINCE EDWARD ROAD", "PUNGGOL COAST")
+
+EXCLUDE = c("MARINA SOUTH", "BUKIT BROWN", "MOUNT PLEASANT", "WATERFRONT", "BEACH", "IMBIAH")
+
+geo_mrt_future <- geo_mrt_lrt_stn %>%
+  filter(NAME %in%  FUTURE_MRT)
+
+glimpse(geo_mrt_future)
+```
+
+Looks correct! We have 44 unique future MRT stations that are new (excludes new interchanges with existing lines), 1 unique station is Sungei Bedok which is an interchange on TEL and DTL, hence, 44 records.
+
+## Existing LRT
+
+```{r}
+geo_lrt <- geo_mrt_lrt_stn %>%
+  filter(RAIL_TYPE == "LRT") %>% filter(!NAME %in% EXCLUDE)
+
+glimpse(geo_lrt)
+```
+
+Looks correct! We have 42 LRT stations in Singapore.
+
+## Existing MRT
+
+```{r}
+geo_mrt_existing <- geo_mrt_lrt_stn %>%
+  filter(RAIL_TYPE == "MRT") %>% filter(!NAME %in% EXCLUDE) %>% filter(!NAME %in% FUTURE_MRT)
+geo_mrt_existing
+```
+
+By looking through the dataframe, the data looks correct!
+:::
+
+### Merging Polygons for Data Frame
+
+For `geo_mrt` which contains data of existing MRT stations, there are interchange stations which has seperate polygons. For example, Dhoby Ghaut MRT station is an interchange between 3 lines and hence has 3 polygons and records as seen below:
+
+```{r}
+filter(geo_mrt_existing, NAME == "DHOBY GHAUT INTERCHANGE")
+```
+
+We want to merge the records to obtain a single spatial point for each MRT station. Below, we will identify the interchange stations and merge their records and polgons manually.
+
+::: panel-tabset
+## Merge Functions
+
+Function to merge 2 and 3 rows respectively
+
+```{r}
+merge_2 <- function(df, kml_1, kml_2){
+  operation <- st_union(filter(df,  Name == kml_1), filter(df,  Name == kml_2))
+  operation <- select(operation, "geometry")
+  df[df$Name == kml_1, "geometry"] <- operation
+  df <- subset(df, Name != kml_2)
+  
+  return(df)
+}
+
+merge_3 <- function(df, kml_1, kml_2, kml_3){
+  operation <- st_union(filter(df,  Name == kml_1), filter(df,  Name == kml_2))
+  operation <- select(operation, c(0:6, "geometry"))
+  operation <- st_union(operation, filter(df,  Name == kml_3))
+  operation <- select(operation, "geometry")
+  df[df$Name == kml_1, "geometry"] <- operation
+  df <- subset(df, Name != kml_2)
+  df <- subset(df, Name != kml_3)
+  
+  return(df)
+}
+```
+
+## Merging Polygons
+
+The polygons are merged for the stations as indicated in the code block
+
+```{r}
+# ANG MO KIO
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_20", "kml_236")
+# BISHAN
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_43", "kml_247")
+# BOON LAY
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_180", "kml_205")
+# BOTANIC GARDENS
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_210", "kml_211")
+# BONUA VISTA
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_227", "kml_228")
+# CALDECOTT
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_231", "kml_232")
+# CHINATOWN
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_80", "kml_165")
+# CHOA CHU KANG
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_118", "kml_187")
+# DHOBY GHAUT
+geo_mrt_existing <- merge_3(geo_mrt_existing, "kml_156", "kml_157", "kml_158")
+# EXPO
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_108", "kml_174")
+# HARBOURFRONT
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_58", "kml_59")
+# HOUGANG
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_11", "kml_245")
+# JURONG EAST
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_135", "kml_136")
+# LITTLE INDIA
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_160", "kml_161")
+# MACPHERSON
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_222", "kml_223")
+# MARINA BAY
+geo_mrt_existing <- merge_3(geo_mrt_existing, "kml_68", "kml_78", "kml_147")
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_68", "kml_148")
+# NEWTON
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_72", "kml_92")
+# ORCHARD
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_98", "kml_154")
+# OUTRAM PARK
+geo_mrt_existing <- merge_3(geo_mrt_existing, "kml_100", "kml_151", "kml_251")
+# PASIR RIS
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_239", "kml_243")
+# PAYA LEBAR
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_153", "kml_212")
+# SERANGOON
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_8", "kml_10")
+# STEVENS
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_105", "kml_209")
+# TAMPINES
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_35", "kml_166")
+# WOODLANDS
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_64", "kml_169")
+# BUGIS
+geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_81", "kml_70")
+```
+
+That's right, we have 134 unique existing MRT stations
+:::
+
+### Converting Spatial Polygons to Spatial Points
+
+```{r}
+geo_mrt_existing <- st_centroid(geo_mrt_existing)
+geo_lrt <- st_centroid(geo_lrt)
+geo_mrt_future <- st_centroid(geo_mrt_future)
+```
+
+### Insert Cross Island Line Punggol Future Stations
+
+The Master Plan 2019 MRT/LRT Station data excludes the Cross Island Line Punggol Stations, so we have to add them. 2 New MRT stations (that are not an existing interchange station with existing lines needs to be added). These are: [Riveria](https://en.wikipedia.org/wiki/Riviera_MRT/LRT_station)and [Elias](https://en.wikipedia.org/wiki/Elias_MRT_station)
+
+```{r}
+new_df <- data.frame(Name = "kml_998", GRND_LEVEL = "UNDERGROUND", RAIL_TYPE = "MRT", NAME = "ELIAS", INC_CRC = "", FMEL_UPD_D = "", lng = "103.984", lat = "1.384")
+new_df_coords <- st_as_sf(new_df, coords = c("lng", "lat"), crs=4326) 
+new_df_coords <- new_df_coords %>% st_transform(3414)
+geo_mrt_future <- rbind(new_df_coords, geo_mrt_future)
+
+new_df <- data.frame(Name = "kml_999", GRND_LEVEL = "UNDERGROUND", RAIL_TYPE = "MRT", NAME = "RIVERIA", INC_CRC = "", FMEL_UPD_D = "", lng = "103.916772", lat = "1.394439")
+new_df_coords <- st_as_sf(new_df, coords = c("lng", "lat"), crs=4326) 
+new_df_coords <- new_df_coords %>% st_transform(3414)
+geo_mrt_future <- rbind(new_df_coords, geo_mrt_future)
+```
+
+### Verifying MRT/LRT Data
+
+```{r}
+tmap_mode("plot") +
+  tm_shape(mpsz) +
+  tm_polygons("REGION_N", alpha = 0.05, border.alpha = 0.05) +
+  tm_shape(geo_mrt_existing) +
+  tm_dots("RAIL_TYPE", palette = "darkgreen", title = "Existing MRT") +
+  tm_shape(geo_lrt) +
+  tm_dots("RAIL_TYPE", palette = "blue", title = "Existing LRT") +
+  tm_shape(geo_mrt_future) +
+  tm_dots("RAIL_TYPE", palette = "red", title = "Future MRT") +
+  tm_layout(legend.position = c("right", "bottom"), 
+            title= 'MRT/LRT Stations in Singapore', 
+            title.position = c('right', 'top'))
+```
+
+Everything looks to be plotted correctly.
+
+## Transforming Railway Line
+
+```{r}
+tmap_mode("plot") +
+  tm_shape(mpsz) +
+  tm_polygons("REGION_N", alpha = 0.05, border.alpha = 0.05) +
+  tm_shape(geo_railway_line) +
+  tm_lines(c("GRND_LEVEL", "RAIL_TYPE"), palette = c("red", "blue", "darkgreen")) +
+  tm_layout(legend.position = c("right", "bottom"), 
+            title= 'Railway Line in Singapore', 
+            title.position = c('right', 'top'))
+```
+
+As we can see from our tmap plot above, the dataset contains:
+
+1.  `GRND_LEVEL` - Whether the track segment is above or underground
+2.  `RAIL_TYPE` - Whether the track belongs to `LRT`, `MRT` or `RAILWAY` (KTM train)
+
+Do note that since the data is extracted from URA Master Plan 2019 Rail Line, we will be able to see all current and future rail lines (Thomson East Coast Lines Stages 4, 5, Cross Island Line 1, Jurong Region Line).
+
+For our analysis, we only want the above ground segments, seperated by `RAIL_TYPE` but excluding KTM data, as generally above ground segments affects residents the most. The reason why we seperate it by `RAIL_TYPE` is that LRT makes lesser noise than MRT and may not adversely impact housing prices as much as MRT. For MRTs, [NUS researchers](https://ireus.nus.edu.sg/mrt-and-property-value/) found that housing values were impacted by noise.
+
+The rationale of including future aboveground lines like the Jurong Region Line in our analysis is that housing prices could be affected by the construction or announcement of future MRT lines which may cause housing prices to fall.
+
+### Splitting MRT/LRT Datasets
+
+::: panel-tabset
+## Filter
+
+MRT
+
+```{r}
+geo_rail_mrt_above <- geo_railway_line %>% filter(GRND_LEVEL == "ABOVEGROUND") %>% filter(RAIL_TYPE == "MRT")
+```
+
+LRT
+
+```{r}
+geo_rail_lrt_above <- geo_railway_line %>% filter(GRND_LEVEL == "ABOVEGROUND") %>% filter(RAIL_TYPE == "LRT")
+```
+
+## Check
+
+MRT
+
+```{r}
+glimpse(geo_rail_mrt_above)
+```
+
+LRT
+
+```{r}
+glimpse(geo_rail_lrt_above)
+```
+:::
+
+### Verifying MRT/LRT Aboveground Railway Line
+
+```{r}
+tmap_mode("plot") +
+  tm_shape(mpsz) +
+  tm_polygons("REGION_N", alpha = 0.05, border.alpha = 0.05) +
+  tm_shape(geo_rail_mrt_above) +
+  tm_lines("RAIL_TYPE", palette = "red") +
+  tm_shape(geo_rail_lrt_above) +
+  tm_lines("RAIL_TYPE", palette = "blue") +
+  tm_layout(legend.position = c("right", "bottom"), 
+            title= 'MRT/LRT Track Line in Singapore', 
+            title.position = c('right', 'top'))
+```
+
+## Transform Parks Dataset
+
+Let us view our parks dataset
+
+```{r}
+glimpse(geo_parks)
+```
+
+```{r}
+tmap_mode("plot") +
+  tm_shape(mpsz) +
+  tm_polygons("REGION_N", alpha = 0.05, border.alpha = 0.05) +
+  tm_shape(geo_parks) +
+  tm_fill("darkgreen") +
+  tm_layout(legend.position = c("right", "bottom"), 
+            title= 'Parks in Singapore', 
+            title.position = c('right', 'top'))
+```
+
+Firstly, as we recognise that parks comes in different shapes and sizes. Parks like Punggol Waterway Park are long by nature and spans the entire width of Punggol. Hence, using a Spatial Points by obtaining its centroid is not the most accurate as the entire length is a park. Hence, we opt to use the park polygon instead.
+
+Our data is in the `MULTIPOLYGON` format. As we want to calculate the proximity from homes to the edges of parks, we need to convert it to `LINESTRING`. The code block uses *st_cast()* to help us cast the format from `MULTIPOLYGON` to `LINESTRING`
+
+```{r}
+geo_parks <- geo_parks %>% st_cast("MULTILINESTRING") %>% st_cast("LINESTRING")
+```
+
+Now, let us check and plot the map of the parks data.
+
+```{r}
+glimpse(geo_parks)
+```
+
+```{r}
+tmap_mode("plot") +
+  tm_shape(mpsz) +
+  tm_polygons("REGION_N", alpha = 0.05, border.alpha = 0.05) +
+  tm_shape(geo_parks) +
+  tm_lines("darkgreen") +
+  tm_layout(legend.position = c("right", "bottom"), 
+            title= 'Parks in Singapore', 
+            title.position = c('right', 'top'))
+```
+
+Great! We have successfully converted the data to `LINESTRING`!
 
 # Data Wrangling: Aspatial Data
 
