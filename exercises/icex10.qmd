@@ -1,0 +1,183 @@
+---
+title: "In-Class Exercise 10: Modelling Geographical Accessibility"
+description: "Modelling Geographical Accessibility"
+author: "Teo Ren Jie"
+date: "03/20/2023"
+number-sections: true
+categories: ["In-Class Exercise", "sf", "sfdep", "tidyverse", "tmap"]
+title-block-banner: true
+image: In-Class_Ex10/preview.png
+execute:
+  message: true
+  warning: true
+---
+
+# Getting Started
+
+## Installing and Loading Packages
+
+Pacman assists us by helping us load R packages that we require, `sf`, `SpatialAcc`, `tidyverse`, `reshape2`, `ggstatplot` and `tmap`.
+
+```{r}
+pacman::p_load(tmap, SpatialAcc, sf, ggstatsplot, reshape2, tidyverse, fca)
+```
+
+## Data Acquisition
+
+The following datasets are used:
+
+| Dataset Name                          | Source                     |
+|---------------------------------------|----------------------------|
+| URA Master Plan 2014 Subzone Boundary | [data.gov.sg](data.gov.sg) |
+| 250m Hexagon GIS Data                 | Prof Kam                   |
+| Eldercare                             | Prof Kam                   |
+| OD Matrix                             | Prof Kam                   |
+
+# Geospatial Data Wrangling
+
+## Importing Geospatial Data
+
+Using the code chunks below with *st_read()*, we will import the three datasets we require for our analysis.
+
+```{r}
+mpsz <- st_read(dsn = "In-Class_Ex10/data/geospatial", layer = "MP14_SUBZONE_NO_SEA_PL")
+```
+
+```{r}
+hexagons <- st_read(dsn = "In-Class_Ex10/data/geospatial", layer = "hexagons") 
+```
+
+```{r}
+eldercare <- st_read(dsn = "In-Class_Ex10/data/geospatial", layer = "ELDERCARE") 
+```
+
+## Updating CRS Information
+
+Next, since the imported data is in EPSG:4326 (WGS84), we need to convert it from Geodetic Coordinate System to Projected Coordinate System in EPSG:3414 (SVY21). The code chunk below will do that:
+
+```{r}
+mpsz <- st_transform(mpsz, 3414)
+eldercare <- st_transform(eldercare, 3414)
+hexagons <- st_transform(hexagons, 3414)
+```
+
+Next, we will verify if the CRS has been updated successfully to SVY21.
+
+```{r}
+st_crs(mpsz)
+```
+
+Yes, the CRS has been updated successfully to SVY21.
+
+## Cleaning and Verifying CRS Information
+
+As there are many redundant fields in both the `eldercare` and `hexagons` dataset, we will reduce the amount of columns to those necessary for our analysis. Next, we will create two columns, `capacity` for `eldercare` and `demand` for `hexagons` with a constant value of 100 for exercise purposes.
+
+Note that we should use the exact `capacity` and `demand` values in real world scenarios.
+
+```{r}
+eldercare <- eldercare %>%
+  select(fid, ADDRESSPOS) %>%
+  mutate(capacity = 100)
+```
+
+```{r}
+hexagons <- hexagons %>%
+  select(fid) %>%
+  mutate(demand = 100)
+```
+
+# Aspatial Data Handling and Wrangling
+
+## Importing Distance Matrix
+
+Next, we will use *read_csv()* to import the distance matrix for our analysis. The imported object is a tibble dataframe called `ODMatrix`
+
+```{r}
+ODMatrix <- read_csv("In-Class_Ex10/data/aspatial/OD_Matrix.csv", skip = 0)
+```
+
+## Tidying Distance Matrix
+
+By selecting the necessary columns and *pivot_wider()*, we convert the data into an OD matrix where the destination_ids are the column fields and origin_ids are the row fields.
+
+```{r}
+distmat <- ODMatrix %>%
+  select(origin_id, destination_id, total_cost) %>%
+  pivot_wider(names_from = destination_id, values_from = total_cost)%>%
+  select(c(-c('origin_id')))
+```
+
+As SVY21 is in metres, we will convert it to kilometres by dividing by 1000.
+
+```{r}
+distmat_km <- as.matrix(distmat/1000)
+```
+
+# Modelling and Visualising Accessibility using Hansen Method
+
+## Computing Hansen's Accessibility
+
+```{r}
+acc_Hansen <- data.frame(ac(hexagons$demand,
+                            eldercare$capacity,
+                            distmat_km, 
+                            #d0 = 50,
+                            power = 2, 
+                            family = "Hansen"))
+```
+
+The default field name is very long, let us rename it to `accHansen`.
+
+```{r}
+colnames(acc_Hansen) <- "accHansen"
+```
+
+Next, we will convert it into tibble format using the code below:
+
+```{r}
+acc_Hansen <- as_tibble(acc_Hansen)
+```
+
+Lastly, we use *bind_cols()* to joint the `acc_Hansen` tibble dataframe with the hexagons simple features dataframe below:\
+
+```{r}
+hexagon_Hansen <- bind_cols(hexagons, acc_Hansen)
+```
+
+## Visualising Hansen's Accessibility
+
+### Extracting Map Extents
+
+Firstly, we will extract the map extents using the `hexagons` simple dataframe using *st_bbox()*
+
+```{r}
+mapex <- st_bbox(hexagons)
+```
+
+Using the code chunk below, we create a high quality cartographic map of accessibility to eldercare in Singapore.
+
+```{r}
+tmap_mode("plot")
+tm_shape(hexagon_Hansen,
+         bbox = mapex) + 
+  tm_fill(col = "accHansen",
+          n = 10,
+          style = "quantile",
+          border.col = "black",
+          border.lwd = 1) +
+tm_shape(eldercare) +
+  tm_symbols(size = 0.1) +
+  tm_layout(main.title = "Accessibility to eldercare: Hansen method",
+            main.title.position = "center",
+            main.title.size = 2,
+            legend.outside = FALSE,
+            legend.height = 0.45, 
+            legend.width = 3.0,
+            legend.format = list(digits = 6),
+            legend.position = c("right", "top"),
+            frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar(width = 0.15) +
+  tm_grid(lwd = 0.1, alpha = 0.5)
+```

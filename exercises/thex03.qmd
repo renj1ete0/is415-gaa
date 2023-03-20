@@ -1507,7 +1507,6 @@ At any step if there are issues, we will detail steps to fix or recover from it.
 
     Nice! All the malls seems to be in their right locations.
 
-
 ```{r}
 #tmap_mode("view")
 #tm_shape(hdb_resale) +
