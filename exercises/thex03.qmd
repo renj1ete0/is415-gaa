@@ -57,42 +57,44 @@ The following packages assists us to accomplish the following:
 
 The following datasets would be used to create the predictive models using conventional OLS and GWR methods for HDB Resale Prices.
 
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Dataset Type | Dataset Name                            | Remarks                                                                                                                                                              | Source                                                                                                          |
-+==============+=========================================+======================================================================================================================================================================+=================================================================================================================+
-| Geospatial   | URA Master Plan 2019 Subzone Boundary   | For visualisation purposes and extract Central Area                                                                                                                  | Prof Kam                                                                                                        |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Aspatial     | HDB Resale Flat Prices                  |                                                                                                                                                                      | [data.gov.sg](https://data.gov.sg/dataset/resale-flat-prices)                                                   |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Aspatial     | HDB MUP/HIP Status                      | Manual Web Scraping                                                                                                                                                  | [hdb.gov.sg](https://services2.hdb.gov.sg/webapp/BB33RESLSTATUS/BB33PReslStatusEnq.jsp)                         |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Geospatial   | Childcare                               |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                      |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Geospatial   | Kindergartens                           |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                      |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Geospatial   | Eldercare                               |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                      |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Geospatial   | Foodcourt/Hawker                        |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                      |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Geospatial   | Supermarket                             |                                                                                                                                                                      | [onemap.sg](onemap.sg)                                                                                          |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Geospatial   | Current and Future MRT/LRT Stations     | Excludes Cross Region Line Punggol Branch                                                                                                                            | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-rail-line-layer)                                     |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| \-           | Future MRT Station (CRL Punggol Branch) | Manually merge into MRT/LRT Station Dataset                                                                                                                          | [wikipedia.org : Elias MRT Stn](https://en.wikipedia.org/wiki/Elias_MRT_station)\                               |
-|              |                                         |                                                                                                                                                                      | [wikipedia.org : Riveria MRT Stn](https://en.wikipedia.org/wiki/Riviera_MRT/LRT_station)                        |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Geospatial   | MRT/LRT Railway Line                    | Filter elevated sections of MRT line                                                                                                                                 | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-rail-line-layer)                                     |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Geospatial   | Bus Stops                               |                                                                                                                                                                      | [datamall.lta.gov.sg](https://datamall.lta.gov.sg/content/dam/datamall/datasets/Geospatial/BusStopLocation.zip) |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Geospatial   | Parks                                   | We consider the rail corridor, nature reserves and parks as parks as they are for leisure purposes.                                                                  | [data.gov.sg](https://data.gov.sg/dataset/nparks-parks-and-nature-reserves)                                     |
-|              |                                         |                                                                                                                                                                      |                                                                                                                 |
-|              |                                         | Also, we will prefer polygons of parks as we can calculate the actual proximity to the edges of the parks instead of to an arbitary point in the centre of the park. |                                                                                                                 |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Geospatial   | Primary Schools                         | Requires special handling                                                                                                                                            | onemap.sg json                                                                                                  |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
-| Aspatial     | CHAS Clinics                            | Extracted using Excel from PDF                                                                                                                                       | [chas.sg](https://www.chas.sg/clinic-locator)                                                                   |
-+--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------+
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Dataset Type | Dataset Name                            | Remarks                                                                                                                                                              | Source                                                                                                                   |
++==============+=========================================+======================================================================================================================================================================+==========================================================================================================================+
+| Geospatial   | URA Master Plan 2019 Subzone Boundary   | For visualisation purposes and extract Central Area                                                                                                                  | Prof Kam                                                                                                                 |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Aspatial     | HDB Resale Flat Prices                  |                                                                                                                                                                      | [data.gov.sg](https://data.gov.sg/dataset/resale-flat-prices)                                                            |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Aspatial     | HDB MUP/HIP Status                      | Manual Web Scraping                                                                                                                                                  | [hdb.gov.sg](https://services2.hdb.gov.sg/webapp/BB33RESLSTATUS/BB33PReslStatusEnq.jsp)                                  |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Aspatial     | Shopping Malls                          | Manual web scraping                                                                                                                                                  | [wikipedia.org : List of Shopping Malls in Singapore](https://en.wikipedia.org/wiki/List_of_shopping_malls_in_Singapore) |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Childcare                               |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                               |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Kindergartens                           |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                               |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Eldercare                               |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                               |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Foodcourt/Hawker                        |                                                                                                                                                                      | [onemap.sg Themes](https://www.onemap.gov.sg/docs/#themes)                                                               |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Supermarket                             |                                                                                                                                                                      | [onemap.sg](onemap.sg)                                                                                                   |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Current and Future MRT/LRT Stations     | Excludes Cross Region Line Punggol Branch                                                                                                                            | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-rail-line-layer)                                              |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| \-           | Future MRT Station (CRL Punggol Branch) | Manually merge into MRT/LRT Station Dataset                                                                                                                          | [wikipedia.org : Elias MRT Stn](https://en.wikipedia.org/wiki/Elias_MRT_station)\                                        |
+|              |                                         |                                                                                                                                                                      | [wikipedia.org : Riveria MRT Stn](https://en.wikipedia.org/wiki/Riviera_MRT/LRT_station)                                 |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Geospatial   | MRT/LRT Railway Line                    | Filter elevated sections of MRT line                                                                                                                                 | [data.gov.sg](https://data.gov.sg/dataset/master-plan-2019-rail-line-layer)                                              |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Bus Stops                               |                                                                                                                                                                      | [datamall.lta.gov.sg](https://datamall.lta.gov.sg/content/dam/datamall/datasets/Geospatial/BusStopLocation.zip)          |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Parks                                   | We consider the rail corridor, nature reserves and parks as parks as they are for leisure purposes.                                                                  | [data.gov.sg](https://data.gov.sg/dataset/nparks-parks-and-nature-reserves)                                              |
+|              |                                         |                                                                                                                                                                      |                                                                                                                          |
+|              |                                         | Also, we will prefer polygons of parks as we can calculate the actual proximity to the edges of the parks instead of to an arbitary point in the centre of the park. |                                                                                                                          |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Geospatial   | Primary Schools                         | Requires special handling                                                                                                                                            | onemap.sg json                                                                                                           |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| Aspatial     | CHAS Clinics                            | Extracted using Excel from PDF                                                                                                                                       | [chas.sg](https://www.chas.sg/clinic-locator)                                                                            |
++--------------+-----------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------+
 
 ## Data Fields
 
@@ -879,6 +881,8 @@ These are the datasets that require further processing:
 
 -   HDB Resale Flat Pricing
 
+-   Shopping Malls
+
 ## Importing Aspatial Data
 
 In the various tabs below, we will import each individual dataset from its respective folders, with a brief explanation of the use cases of each dataset.
@@ -903,6 +907,12 @@ glimpse(hdb_hip_mup_raw)
 ```{r}
 hdb_resale_raw = read_csv("Take-Home_Ex03/aspatial/resale-flat-prices-based-on-registration-date-from-jan-2017-onwards.csv")
 glimpse(hdb_resale_raw)
+```
+
+## Shopping Malls
+
+```{r}
+shopping_malls_raw = read_xlsx("Take-Home_Ex03/aspatial/malls-20230320.xlsx")
 ```
 :::
 
@@ -954,6 +964,7 @@ Next, we transform the Aspatial Datasets into more meaningful values:
 1.  CHAS Clinics - There is nothing to transform, since as noted earlier, there is already a `postal` column provided
 2.  HDB HIP MUP - We need to obtain the address for geocoding (obtaining the SVY21 `X` and `Y` coordinates) by combining the `BLK` and `STREET` fields
 3.  HDB Resale Flat Pricing - We need to obtain the address for geocoding (obtaining the SVY21 `X` and `Y` coordinates) by combining the `block` and `street_name` fields, and also convert the remaining lease from the form of `YY years MM months` to a more machine-readable format (ie. `MM` months)
+4.  Shopping Malls - Nothing to transform, we can use the `Mall_Name` as the search term to obtain the geocode (SVY `X` and `Y` coordinates)
 
 The code chunks will assist with the transformation using *mutate()* further explained below:
 
@@ -1026,6 +1037,13 @@ glimpse(addr_lst.chas)
 ```{r}
 addr_lst.resale <- sort(unique(hdb_resale_trans$address))
 glimpse(addr_lst.resale)
+```
+
+## Shopping Malls
+
+```{r}
+addr_lst.malls <- sort(unique(shopping_malls_raw$Mall_Name))
+glimpse(addr_lst.malls)
 ```
 :::
 
@@ -1115,6 +1133,12 @@ HDB Resale Flat Pricing
 coords_resale <- get_coordinates(addr_lst.resale)
 ```
 
+Shopping Malls
+
+```{r eval=FALSE}
+coords_malls <- get_coordinates(addr_lst.malls)
+```
+
 ## RDS Scripts
 
 Writing RDS
@@ -1122,6 +1146,7 @@ Writing RDS
 ```{r eval=FALSE}
 write_rds(coords_chas, "Take-Home_Ex03/rds/coords_chas.rds")
 write_rds(coords_resale, "Take-Home_Ex03/rds/coords_resale.rds")
+write_rds(coords_malls, "Take-Home_Ex03/rds/coords_malls.rds")
 ```
 
 Reading RDS
@@ -1129,6 +1154,7 @@ Reading RDS
 ```{r}
 coords_chas <- read_rds("Take-Home_Ex03/rds/coords_chas.rds")
 coords_resale <- read_rds("Take-Home_Ex03/rds/coords_resale.rds")
+coords_malls <- read_rds("Take-Home_Ex03/rds/coords_malls.rds")
 ```
 
 ## Glimpse Records
@@ -1143,6 +1169,12 @@ HDB Resale Flat Pricing
 
 ```{r}
 glimpse(coords_resale)
+```
+
+Shopping Malls
+
+```{r}
+glimpse(coords_malls)
 ```
 :::
 
@@ -1331,10 +1363,10 @@ At any step if there are issues, we will detail steps to fix or recover from it.
       tm_polygons("REGION_N",
                   alpha = 0.5) +
     tm_shape(hdb_resale_sf) +
-      tm_dots("town")
+      tm_dots("town", size = 0.5)
     ```
 
-    [View Interactive Version of Map here](thex03_hdbplot1.html)!
+    [View Interactive Version of Map here](thex03_hdbplot1.html)! *\[20+mb\]*
 
     Oddly, 27 Marine Cres appeared as a point on Sembcorp Marine Tuas Crescent and 54 Kent Rd somehow appeared as a point on 54J SOUTH BUONA VISTA ROAD KENT RIDGE HILL RESIDENCES. There are also some other differences, so let us now recode some of the addresses to get them to the right locations:
 
@@ -1425,10 +1457,56 @@ At any step if there are issues, we will detail steps to fix or recover from it.
       tm_dots("town")
     ```
 
-    [View Interactive Version of Map here](thex03_hdbplot2.html)!
+    [View Interactive Version of Map here](thex03_hdbplot2.html)! *\[20+mb\]*
 
     Great! All the blocks looks to be plotted in the correct locations!
     :::
+
+### Shopping Malls
+
+1.  Merge Coordinate Data and Original Dataframe
+
+    ```{r}
+    temp_malls <- left_join(shopping_malls_raw, coords_malls, by=c("Mall_Name" = "address"))
+    ```
+
+2.  Check for `NA` X/Y values and manually amend if required
+
+    ```{r}
+    filter(temp_malls, is.na(x) == TRUE)
+    ```
+
+    No `NA` values, great!
+
+3.  Convert a DataFrame into a sf Object
+
+    We specify the SVY21 X and Y coordinates to be used as the coordinate geometry. The `crs` specified is `3414` which refers to `SVY21`.
+
+    ```{r}
+    malls_sf <- st_as_sf(temp_malls,
+                            coords = c("x", "y"),
+                            crs = 3414)
+    ```
+
+4.  Plot a tmap and check if points are plotted in the correct regions
+
+    Now, we will plot an interactive tmap to check if our points are correct. We overlay the URA Master Plan Regions for a quick overlay to roughly check if the malls are located in the correct areas. Do note that mall region may differ from URA Planning Areas.
+
+    ```{r}
+    tmap_mode("view")
+    tmap_options(check.and.fix = TRUE)
+    tm_shape(mpsz) +
+      tm_polygons("REGION_N",
+                  alpha = 0.5) +
+    tm_shape(malls_sf) +
+      tm_dots("Region",
+              popup.vars=c("Mall_Name"="Mall_Name", "Region"="Region"),
+              size = 0.05,
+              palette = "Set2")
+    ```
+
+    Nice! All the malls seems to be in their right locations.
+
 
 ```{r}
 #tmap_mode("view")
