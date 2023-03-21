@@ -133,7 +133,7 @@ The data fields we are looking to incorporate and work with in our predictive mo
 
     -   Some homeowners may prefer multi-story HDBs over single-story ones
 
-## Vocational Factors
+## Locational Factors
 
 -   Proximity to CBD
 
@@ -159,9 +159,11 @@ The data fields we are looking to incorporate and work with in our predictive mo
 
 -   Numbers of primary school within 1km
 
--   Proximity to Overhead MRT Line \[noise concern\] (if \<300m)
+-   Proximity to Overhead MRT Line \[noise concern\]
 
     -   The closer a HDB unit is to the MRT track, the home value might be affected due to noise concerns. We measure the proximity of HDB units using its euclidean distance to the closest part of the MRT track if it is less than 300metres away.
+
+-   Proximity to Overhead LRT Line (similar to MRT line)
 
 -   Number of Future MRT stops within 800m (10min walk)
 
@@ -180,7 +182,9 @@ There are two categories of datasets we will need for our analysis, these includ
 
 -   Datasets that are retrieved over API - We need to obtain the datasets using API Calls
 
-## Retrieving Data from API Calls
+## Importing / Retrieving / Obtaining Data
+
+### Retrieving Data from API Calls
 
 There are some data that we need to retreive using API calls from [onemap.sg](onemap.sg). OneMap offers additional data from different government agencies through [Themes](https://www.onemap.gov.sg/docs/#themes). For R, the [onemapsgapi](https://cran.r-project.org/web/packages/onemapsgapi/onemapsgapi.pdf) package helps us with the API calls with onemap.sg servers to obtain the data we require.
 
@@ -250,7 +254,7 @@ write_rds(hawker_sf, "Take-Home_Ex03/rds/hawker_sf.rds")
 ```
 :::
 
-## Obtaining Schools Data
+### Obtaining Schools Data
 
 Obtaining school data from OneMap is a bit tricky, it was not available through OneMap themes or a download link through the OneMap website. However, through clicking through the Query Schools function on the map using using 'Inspect Element', we could see that a GET request is called to obtain the map data as json (as seen in the screenshot below):
 
@@ -286,7 +290,7 @@ Now, we will save the data imported as RDS file format (R Data Serialisation).
 write_rds(schools_sf_3414, "Take-Home_Ex03/rds/schools_sf_3414.rds")
 ```
 
-## Importing Geospatial Data
+### Importing Geospatial Data
 
 ::: panel-tabset
 ## Downloaded
@@ -361,6 +365,21 @@ geo_kindergartens <- st_transform(geo_kindergartens,3414)
 
 ## Check
 
+Bus Stop
+
+```{r}
+st_crs(geo_bus_stop)
+```
+
+Oh, the CRS was not set properly and reflected as EPSG:9001
+
+```{r}
+geo_bus_stop <- st_set_crs(geo_bus_stop, 3414)
+st_crs(geo_bus_stop)
+```
+
+Done!
+
 Master Plan Subzone 2019
 
 ```{r}
@@ -418,7 +437,26 @@ geo_kindergartens
 
 Great! Now everything is in `SVY21` Projected Coordinate System.
 
-## Fixing KML Data
+## Transform Datasets
+
+### Fixing Master Plan Subzone Boundary Geometries
+
+As we recall for exercises in class, there are issues with invalid geometries in the dataset.
+
+```{r}
+length(which(st_is_valid(mpsz) == FALSE))
+```
+
+Here, we will fix it by using *st_make_valid()*
+
+```{r}
+mpsz <- st_make_valid(mpsz)
+length(which(st_is_valid(mpsz) == FALSE))
+```
+
+Great, its fixed!
+
+### Fixing KML Data
 
 When we look at the MRT/LRT Station and Railway Line stations, we find that the labels are `KML_1`, `KML_2`, etc which are not useful for our analysis.
 
@@ -478,7 +516,7 @@ glimpse(geo_railway_line)
 
 Great now we have extracted the attributes into its own columns where we can use it for further analysis.
 
-## Transforming and Modifying MRT/LRT Station Data
+### Transforming and Modifying MRT/LRT Station Data
 
 Let us view `geo_mrt_lrt_stn` data on a map and the table and fix any NA values we might find:
 
@@ -514,7 +552,6 @@ geo_stn_na
 View on a map
 
 ```{r}
-tmap_options(check.and.fix = TRUE)
 tmap_mode("view") +
   tm_shape(mpsz) +
   tm_polygons("REGION_N", alpha = 0.1, border.alpha = 0.1) +
@@ -568,7 +605,7 @@ There are also a few other hurdles we need to go through:
 1.  Interchange MRT stations have multiple polygons and records, we need to merge them
 2.  For our analysis, we want to convert the polygons to points to be able to perform our analysis.
 
-## Extraction of Data into Different DataFrames
+### Extraction of Data into Different DataFrames
 
 ::: panel-tabset
 ## Future MRT
@@ -608,7 +645,7 @@ geo_mrt_existing
 By looking through the dataframe, the data looks correct!
 :::
 
-### Merging Polygons for Data Frame
+#### Merging Polygons for Data Frame
 
 For `geo_mrt` which contains data of existing MRT stations, there are interchange stations which has seperate polygons. For example, Dhoby Ghaut MRT station is an interchange between 3 lines and hence has 3 polygons and records as seen below:
 
@@ -709,7 +746,7 @@ geo_mrt_existing <- merge_2(geo_mrt_existing, "kml_81", "kml_70")
 That's right, we have 134 unique existing MRT stations
 :::
 
-### Converting Spatial Polygons to Spatial Points
+#### Converting Spatial Polygons to Spatial Points
 
 ```{r}
 geo_mrt_existing <- st_centroid(geo_mrt_existing)
@@ -717,7 +754,7 @@ geo_lrt <- st_centroid(geo_lrt)
 geo_mrt_future <- st_centroid(geo_mrt_future)
 ```
 
-### Insert Cross Island Line Punggol Future Stations
+#### Insert Cross Island Line Punggol Future Stations
 
 The Master Plan 2019 MRT/LRT Station data excludes the Cross Island Line Punggol Stations, so we have to add them. 2 New MRT stations (that are not an existing interchange station with existing lines needs to be added). These are: [Riveria](https://en.wikipedia.org/wiki/Riviera_MRT/LRT_station)and [Elias](https://en.wikipedia.org/wiki/Elias_MRT_station)
 
@@ -740,11 +777,11 @@ tmap_mode("plot") +
   tm_shape(mpsz) +
   tm_polygons("REGION_N", alpha = 0.05, border.alpha = 0.05) +
   tm_shape(geo_mrt_existing) +
-  tm_dots("RAIL_TYPE", palette = "darkgreen", title = "Existing MRT") +
+  tm_dots("RAIL_TYPE", palette = "darkgreen", title = "Existing MRT", size = 0.02) +
   tm_shape(geo_lrt) +
-  tm_dots("RAIL_TYPE", palette = "blue", title = "Existing LRT") +
+  tm_dots("RAIL_TYPE", palette = "blue", title = "Existing LRT", size = 0.02) +
   tm_shape(geo_mrt_future) +
-  tm_dots("RAIL_TYPE", palette = "red", title = "Future MRT") +
+  tm_dots("RAIL_TYPE", palette = "red", title = "Future MRT", size = 0.02) +
   tm_layout(legend.position = c("right", "bottom"), 
             title= 'MRT/LRT Stations in Singapore', 
             title.position = c('right', 'top'))
@@ -752,7 +789,7 @@ tmap_mode("plot") +
 
 Everything looks to be plotted correctly.
 
-## Transforming Railway Line
+### Transforming Railway Line
 
 ```{r}
 tmap_mode("plot") +
@@ -776,7 +813,7 @@ For our analysis, we only want the above ground segments, seperated by `RAIL_TYP
 
 The rationale of including future aboveground lines like the Jurong Region Line in our analysis is that housing prices could be affected by the construction or announcement of future MRT lines which may cause housing prices to fall.
 
-### Splitting MRT/LRT Datasets
+#### Splitting MRT/LRT Datasets
 
 ::: panel-tabset
 ## Filter
@@ -808,7 +845,7 @@ glimpse(geo_rail_lrt_above)
 ```
 :::
 
-### Verifying MRT/LRT Aboveground Railway Line
+#### Verifying MRT/LRT Aboveground Railway Line
 
 ```{r}
 tmap_mode("plot") +
@@ -823,7 +860,7 @@ tmap_mode("plot") +
             title.position = c('right', 'top'))
 ```
 
-## Transform Parks Dataset
+### Transform Parks Dataset
 
 Let us view our parks dataset
 
@@ -868,6 +905,71 @@ tmap_mode("plot") +
 ```
 
 Great! We have successfully converted the data to `LINESTRING`!
+
+### Prepare Good Primary Schools Dataset
+
+[schlah.com](https://schlah.com/primary-schools) provides a good breakdown of factors that contributes to a school's ranking, based on the following extracted from their website:
+
+-   Gifted Education Programme (GEP): 20%
+
+-   Popularity in Primary 1 (P1) Registration: 20%
+
+-   Special Assistance Plan (SAP): 15%
+
+-   Singapore Youth Festival Arts Presentation: 15%
+
+-   Singapore National School Games: 15%
+
+-   Singapore Uniformed Groups Unit Recognition: 15%
+
+In our analysis, we want to see if good schools can contribute to increased housing prices in Singapore. For our analysis, we will take that the top 10% (16) of primary schools in Singapore are 'good schools'
+
+The code chunk below will extract the top 16 good primary schools for our analysis.
+
+```{r}
+TOP_10PCT_SCHS = c("NANYANG PRIMARY SCHOOL",
+                  "TAO NAN SCHOOL",
+                  "CATHOLIC HIGH SCHOOL",
+                  "NAN HUA PRIMARY SCHOOL",
+                  "ST. HILDA'S PRIMARY SCHOOL",
+                  "HENRY PARK PRIMARY SCHOOL",
+                  "ANGLO-CHINESE SCHOOL (PRIMARY)",
+                  "RAFFLES GIRLS' PRIMARY SCHOOL",
+                  "PEI HWA PRESBYTERIAN PRIMARY SCHOOL",
+                  "CHIJ ST. NICHOLAS GIRLS' SCHOOL",
+                  "ROSYTH SCHOOL",
+                  "KONG HWA SCHOOL",
+                  "POI CHING SCHOOL",
+                  "HOLY INNOCENTS' PRIMARY SCHOOL",
+                  "AI TONG SCHOOL",
+                  "RED SWASTIKA SCHOOL")
+
+geo_top_schools = geo_schools %>% filter(SCHOOLNAME %in% TOP_10PCT_SCHS)
+glimpse(geo_top_schools)
+
+```
+
+There we have it, we have successfully extracted the top 10% of primary schools in Singapore (16 schools).
+
+### Prepare CBD Outline
+
+From [Wikipedia](https://en.wikipedia.org/wiki/Downtown_Core), we know that Singapore's CBD is also called `DOWNTOWN CORE`. To be accurate in our analysis, we will calculate the proximity to CBD based on the following rules:
+
+-   if outside CBD boundary, we will calcualte the distance to the `LINESTRING`.
+
+-   if within CBD, distance will be 0
+
+The codeblock below achieves a few things:
+
+1.  Filter to get the subzones of `DOWNTOWN CORE` planning area
+2.  Combine the polygons to obtain the outline of `DOWNTOWN CORE` (CBD)
+3.  Convert the geometry from `POLYGON` to `LINESTRING` format
+
+```{r}
+cbd_sf <- mpsz %>% filter(mpsz$PLN_AREA_N == "DOWNTOWN CORE")
+cbd_geom <- st_union(cbd_sf)
+cbd_geom <- st_cast(cbd_geom, "LINESTRING")
+```
 
 # Data Wrangling: Aspatial Data
 
@@ -1347,9 +1449,10 @@ At any step if there are issues, we will detail steps to fix or recover from it.
 
     Now, we will plot an interactive tmap to check if our points are correct. We overlay the URA Master Plan Regions for a quick overlay to roughly check if the HDBs are located in the correct areas. Do note that HDB Towns differ from URA Planning Areas.
 
-    ```{r}
+    Generate external interactive plot
+
+    ```{r eval=FALSE}
     tmap_mode("plot")
-    tmap_options(check.and.fix = TRUE)
     hdb_plot1 <- tm_shape(mpsz) +
       tm_polygons("REGION_N",
                   alpha = 0.5) +
@@ -1357,16 +1460,20 @@ At any step if there are issues, we will detail steps to fix or recover from it.
       tm_dots("town",
               popup.vars=c("block"="block", "street_name"="street_name", "flat_model" = "flat_model", "town" = "town", "resale_price" = "resale_price", "remaining_lease_mths", "remaining_lease_mths"))
     tmap_save(hdb_plot1, "thex03_hdbplot1.html")
+    ```
 
-    tmap_options(check.and.fix = TRUE)
+    Static Plot
+
+    ```{r}
+    tmap_mode("plot")
     tm_shape(mpsz) +
       tm_polygons("REGION_N",
                   alpha = 0.5) +
     tm_shape(hdb_resale_sf) +
-      tm_dots("town", size = 0.5)
+      tm_dots("town", size = 0.02)
     ```
 
-    [View Interactive Version of Map here](thex03_hdbplot1.html)! *\[20+mb\]*
+    [View Interactive Version of Map here](thex03_hdbplot1.html){target="_blank"}! *\[20+mb\]*
 
     Oddly, 27 Marine Cres appeared as a point on Sembcorp Marine Tuas Crescent and 54 Kent Rd somehow appeared as a point on 54J SOUTH BUONA VISTA ROAD KENT RIDGE HILL RESIDENCES. There are also some other differences, so let us now recode some of the addresses to get them to the right locations:
 
@@ -1439,9 +1546,10 @@ At any step if there are issues, we will detail steps to fix or recover from it.
 
     ## 5. Plot a tmap and check if points are plotted in the correct regions
 
-    ```{r}
+    Generate external interactive map
+
+    ```{r eval=FALSE}
     tmap_mode("plot")
-    tmap_options(check.and.fix = TRUE)
     hdb_plot2 <- tm_shape(mpsz) +
       tm_polygons("REGION_N",
                   alpha = 0.5) +
@@ -1449,7 +1557,12 @@ At any step if there are issues, we will detail steps to fix or recover from it.
       tm_dots("town",
               popup.vars=c("block"="block", "street_name"="street_name", "flat_model" = "flat_model", "town" = "town", "resale_price" = "resale_price", "remaining_lease_mths", "remaining_lease_mths"))
     tmap_save(hdb_plot2, "thex03_hdbplot2.html")
+    ```
 
+    Static Plot
+
+    ```{r}
+    tmap_mode("plot")
     tm_shape(mpsz) +
       tm_polygons("REGION_N",
                   alpha = 0.5) +
@@ -1457,7 +1570,7 @@ At any step if there are issues, we will detail steps to fix or recover from it.
       tm_dots("town")
     ```
 
-    [View Interactive Version of Map here](thex03_hdbplot2.html)! *\[20+mb\]*
+    [View Interactive Version of Map here](thex03_hdbplot2.html){target="_blank"}! *\[20+mb\]*
 
     Great! All the blocks looks to be plotted in the correct locations!
     :::
@@ -1483,7 +1596,7 @@ At any step if there are issues, we will detail steps to fix or recover from it.
     We specify the SVY21 X and Y coordinates to be used as the coordinate geometry. The `crs` specified is `3414` which refers to `SVY21`.
 
     ```{r}
-    malls_sf <- st_as_sf(temp_malls,
+    geo_malls <- st_as_sf(temp_malls,
                             coords = c("x", "y"),
                             crs = 3414)
     ```
@@ -1494,11 +1607,10 @@ At any step if there are issues, we will detail steps to fix or recover from it.
 
     ```{r}
     tmap_mode("view")
-    tmap_options(check.and.fix = TRUE)
     tm_shape(mpsz) +
       tm_polygons("REGION_N",
                   alpha = 0.5) +
-    tm_shape(malls_sf) +
+    tm_shape(geo_malls) +
       tm_dots("Region",
               popup.vars=c("Mall_Name"="Mall_Name", "Region"="Region"),
               size = 0.05,
@@ -1506,6 +1618,115 @@ At any step if there are issues, we will detail steps to fix or recover from it.
     ```
 
     Nice! All the malls seems to be in their right locations.
+
+# Preparing Locational Factors
+
+From our list of locational factors, we can see that in general, we have two types of locational factors:
+
+1.  Count of a factor within a certain radius
+2.  Proximity of housing to a factor
+
+We have created functions below that will prepare out data we require for our analysis.
+
+## Functions
+
+### Get Proximity Locational Factors
+
+The `get_prox()` function below takes in an origin and destination dataframe and creates a distance matrix of origin and destination pairs based on *st_distance().* Next, we use mutate and apply to locate the destination that is located the minimum distance away from the origin and save it to the corresponding row in `origin_df` under the `PROX` column. The `1` in apply is to apply the function row by row, which corresponds directly to the `origin_df` rows.
+
+Next, we rename the columns based on whats specified by the input parameter and return the dataframe.
+
+For the code below, we will use it to detect for 2 types of spatial types for destinations, Points and Linestring.
+
+For our two linestring datasets, we know that there are:
+
+1.  No HDBs within park boundaries
+2.  No HDBs within Downtown Core
+
+Hence, the following datasets will only need to factor distance to the boundary and there are no concerns that there are HDBs within those regions.
+
+```{r}
+get_prox <- function(origin_df, dest_df, col_name){
+  
+  # creates a matrix of distances
+  dist_matrix <- st_distance(origin_df, dest_df)           
+  
+  # find the nearest location_factor and create new data frame
+  near <- origin_df %>% 
+    mutate(PROX = apply(dist_matrix, 1, function(x) min(x)) / 1000) 
+  
+  # rename column name according to input parameter
+  names(near)[names(near) == 'PROX'] <- col_name
+
+  # Return df
+  return(near)
+}
+```
+
+### Get Num Within Locational Factors
+
+The `get_within()` function below takes in an origin and destination dataframe and creates a distance matrix of origin and destination pairs based on *st_distance().*
+
+Next, we use mutate and apply to obtain the sum of destinations that fits less than or equal to the `threshold_dist` specified and save the sum value to the corresponding row in `origin_df` under the `PROX` column. The `1` in apply is to apply the function row by row, which corresponds directly to the `origin_df` rows.
+
+Next, we rename the columns based on whats specified by the input parameter and return the dataframe.
+
+```{r}
+get_within <- function(origin_df, dest_df, threshold_dist, col_name){
+  
+  # creates a matrix of distances
+  dist_matrix <- st_distance(origin_df, dest_df)   
+  
+  # count the number of location_factors within threshold_dist and create new data frame
+  wdist <- origin_df %>% 
+    mutate(WITHIN_DT = apply(dist_matrix, 1, function(x) sum(x <= threshold_dist)))
+  
+  # rename column name according to input parameter
+  names(wdist)[names(wdist) == 'WITHIN_DT'] <- col_name
+
+  # Return df
+  return(wdist)
+}
+```
+
+## Generating Proximity Locational Factors
+
+```{r eval=FALSE}
+geo_hdb_resale <- hdb_resale_sf
+geo_hdb_resale <- get_prox(geo_hdb_resale, cbd_geom, "PROX_CBD")
+geo_hdb_resale <- get_prox(geo_hdb_resale, geo_eldercare, "PROX_ELDER")
+geo_hdb_resale <- get_prox(geo_hdb_resale, geo_hawker, "PROX_HAWKER")
+geo_hdb_resale <- get_prox(geo_hdb_resale, geo_mrt_existing, "PROX_MRT_E")
+geo_hdb_resale <- get_prox(geo_hdb_resale, geo_parks, "PROX_PARK")
+geo_hdb_resale <- get_prox(geo_hdb_resale, geo_top_schools, "PROX_TOP_SCH")
+geo_hdb_resale <- get_prox(geo_hdb_resale, geo_malls, "PROX_MALL")
+geo_hdb_resale <- get_prox(geo_hdb_resale, geo_supermarkets, "PROX_SUPMKT")
+geo_hdb_resale <- get_prox(geo_hdb_resale, geo_rail_mrt_above, "PROX_TRK_MRT")
+geo_hdb_resale <- get_prox(geo_hdb_resale, geo_rail_lrt_above, "PROX_TRK_LRT")
+```
+
+## Generating Num Within Locational Factors
+
+```{r eval=FALSE}
+geo_hdb_resale <- get_within(geo_hdb_resale, geo_childcare, 350, "NUM_350_CHILD")
+geo_hdb_resale <- get_within(geo_hdb_resale, geo_kindergartens, 350, "NUM_350_KINDER")
+geo_hdb_resale <- get_within(geo_hdb_resale, geo_bus_stop, 350, "NUM_350_BUS")
+geo_hdb_resale <- get_within(geo_hdb_resale, geo_schools, 1000, "NUM_1000_SCH")
+geo_hdb_resale <- get_within(geo_hdb_resale, geo_mrt_future, 800, "NUM_800_MRT_F")
+geo_hdb_resale <- get_within(geo_hdb_resale, geo_lrt, 350, "NUM_350_LRT")
+```
+
+## RDS Scripts
+
+To prevent running the code above again, we will save
+
+```{r eval=FALSE}
+write_rds(geo_hdb_resale, "Take-Home_Ex03/rds/geo_hdb_resale.rds")
+```
+
+```{r}
+geo_hdb_resale <- read_rds("Take-Home_Ex03/rds/geo_hdb_resale.rds")
+```
 
 ```{r}
 #tmap_mode("view")
