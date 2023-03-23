@@ -1735,7 +1735,6 @@ geo_hdb_resale <- read_rds("Take-Home_Ex03/rds/geo_hdb_resale.rds")
 
 Looking at the list of structural factors, there are some factors that requires further processing. These strucutral factors are listed in the table below.
 
-<<<<<<< HEAD
 +----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
 | dName of Structural Factor             | Data Type   | Remarks                                                                                                                         |
 +========================================+=============+=================================================================================================================================+
@@ -1763,8 +1762,6 @@ Looking at the list of structural factors, there are some factors that requires 
 | Main Upgrading Program (MUP) Completed | Categorical | Requires one-hot encoding                                                                                                       |
 | Apartment Model                        | Categorical | This data has to be derived and standardised from `flat_model`                                                                  |
 | Apartment Multi-story                  | Categorical | This data has to be derived and standardised from `flat_model`                                                                  |
->>>>>>> 5f39c96fa1faac403ba1b5a882cb2c55c06e93b3
-
 ## Floor Level
 
 Now, let us first look at the floor levels.
@@ -1823,7 +1820,6 @@ Let us recode them so that the model can generalise better.
 ::: panel-tabset
 ## Recode Values
 
-<<<<<<< HEAD
 +------------------------+---------------------------------------+------------------------------+
 | Original Values        | Recoded Values (model\_\<valuename\>) | Recoded Values (multistorey) |
 +========================+=======================================+==============================+
@@ -1863,8 +1859,6 @@ Let us recode them so that the model can generalise better.
 | Premium Apartment Loft | Premium = 1                           | 1                            |
 | Improved - Maisonette  | Standard = 1                          | 1                            |
 | 3Gen                   | 3Gen = 1                              | 0                            |
->>>>>>> 5f39c96fa1faac403ba1b5a882cb2c55c06e93b3
-
 ## Create Multistorey Columns
 
 Using the code chunk below, we will check if the `flat_model` corresponds to the following types, if it is, we code the value in the `multistorey` as 1. Else, 0 is assigned.
