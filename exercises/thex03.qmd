@@ -5,7 +5,7 @@ author: "Teo Ren Jie"
 date: "3/12/2023"
 date-modified: "3/19/2023"
 number-sections: true
-categories: ["Take-Home Exercise", "sf", "readXL", "tidyverse", "tmap", "sfdep", "gifski"]
+categories: ["Take-Home Exercise"]
 title-block-banner: true
 image: Take-Home_Ex03/preview.png
 execute:
@@ -117,11 +117,7 @@ The data fields we are looking to incorporate and work with in our predictive mo
 
     -   For HDB units that has received HIP, their home value may be affected positively than a similar aged flat that has not received it
 
--   Relative Age of Remaining Lead to Mean of Remaining Lease Left within 1km (+ if newer, - if older than area)
-
-    -   If a HDB estate is relatively newer than HDBs in the area, homeowners might be enticed to buy newer HDB units in the area
-
--   Apartment Type (eg. DBSS/Standard/Premium)
+-   Flat Model (eg. DBSS/Standard/Premium)
 
     -   Design Build Sell Scheme (DBSS) flats may call for a higher value than regular HDB flats as they are designed, build and sold by 3rd party developers although they are still HDB Flats. They are supposed to be better than premium flats
 
@@ -129,7 +125,7 @@ The data fields we are looking to incorporate and work with in our predictive mo
 
     -   Reference: https://www.teoalida.com/singapore/hdbflattypes/
 
--   Apartment Multi-story (Maisonette or Loft)
+-   Flat Multi-storey (Maisonette or Loft)
 
     -   Some homeowners may prefer multi-story HDBs over single-story ones
 
@@ -1689,7 +1685,12 @@ get_within <- function(origin_df, dest_df, threshold_dist, col_name){
 }
 ```
 
+## Generating Locational Factors and Saving Results
+
+::: panel-tabset
 ## Generating Proximity Locational Factors
+
+Using the code chunk below, we will generate the proximity to locational factors specified below:
 
 ```{r eval=FALSE}
 geo_hdb_resale <- hdb_resale_sf
@@ -1707,6 +1708,8 @@ geo_hdb_resale <- get_prox(geo_hdb_resale, geo_rail_lrt_above, "PROX_TRK_LRT")
 
 ## Generating Num Within Locational Factors
 
+Now, using the code chunk below, we will obtain the count of location factors specified:
+
 ```{r eval=FALSE}
 geo_hdb_resale <- get_within(geo_hdb_resale, geo_childcare, 350, "NUM_350_CHILD")
 geo_hdb_resale <- get_within(geo_hdb_resale, geo_kindergartens, 350, "NUM_350_KINDER")
@@ -1718,7 +1721,7 @@ geo_hdb_resale <- get_within(geo_hdb_resale, geo_lrt, 350, "NUM_350_LRT")
 
 ## RDS Scripts
 
-To prevent running the code above again, we will save
+To prevent running the code above again on every render, we will save the results to a RDS file. We will use the read script to read the file without having to rerun the processing on every render.
 
 ```{r eval=FALSE}
 write_rds(geo_hdb_resale, "Take-Home_Ex03/rds/geo_hdb_resale.rds")
@@ -1727,6 +1730,7 @@ write_rds(geo_hdb_resale, "Take-Home_Ex03/rds/geo_hdb_resale.rds")
 ```{r}
 geo_hdb_resale <- read_rds("Take-Home_Ex03/rds/geo_hdb_resale.rds")
 ```
+:::
 
 ```{r}
 #tmap_mode("view")
@@ -1736,6 +1740,253 @@ geo_hdb_resale <- read_rds("Take-Home_Ex03/rds/geo_hdb_resale.rds")
 #popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))
 ```
 
+# Preparing Structural Factors
+
+Looking at the list of structural factors, there are some factors that requires further processing. These strucutral factors are listed in the table below.
+
++----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
+| dName of Structural Factor             | Data Type   | Remarks                                                                                                                         |
++========================================+=============+=================================================================================================================================+
+| Area of Unit                           | Numerical   |                                                                                                                                 |
++----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
+| Floor Level                            | Categorical | Requires recoding of values                                                                                                     |
++----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
+| Remaining Lease                        | Numerical   | Data has been processed to numerical readable values in months in [Transforming Aspatial Data - Create New Columns with Values] |
++----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
+| Age of the unit                        | Numerical   |                                                                                                                                 |
++----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
+| Main Upgrading Program (MUP) Completed | Categorical | Requires one-hot encoding                                                                                                       |
++----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
+| Apartment Model                        | Categorical | This data has to be derived and standardised from `flat_model`                                                                  |
++----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
+| Apartment Multi-story                  | Categorical | This data has to be derived and standardised from `flat_model`                                                                  |
++----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
+
+## Floor Level
+
+Now, let us first look at the floor levels.
+
+```{r}
+storeys <- sort(unique(geo_hdb_resale$storey_range))
+storeys
+```
+
+From the unique values obtained above, we can see that story range is provided as a categorical range of every three floors. In the data above, we can see that there are 17 storey range categories.
+
+Let us recode the categorical naming to numerical values by assigning 1 to the first range `01 TO 03` and 17 to the last range `49 TO 51`.
+
+```{r}
+storey_order <- 1:length(storeys)
+storey_range_order <- data.frame(storeys, storey_order)
+storey_range_order
+```
+
+From our data frame above, we have obtained the storey ranges and `storey_order`. Using the code below, we will use left_join to join `storey_order` to the main `geo_hdb_resale` dataframe.
+
+```{r}
+geo_hdb_resale <- left_join(geo_hdb_resale,  storey_range_order, by = c("storey_range" = "storeys"))
+```
+
+There we go, we have combined the recorded storey range values as `storey_order`.
+
+## HDB Apartment Model and Multi-storey
+
+Not all HDB Apartments are built the same, there are different HDB Models and some HDB units are multi-storey. Let us explore what kinds of models do we have in our dataset:
+
+```{r}
+unique(geo_hdb_resale$flat_model)
+```
+
+From our data above, we can see that we have 11 distinct categories of HDB Apartment Types. Some of these terminologies changed over time and may refer to the configuration or whether the apartments came with furnishings.
+
+Let use understand what some of the terms [mean](https://www.teoalida.com/singapore/hdbflattypes/):
+
+-   Design Build Sell Scheme (DBSS) flats may call for a higher value than regular HDB flats as they are designed, build and sold by 3rd party developers although they are still HDB Flats. They are supposed to be better than premium flats
+
+-   Premium flats which come with pre-installed fittings and furnishings over standard apartments which comes with none
+
+-   Standard flats are opposite of premium, they don't come with furnishings or fittings
+
+-   Maisonette / Loft comes with a second floor of apartment space
+
+-   3Gen is a new type of single-key unit with additional bedroom and bathroom for grandparents to live in
+
+-   Adjoined flats are units where two HDB units are combined (may or may not have 2 front doors)
+
+-   Type S2 are types assigned to 5-room units in The Pinnacle at Duxton
+
+Let us recode them so that the model can generalise better.
+
+::: panel-tabset
+## Recode Values
+
++------------------------+---------------------------------------+------------------------------+
+| Original Values        | Recoded Values (model\_\<valuename\>) | Recoded Values (multistorey) |
++========================+=======================================+==============================+
+| Improved               | Standard = 1                          | 0                            |
++------------------------+---------------------------------------+------------------------------+
+| Standard               | Standard = 1                          | 0                            |
++------------------------+---------------------------------------+------------------------------+
+| DBSS                   | DBSS = 1                              | 0                            |
++------------------------+---------------------------------------+------------------------------+
+| Model A                | Standard = 1                          | 0                            |
++------------------------+---------------------------------------+------------------------------+
+| Adjoined flat          | Adjoined = 1                          | 0                            |
++------------------------+---------------------------------------+------------------------------+
+| Premium Apartment      | Premium = 1                           | 0                            |
++------------------------+---------------------------------------+------------------------------+
+| Type S2                | S2 = 1                                | 0                            |
++------------------------+---------------------------------------+------------------------------+
+| Model A-Maisonette     | Standard = 1                          | 1                            |
++------------------------+---------------------------------------+------------------------------+
+| Premium Apartment Loft | Premium = 1                           | 1                            |
++------------------------+---------------------------------------+------------------------------+
+| Improved - Maisonette  | Standard = 1                          | 1                            |
++------------------------+---------------------------------------+------------------------------+
+| 3Gen                   | 3Gen = 1                              | 0                            |
++------------------------+---------------------------------------+------------------------------+
+
+## Create Multistorey Columns
+
+Using the code chunk below, we will check if the `flat_model` corresponds to the following types, if it is, we code the value in the `multistorey` as 1. Else, 0 is assigned.
+
+```{r}
+geo_hdb_resale <- geo_hdb_resale %>% mutate(multistorey = ifelse(flat_model %in% c("Improved-Maisonette", "Model A-Maisonette", "Premium Apartment Loft"), 1, 0 ))
+```
+
+## Recode
+
+```{r}
+geo_hdb_resale <- geo_hdb_resale %>% mutate(model_standard = ifelse(flat_model %in% c("Improved", "Standard", "Model A", "Model A-Maisonette", "Improved-Maisonette"), 1, 0))
+geo_hdb_resale <- geo_hdb_resale %>% mutate(model_premium = ifelse(flat_model %in% c("Premium Apartment", "Premium Apartment Loft"), 1, 0))
+geo_hdb_resale <- geo_hdb_resale %>% mutate(model_dbss = ifelse(flat_model %in% c("DBSS"), 1, 0))
+geo_hdb_resale <- geo_hdb_resale %>% mutate(model_adjoined = ifelse(flat_model %in% c("Adjoined"), 1, 0))
+geo_hdb_resale <- geo_hdb_resale %>% mutate(model_3gen = ifelse(flat_model %in% c("3Gen"), 1, 0))
+geo_hdb_resale <- geo_hdb_resale %>% mutate(model_s2 = ifelse(flat_model %in% c("S2"), 1, 0))
+```
+
+Nice, we have completed our recoding, let us view a snippet of our data
+
+## Glimpse
+
+```{r}
+glimpse(geo_hdb_resale)
+```
+:::
+
+## HDB HIP MUP
+
+Similarly for HIP MUP data, since there are all coded as `HIP` or `MUP` or NA cateogrical values, we need to convert them to numbers so that the model will be able to build.
+
+In this case, we will create two new columns, `HIP` and `MUP` to track which kind of upgrading project has been done on the unit.
+
+::: panel-tabset
+## Recode
+
+Using the code chunk, we will recode the respective values into the respective columns as 1 (true) or 0 (false).
+
+```{r}
+geo_hdb_resale <- geo_hdb_resale %>% mutate(hip = ifelse(is.na(TYPE), 0, ifelse(TYPE == "HIP", 1, 0)))
+geo_hdb_resale <- geo_hdb_resale %>% mutate(hip = ifelse(is.na(TYPE), 0, ifelse(TYPE == "MUP", 1, 0)))
+```
+
+The manipulation is complete, let us glimpse the values.
+
+## Glimpse
+
+```{r}
+glimpse(geo_hdb_resale)
+```
+:::
+
+## RDS Scripts and Preparing for EDA
+
+We will now save our prepared HDB Resale dataset and mpsz to a RDS file and clear all variables to free up the memory before reloading the dataset as `final_resale`.
+
+The `rm(list=ls())` function will clear all variables
+
+```{r eval=FALSE}
+write_rds(geo_hdb_resale,"Take-Home_Ex03/rds/final_resale.rds")
+write_rds(mpsz,"Take-Home_Ex03/rds/mpsz.rds")
+```
+
+```{r}
+rm(list=ls())
+```
+
+```{r}
+final_resale <- read_rds("Take-Home_Ex03/rds/final_resale.rds")
+mpsz <- read_rds("Take-Home_Ex03/rds/mpsz.rds")
+```
+
+# Exploratory Data Analysis
+
+Now, we can perform EDA on our prepared dataset `geo_hdb_resale` to better understand our dataset.
+
+```{r}
+glimpse(final_resale)
+```
+
+## Removing Columns Not Required For Analysis
+
+Firstly, let us remove the columns that are not required for further analysis to save on memory space.
+
+To do this, we use the *select()* function and indicate the columns we want to remove by having the prefix`-`
+
+```{r}
+final_resale <- select(final_resale, c(-flat_type,-storey_range,-flat_model, -lease_commence_date, -address, -TYPE, -remaining_lease))
+```
+
+Now, let us view the columns remaining.
+
+```{r}
+glimpse(final_resale)
+```
+
+## Understanding Resale Prices
+
+Now, let us plot a histogram to understand the pricing of 5-Room resale flats between Jan 2020 to Feb 2023.
+
+```{r}
+ggplot(final_resale, aes(x=resale_price)) +
+  geom_histogram(bins = 20, color = "black", fill = "lightblue")
+```
+
+From our graph above, we can see that:
+
+-   Right-skewed distribution of resale_prices
+
+-   Most resale HDBs are transacted near the \$500,000 range.
+
+-   Outliers are seen where HDB prices are transacted near \$1 million or more
+
+In this scenerio, while we can take log of `resale_price`, we will not perform the transformation to make it a normal distribution as:
+
+1.  `resale_price` is the value to be predicted, we do not want to predict the log of `resale_price`
+2.  Using the log of `resale_price` will cause it to have a high correlation with actual `resale_price`
+
+## Understanding Structural Factors
+
+## Understanding Locational Factors
+
+## Statistical Point Map
+
+Let
+
+```{r eval=FALSE}
+tmap_options("view")
+tm_shape(mpsz) +
+  tm_polygons("REGION_N",
+              alpha = 0.5) +
+tm_shape(final_resale) +
+  tm_dots("resale_price",
+          popup.vars= TRUE,
+          size = 0.05,
+          palette = "Set2")
+```
+
 # Credits
 
 https://stackoverflow.com/questions/50775357/how-to-read-in-kml-file-properly-in-r-or-separate-out-lumped-variables-into-col
+
+https://www.teoalida.com/singapore/hdbflattypes/
