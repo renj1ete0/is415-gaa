@@ -242,6 +242,10 @@
     "href": "exercises/thex03.html#statistical-point-map",
     "title": "Take-Home Exercise 03: Predicting HDB Public Housing Resale Prices Using Geographically Weighted Methods",
     "section": "7.5 Statistical Point Map",
+<<<<<<< HEAD
     "text": "7.5 Statistical Point Map\nLet\n\ntmap_options(\"view\")\ntm_shape(mpsz) +\n  tm_polygons(\"REGION_N\",\n              alpha = 0.5) +\ntm_shape(final_resale) +\n  tm_dots(\"resale_price\",\n          popup.vars= TRUE,\n          size = 0.05,\n          palette = \"Set2\")"
+=======
+    "text": "7.5 Statistical Point Map\nLet\n\ntmap_options(\"view\")\n\nnamed list()\n\ntm_shape(mpsz) +\n  tm_polygons(\"REGION_N\",\n              alpha = 0.5) +\ntm_shape(final_resale) +\n  tm_dots(\"resale_price\",\n          popup.vars= TRUE,\n          size = 0.05,\n          palette = \"Set2\")"
+>>>>>>> 5f39c96fa1faac403ba1b5a882cb2c55c06e93b3
   }
 ]
