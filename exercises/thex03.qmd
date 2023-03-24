@@ -1,6 +1,6 @@
 ---
 title: "Take-Home Exercise 03: Predicting HDB Public Housing Resale Prices Using Geographically Weighted Methods"
-description: "Predicting HDB Public Housing Resale Prices Using Geographically Weighted Methods trained using Jan 2020 to Dec 2022 and tested with Jan to Feb 2023"
+description: "Predicting HDB Public Housing Resale Prices Using Geographically Weighted Methods trained using Jan 2021 to Dec 2022 and tested with Jan to Feb 2023"
 author: "Teo Ren Jie"
 date: "3/12/2023"
 date-modified: "3/19/2023"
@@ -36,7 +36,7 @@ In this take-home exercise, you are tasked to predict HDB resale prices at the s
 Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and funModeling.
 
 ```{r}
-pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite, onemapsgapi, rvest)
+pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite, onemapsgapi, rvest, ggpubr, olsrr)
 ```
 
 The following packages assists us to accomplish the following:
@@ -1016,7 +1016,7 @@ shopping_malls_raw = read_xlsx("Take-Home_Ex03/aspatial/malls-20230320.xlsx")
 
 ## Filtering HDB Resale Flat Data
 
-We will now filter the HDB Resale to focus on the target months, Jan 2020 to Feb 2023, and 5 Room HDBs to construct the predictive model. We will use:
+We will now filter the HDB Resale to focus on the target months, Jan 2021 to Feb 2023, and 5 Room HDBs to construct the predictive model. We will use:
 
 -   *filter()* to filter out the desired room type and months
 
@@ -1029,7 +1029,7 @@ We will now filter the HDB Resale to focus on the target months, Jan 2020 to Feb
 
 ```{r}
 hdb_resale <- filter(hdb_resale_raw, flat_type == "5 ROOM") %>%
-              filter(month >= "2020-01" & month <= "2023-02")
+              filter(month >= "2021-01" & month <= "2023-02")
 ```
 
 ## Glimpse Variables
@@ -1092,6 +1092,12 @@ hdb_resale_trans <- hdb_resale %>%
   mutate(hdb_resale, remaining_lease_mths = (as.integer(str_sub(remaining_lease, 0, 2)) * 12 + ifelse(is.na(as.integer(str_sub(remaining_lease, 9, 11))), 0,  as.integer(str_sub(remaining_lease, 9, 11)))))
 ```
 
+Next, we also need to obtain the age of the HDBs. In Singapore, HDB leases are 99 years. We can take `99 - remaining_lease_mths` to obtain `age_of_unit_mths`
+
+```{r}
+hdb_resale_trans <- hdb_resale_trans %>% mutate(age_of_unit_mths = (99*12) - remaining_lease_mths)
+```
+
 Next, let us left join the HDB HIP MUP data into HDB Resale Transactions so that we know which HDB units have already completed their upgrading.
 
 ```{r}
@@ -1102,7 +1108,7 @@ glimpse(hdb_resale_trans)
 Then we'll select only the unnecessary columns:
 
 ```{r}
-hdb_resale_trans <- hdb_resale_trans %>% select(c(1:13, 16))
+hdb_resale_trans <- hdb_resale_trans %>% select(c(1:14, 17))
 ```
 :::
 
@@ -1304,16 +1310,25 @@ At any step if there are issues, we will detail steps to fix or recover from it.
 
     Here, using *filter()* and *is.na()*, we find out which records do not have a valid location assigned to it. Now, let us manually check through the records and fix the issue.
 
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | CHAS Clinic Address                                                     | Issue                                                                        |
-    |-------------------------------------------------------------------------|------------------------------------------------------------------------------|
+    +=========================================================================+==============================================================================+
     | 189, Selegie Road, Selegie Centre, #01- 05, Singapore 188332            | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 140, Corporation Drive, #01- 03                                         | Postal Code number **610140** according to OneMap, we will amend accordingly |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 6, Gemmill Lane                                                         | Postal Code number **069249** according to OneMap, we will amend accordingly |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 102, Yishun Avenue 5, #01- 133, Singapore\\r\\n760102                   | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 34, Craig Road, Chinatown Plaza, #01- 04,\\r\\nSingapore 089673         | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 1, Rochor Road, Rochor Centre, #03- 516,\\r\\nSingapore 180001          | No longer exists based on Onemap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 51, TAMPINES AVENUE 4, OUR TAMPINES\\r\\nHUB, #B1- 04/05                | Records are appended as **528523** on OneMap, we will amend accordingly      |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 50, Market Street, Golden Shoe Car Park,\\r\\n#01- 30, Singapore 048940 | No longer exists based on OneMap and Google Map, we will remove it           |
+    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
 
     Now, let us update:
 
@@ -1466,7 +1481,7 @@ At any step if there are issues, we will detail steps to fix or recover from it.
 
     #### Fixing Data
 
-    ::: {.panel-tabset .column-screen-inset-left}
+    ::: panel-tabset
     ## 1. Update Records
 
     We use *mutate()* to replace the existing addresses with more specific ones that we found on OneMap.
@@ -1554,7 +1569,7 @@ At any step if there are issues, we will detail steps to fix or recover from it.
       tm_polygons("REGION_N",
                   alpha = 0.5) +
     tm_shape(hdb_resale_sf) +
-      tm_dots("town")
+      tm_dots("town", size = 0.05)
     ```
 
     [View Interactive Version of Map here](thex03_hdbplot2.html){target="_blank"}! *\[20+mb\]*
@@ -1723,14 +1738,6 @@ geo_hdb_resale <- read_rds("Take-Home_Ex03/rds/geo_hdb_resale.rds")
 ```
 :::
 
-```{r}
-#tmap_mode("view")
-#tm_shape(hdb_resale) +
-#  tm_dots("resale_price",
-#      
-#popup.vars=c("month"="month", "town"="town", "block" = "block", "street_name" = "street_name"))
-```
-
 # Preparing Structural Factors
 
 Looking at the list of structural factors, there are some factors that requires further processing. These strucutral factors are listed in the table below.
@@ -1752,17 +1759,6 @@ Looking at the list of structural factors, there are some factors that requires 
 +----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
 | Apartment Multi-story                  | Categorical | This data has to be derived and standardised from `flat_model`                                                                  |
 +----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
-=======
-| dName of Structural Factor             | Data Type   | Remarks                                                                                                                         |
-|----------------------------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------|
-| Area of Unit                           | Numerical   |                                                                                                                                 |
-| Floor Level                            | Categorical | Requires recoding of values                                                                                                     |
-| Remaining Lease                        | Numerical   | Data has been processed to numerical readable values in months in [Transforming Aspatial Data - Create New Columns with Values] |
-| Age of the unit                        | Numerical   |                                                                                                                                 |
-| Main Upgrading Program (MUP) Completed | Categorical | Requires one-hot encoding                                                                                                       |
-| Apartment Model                        | Categorical | This data has to be derived and standardised from `flat_model`                                                                  |
-| Apartment Multi-story                  | Categorical | This data has to be derived and standardised from `flat_model`                                                                  |
-## Floor Level
 
 Now, let us first look at the floor levels.
 
@@ -1845,21 +1841,8 @@ Let us recode them so that the model can generalise better.
 +------------------------+---------------------------------------+------------------------------+
 | 3Gen                   | 3Gen = 1                              | 0                            |
 +------------------------+---------------------------------------+------------------------------+
-=======
-| Original Values        | Recoded Values (model\_\<valuename\>) | Recoded Values (multistorey) |
-|------------------------|---------------------------------------|------------------------------|
-| Improved               | Standard = 1                          | 0                            |
-| Standard               | Standard = 1                          | 0                            |
-| DBSS                   | DBSS = 1                              | 0                            |
-| Model A                | Standard = 1                          | 0                            |
-| Adjoined flat          | Adjoined = 1                          | 0                            |
-| Premium Apartment      | Premium = 1                           | 0                            |
-| Type S2                | S2 = 1                                | 0                            |
-| Model A-Maisonette     | Standard = 1                          | 1                            |
-| Premium Apartment Loft | Premium = 1                           | 1                            |
-| Improved - Maisonette  | Standard = 1                          | 1                            |
-| 3Gen                   | 3Gen = 1                              | 0                            |
-## Create Multistorey Columns
+
+\## Create Multistorey Columns
 
 Using the code chunk below, we will check if the `flat_model` corresponds to the following types, if it is, we code the value in the `multistorey` as 1. Else, 0 is assigned.
 
@@ -1873,9 +1856,9 @@ geo_hdb_resale <- geo_hdb_resale %>% mutate(multistorey = ifelse(flat_model %in%
 geo_hdb_resale <- geo_hdb_resale %>% mutate(model_standard = ifelse(flat_model %in% c("Improved", "Standard", "Model A", "Model A-Maisonette", "Improved-Maisonette"), 1, 0))
 geo_hdb_resale <- geo_hdb_resale %>% mutate(model_premium = ifelse(flat_model %in% c("Premium Apartment", "Premium Apartment Loft"), 1, 0))
 geo_hdb_resale <- geo_hdb_resale %>% mutate(model_dbss = ifelse(flat_model %in% c("DBSS"), 1, 0))
-geo_hdb_resale <- geo_hdb_resale %>% mutate(model_adjoined = ifelse(flat_model %in% c("Adjoined"), 1, 0))
+geo_hdb_resale <- geo_hdb_resale %>% mutate(model_adjoined = ifelse(flat_model %in% c("Adjoined flat"), 1, 0))
 geo_hdb_resale <- geo_hdb_resale %>% mutate(model_3gen = ifelse(flat_model %in% c("3Gen"), 1, 0))
-geo_hdb_resale <- geo_hdb_resale %>% mutate(model_s2 = ifelse(flat_model %in% c("S2"), 1, 0))
+geo_hdb_resale <- geo_hdb_resale %>% mutate(model_s2 = ifelse(flat_model %in% c("Type S2"), 1, 0))
 ```
 
 Nice, we have completed our recoding, let us view a snippet of our data
@@ -1900,7 +1883,7 @@ Using the code chunk, we will recode the respective values into the respective c
 
 ```{r}
 geo_hdb_resale <- geo_hdb_resale %>% mutate(hip = ifelse(is.na(TYPE), 0, ifelse(TYPE == "HIP", 1, 0)))
-geo_hdb_resale <- geo_hdb_resale %>% mutate(hip = ifelse(is.na(TYPE), 0, ifelse(TYPE == "MUP", 1, 0)))
+geo_hdb_resale <- geo_hdb_resale %>% mutate(mup = ifelse(is.na(TYPE), 0, ifelse(TYPE == "MUP", 1, 0)))
 ```
 
 The manipulation is complete, let us glimpse the values.
@@ -1980,7 +1963,70 @@ In this scenerio, while we can take log of `resale_price`, we will not perform t
 
 ## Understanding Structural Factors
 
+```{r}
+s_factor <- c("floor_area_sqm", "storey_order", "remaining_lease_mths", "age_of_unit_mths")
+s_factor_cat <- c("mup", "hip", "model_standard", "model_premium", "model_dbss", "model_adjoined", "model_3gen", "model_s2", "multistorey")
+```
+
+```{r}
+s_factor_hist_list <- c()
+for (i in 1:length(s_factor)) {
+  hist_plot <- ggplot(final_resale, aes_string(x = s_factor[[i]])) +
+    geom_histogram(color="black", fill = "lightblue") +
+    labs(title = s_factor[[i]]) +
+    theme(plot.title = element_text(size = 10),
+          axis.title = element_blank())
+  
+  s_factor_hist_list[[i]] <- hist_plot
+}
+
+s_factor_hist_list_cat <- c()
+for (i in 1:length(s_factor_cat)) {
+  hist_plot <- ggplot(final_resale, aes_string(x = s_factor_cat[[i]])) +
+    geom_histogram(bins = 2, color="black", fill = "lightblue") +
+    labs(title = s_factor_cat[[i]]) +
+    theme(plot.title = element_text(size = 10),
+          axis.title = element_blank())
+  
+  s_factor_hist_list_cat[[i]] <- hist_plot
+}
+```
+
+```{r}
+ggarrange(plotlist = s_factor_hist_list,
+          ncol = 2,
+          nrow = 2)
+
+ggarrange(plotlist = s_factor_hist_list_cat,
+          ncol = 3,
+          nrow = 3)
+```
+
 ## Understanding Locational Factors
+
+```{r}
+l_factor <- c("PROX_CBD", "PROX_ELDER", "PROX_HAWKER", "PROX_MRT_E",
+              "PROX_PARK", "PROX_TOP_SCH", "PROX_MALL", "PROX_SUPMKT",
+              "PROX_TRK_MRT", "PROX_TRK_LRT")
+
+l_factor_hist_list <- c()
+for (i in 1:length(l_factor)) {
+  hist_plot <- ggplot(final_resale, aes_string(x = l_factor[[i]])) +
+    geom_histogram(color="black", fill = "lightblue") +
+    labs(title = l_factor[[i]]) +
+    theme(plot.title = element_text(size = 10),
+          axis.title = element_blank())
+  
+  l_factor_hist_list[[i]] <- hist_plot
+}
+
+```
+
+```{r}
+ggarrange(plotlist = l_factor_hist_list,
+          ncol = 2,
+          nrow = 2)
+```
 
 ## Statistical Point Map
 
@@ -1997,6 +2043,141 @@ tm_shape(final_resale) +
           size = 0.05,
           palette = "Set2")
 ```
+
+## Computing Correlation Matrix
+
+Before we create the OLS and Machine Learning Models to predict housing prices, we need to check if there is any strong correlation which suggests multicollinearity. We will drop one of the variable if there is a pair which correlation above 0.8 (very strong positive correlation) or below -0.8 (very strong negative correlation).
+
+The code chunk below exports the correlation plot into a png so that the text is more readable and image is higher in resolution.
+
+```{r}
+#| column: screen-left
+
+final_resale_nogeom <- final_resale %>% st_drop_geometry()
+
+png(file="Take-Home_Ex03/corr.png", res=300, width=2500, height=2000)
+corrplot::corrplot(cor(final_resale_nogeom[,c(5, 7:34)]),
+                   diag = FALSE,
+                   order = "AOE",
+                   tl.pos = "td",
+                   tl.cex = 0.5,
+                   number.cex = 0.4,
+                   number.font = 2,
+                   number.digits = 2,
+                   method = "number",
+                   type = "upper")
+while (!is.null(dev.list()))  dev.off()
+```
+
+![](Take-Home_Ex03/corr.png)
+
+From the correlation matrix above, we can see that:
+
+-   `age_of_unit_mths` and `remaining_lease_mths` have perfect negative correlation since the `age_of_unit_mths` was derived using `(99 years x 12 mths) - remaining_lease_mths`. In this case, we will remove `age_of_unit_mths`
+
+-   `model_standard` and `model_premium` has a very strong negative correlation of -0.88 since in most scenerios, if a unit is not a standard one, it is premium. We will remove the `model_premium` variable
+
+Using the code chunk below, we will drop the two variables selected, `age_of_unit_mths` and `model_premium`.
+
+```{r}
+final_resale <- select(final_resale, c(-age_of_unit_mths, -model_premium))
+```
+
+## Preparing Model and Test Data
+
+For our models, we want to use data from Jan 2021 to Dec 2022 to build our model and Jan to Feb 2023 to predict and test our models. The code below will help us split the dataset into two:
+
+```{r}
+resale.model <- final_resale %>% filter(!month %in% c("2023-01", "2023-02"))
+resale.test <- final_resale %>% filter(month %in% c("2023-01", "2023-02"))
+```
+
+# OLS Multiple Linear Regression Model
+
+## Building the OLS Model using olsrr
+
+```{r}
+resale.mlr <- lm(formula = resale_price ~ floor_area_sqm + remaining_lease_mths + PROX_CBD + PROX_ELDER + PROX_HAWKER + PROX_MRT_E + PROX_PARK + PROX_TOP_SCH + PROX_MALL + PROX_SUPMKT + PROX_TRK_MRT + PROX_TRK_LRT + NUM_350_CHILD + NUM_350_BUS + NUM_1000_SCH + NUM_800_MRT_F + NUM_350_LRT + storey_order + multistorey + model_standard + model_dbss + model_adjoined + model_3gen + model_s2 + hip + mup,
+                 data = resale.model)
+ols_regress(resale.mlr)
+```
+
+## Testing for Linear Regression Assumptions
+
+::: panel-tabset
+## Multicolinearity
+
+```{r}
+ols_vif_tol(resale.mlr)
+```
+
+## Non-Linearity
+
+```{r}
+ols_plot_resid_fit(resale.mlr)
+```
+
+## Normality
+
+```{r}
+ols_plot_resid_hist(resale.mlr)
+```
+
+## Spatial Autocorrelation
+
+```{r}
+resale.mlr.residuals <- as.data.frame(resale.mlr$residuals)
+final_resale.mlr.residuals <- cbind(resale.model, resale.mlr.residuals) %>%
+  rename(`MLR_RES` = `resale.mlr.residuals`)
+final_resale.mlr.sp <- as_Spatial(final_resale.mlr.residuals)
+final_resale.mlr.sp
+```
+
+```{r}
+tmap_mode("view")
+tm_shape(mpsz) +
+  tm_polygons("REGION_N",
+              alpha = 0.5) +
+tm_shape(final_resale.mlr.sp) +
+  tm_dots("MLR_RES",
+          size = 0.05)
+```
+:::
+
+```{r}
+summary(final_resale)
+```
+
+```{r}
+resale.mlrtest <- resale.test
+resale.mlrtest$predict  <- predict(object = resale.mlr, newdata = resale.mlrtest)
+```
+
+```{r}
+resale.mlrtest <- resale.mlrtest %>% mutate(error = resale.mlrtest$predict - resale.mlrtest$resale_price)
+```
+
+```{r}
+tmap_mode("view")
+tmap_mode("view")
+tm_shape(mpsz) +
+  tm_polygons("REGION_N",
+              alpha = 0.2) +
+tm_shape(resale.mlrtest) +
+  tm_dots("error",
+          size = 0.05,
+          style = "quantile")
+```
+
+```{r}
+MSE <- mean((resale.mlrtest$error)^2)
+```
+
+```{r}
+ols_pred_rsq(resale.mlr)
+```
+
+# Geographical Random Forest Model
 
 # Credits
 
