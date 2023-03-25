@@ -3,7 +3,7 @@ title: "Take-Home Exercise 03: Predicting HDB Public Housing Resale Prices Using
 description: "Predicting HDB Public Housing Resale Prices Using Geographically Weighted Methods trained using Jan 2021 to Dec 2022 and tested with Jan to Feb 2023"
 author: "Teo Ren Jie"
 date: "3/12/2023"
-date-modified: "3/19/2023"
+date-modified: "3/25/2023"
 number-sections: true
 categories: ["Take-Home Exercise"]
 title-block-banner: true
@@ -2319,8 +2319,6 @@ ggplot(data = resale.rftest.tmap,
   geom_boxplot()
 ```
 
-## 
-
 # Comparative Analysis
 
 Now that we have completed building and predicting the the OLS Linear Regression and SpatialML's Geographically Weighted Random Forest model performance, let us do a side-by-side comparison of both model's performance.
@@ -2425,6 +2423,38 @@ From our box plot, we can see that the GWRF model is better in OLS MLR model in 
 2.  GWR a smaller range of error between the 0th Quartile and 4th Quartile, meaning that the range of errors is lesser than OLS MLR model
 3.  GWR's range of errors are closer to zero, meaning predictions are closer to actual resale price of HDBs than OLS MLR model
 
+### Understanding RMSE by Town
+
+To understand the RMSE
+
+```{r}
+TOWN <- unique(resale.mlrtest$town)
+RMSE_TOWN <- data.frame()
+
+for (t in TOWN){
+  
+  x <- filter(resale.mlrtest, resale.mlrtest$town == t)
+  y <- filter(test_data_p, test_data_p$town == t)
+  
+  xr <- rmse(x$resale_price, x$predict)
+  yr <- rmse(y$resale_price, y$GRF_pred)
+  
+  row <- data.frame(town = t, olsrmse = xr, gwrfrmse = yr)
+  RMSE_TOWN <- rbind(RMSE_TOWN, row)
+}
+
+RMSE_TOWN <- RMSE_TOWN %>% mutate(change_rmse = RMSE_TOWN$olsrmse - RMSE_TOWN$gwrfrmse)
+RMSE_TOWN
+
+RMSE_TOWN[order(-RMSE_TOWN$change_rmse),]
+```
+
+From viewing the changes of RMSE in different HDB towns, we can see that the RMSE scores improved in all towns except Bedok and Hougang .
+
+This means that for predictions of HDB resale prices in all towns except Bedok and Hougang, they became more accurate moving from OLS Multiple Linear Regression model to Geographically Weighted Random Forest model. Only Bedok's and Hougang's resale pricing predictions became worse, Bedok by -\$17129.53 in mean root mean squared errors and Hougang by -\$7604.37 in RMSE.
+
+More investigation would have to be done to understand further about why the two towns, Bedok and Hougang, became worse at predicting HDB resale prices with the GWRF model.
+
 ## Map Comparison
 
 ### Plot of Errors
@@ -2453,11 +2483,11 @@ tm_shape(resale.rftest.tmap) +
 tmap_arrange(t1, t2, ncol = 2, sync = TRUE)
 ```
 
-## Comparative Analysis of Errors by Towns
+## Comparative Analysis of RMSE by Towns
 
 Let us zoom into the specific HDB towns and compare the predicted errors between OLS Multiple Linear Regression and Geographically Weighted Random Forest models.
 
-For reference, the interactive map on the left is the results from OLS Multiple Linear Regression Model and the right is from the Goegraphically Weighted Random Forest.
+For reference, the interactive map on the left is the results from OLS Multiple Linear Regression Model and the right is from the Geographically Weighted Random Forest.
 
 We have chosen a list of towns from different regions of Singapore that was designed with different planning principles and built in different time periods:
 
@@ -2467,7 +2497,7 @@ We have chosen a list of towns from different regions of Singapore that was desi
 4.  Tampines - East
 5.  Bukit Merah - Central
 
-### Generate Error Town Function
+### Generate Error by Town Function
 
 Using the function below, we can plot interactive tmaps of errors in different HDB towns by calling the `generate_error_town` with 2 spatial dataframes and the HDB Town (`AREA)` to be filtered. A side-byside tmap will be generated and movement will be synced across both maps.
 
@@ -2482,33 +2512,32 @@ generate_error_town <- function(geo1, geo2, AREA) {
             size = 0.05,
             alpha = 0.7,
             breaks = c(-Inf, -200000, -100000, -75000, -50000, -25000, 0, 25000, 50000, 75000, Inf)) +
-    tm_view(set.zoom.limits = c(13, 15))
+    tm_view(set.zoom.limits = c(13, 16))
   t2 <- 
     tm_shape(plot_map_t2) +
       tm_dots("error",
             size = 0.05,
             alpha = 0.7,
             breaks = c(-Inf, -200000, -100000, -75000, -50000, -25000, 0, 25000, 50000, 75000, Inf)) +
-    tm_view(set.zoom.limits = c(13, 15))
+    tm_view(set.zoom.limits = c(13, 16))
   
   tmap_arrange(t1, t2, ncol = 2, sync = TRUE)
 }
 ```
 
+### Generate RMSE by Town
+
+The code block below will generate the RMSE (Root Mean Squared Errors) for each HDB Town specified. This measure could be used to compare:
+
+1.  Same model, across towns
+2.  Different model, same dataset (town or full dataset)
+
+This could give us a sensing of how well the model is good at predicting each area's reasale house pricings.
+
+Sample Code for `Yishun`:
+
 ```{r}
-generate_rmse_town <- function(geo1, geo2, AREA) {
-  plot_map_t1 <- filter(geo1, town == AREA)
-  plot_map_t2 <- filter(geo2, town == AREA)
-  t1r <- rmse(plot_map_t1$resale_price, plot_map_t1$predict)
-  t2r <- rmse(plot_map_t2$resale_price, plot_map_t2$GRF_pred)
-  print("RMSE FOR: ")
-  print(AREA)
-  print("==============")
-  print("RMSE OLS:")
-  print(t1r)
-  print("RMSE GWRF:")
-  print(t2r)
-}
+RMSE_TOWN %>% filter(town == "YISHUN")
 ```
 
 ### Jurong West - West
@@ -2523,10 +2552,15 @@ generate_error_town(resale.mlrtest, resale.rftest.tmap, "JURONG WEST")
 
 ```{r}
 #| code-fold: true
-generate_rmse_town(resale.mlrtest, test_data_p, "JURONG WEST")
+RMSE_TOWN %>% filter(town == "JURONG WEST")
 ```
 
-There are lesser extreme errors
+There are lesser extreme errors in the Geographically Weighted Random Forest model from the OLS Multiple Linear Regression model, the Root Mean Squared Error (RMSE) for Jurong West fell from \$63789.10 to \$44813.36 when moving from OLS to GWRF models.. Most predicted HDB resale pricing is closer to 0.
+
+Takeaway points:
+
+1.  Best improved cluster of HDB resale units were near Corporation Rd and Corporation Dr to the South West corner of Jurong Lake Gardens. The predicted values in the GWRF model was close to actual pricing (within +/- 25,000).
+2.  GWRF could have improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values.
 
 ### Woodlands - North
 
@@ -2540,10 +2574,15 @@ generate_error_town(resale.mlrtest, resale.rftest.tmap, "WOODLANDS")
 
 ```{r}
 #| code-fold: true
-generate_rmse_town(resale.mlrtest, test_data_p, "WOODLANDS")
+RMSE_TOWN %>% filter(town == "WOODLANDS")
 ```
 
-There are lesser extreme errors
+There are lesser extreme errors in the Geographically Weighted Random Forest model from the OLS Multiple Linear Regression model, the Root Mean Squared Error (RMSE) for Woodlands fell from \$64160.62 to \$42264.54 when moving from OLS to GWRF models.. Most predicted HDB resale pricing is closer to 0.
+
+Takeaway points:
+
+1.  Most HDB predictions improved from -\$200,000 to -\$75,000 errors from Predicted to Actual resale values to \$-50,000 to \$0 error, going from OLS MLR model to GWRF model. This means that the GWRF model can more accurately in most instances, predict housing prices closer to its actual values.
+2.  GWRF could have improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values. However, the GWRF model may have worsened the predictions for certain specific HDBs, specifically the ones right beside the MRT station (Admiralty and Woodlands MRT stations).
 
 ### Punggol - North East
 
@@ -2557,10 +2596,19 @@ generate_error_town(resale.mlrtest, resale.rftest.tmap, "PUNGGOL")
 
 ```{r}
 #| code-fold: true
-generate_rmse_town(resale.mlrtest, test_data_p, "PUNGGOL")
+RMSE_TOWN %>% filter(town == "PUNGGOL")
 ```
 
-There are lesser extreme errors
+There are lesser extreme errors in the Geographically Weighted Random Forest model from the OLS Multiple Linear Regression model, the Root Mean Squared Error (RMSE) for Punggol fell from \$102508.70 to \$41495.72 when moving from OLS to GWRF models.. Most predicted HDB resale pricing is closer to 0.
+
+Takeaway points:
+
+1.  Most HDB predictions improved from -\$200,000 to -\$100,000 errors from Predicted to Actual resale values to \$-25,000 to \$0 error, going from OLS MLR model to GWRF model. This means that the GWRF model can more accurately in most instances, predict housing prices closer to its actual values.
+2.  GWRF could have improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values. \
+    \
+    As we see, most resale housing in Punggol were closer to the actual predicted values, meaning that there is a general possibility of increased popularity of Punggol HDB resale units that could not be captured or interpreted using a Linear Regression model without context of Geographic clustering or with the predictors. \
+    \
+    In this scenerio, we can see the importance of Geographic Weighted methods if clustering is observed between points as there might be unknown correlation that cannot be seen or interpreted without the knowledge of geospatial data.
 
 ### Tampines - East
 
@@ -2574,10 +2622,18 @@ generate_error_town(resale.mlrtest, resale.rftest.tmap, "TAMPINES")
 
 ```{r}
 #| code-fold: true
-generate_rmse_town(resale.mlrtest, test_data_p, "TAMPINES")
+RMSE_TOWN %>% filter(town == "TAMPINES")
 ```
 
 There are lesser extreme errors
+
+There are lesser extreme errors in the Geographically Weighted Random Forest model from the OLS Multiple Linear Regression model, the Root Mean Squared Error (RMSE) for Tampines fell from \$63875.32 to \$59416.10 when moving from OLS to GWRF models. Most predicted HDB resale pricing is closer to 0.
+
+Takeaway points:
+
+1.  Most HDB predictions improved from -\$75,000 to -\$50,000 errors from Predicted to Actual resale values to \$-50,000 to \$0 error, going from OLS MLR model to GWRF model. This means that the GWRF model can more accurately in most instances, predict housing prices closer to its actual values.
+2.  However, we also observe more instances of over-prediction of HDB resale pricing near the edges of Tampines
+3.  GWRF could have improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values.
 
 ### Bukit Merah - Central
 
@@ -2591,12 +2647,42 @@ generate_error_town(resale.mlrtest, resale.rftest.tmap, "BUKIT MERAH")
 
 ```{r}
 #| code-fold: true
-generate_rmse_town(resale.mlrtest, test_data_p, "BUKIT MERAH")
+RMSE_TOWN %>% filter(town == "BUKIT MERAH")
 ```
 
-There are lesser extreme errors
+There are lesser extreme errors in the Geographically Weighted Random Forest model from the OLS Multiple Linear Regression model, the Root Mean Squared Error (RMSE) for Bukit Merah fell from \$116461 to \$67249.40 when moving from OLS to GWRF models. Most predicted HDB resale pricing is closer to 0.
 
-## Conclusion
+Takeaway points:
+
+1.  Most HDB predictions improved from the extreme less than \$-200,000 errors errors from Predicted to Actual resale values to \$-25,000 to \$0 error, going from OLS MLR model to GWRF model. This means that the GWRF model can more accurately in most instances, predict housing prices closer to its actual values.
+2.  There are a few more instances of overprediction in the GWRF model though, between \$25,000 to \$75,000 to its actual resale value.
+3.  GWRF could have improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values. \
+    \
+    In this case, Bukit Merah which is nearer to the Central Business District could have its pricing corrected more since the linear regression predictors cannot estimate the effects of proximity to CBD well enough, or, there could be unknown geographical effects seen in Punggol town where resale housing in the town could be seen as more attractive to buyers.
+
+### Bedok - East
+
+```{r}
+#| column: screen-inset-shaded
+#| code-fold: true
+generate_error_town(resale.mlrtest, resale.rftest.tmap, "BEDOK")
+```
+
+*left): OLS Multiple Linear Regression \| (right): Geographically Weighted Random Forest*
+
+```{r}
+#| code-fold: true
+RMSE_TOWN %>% filter(town == "BEDOK")
+```
+
+The Root Mean Squared Error (RMSE) for Bedok rose from \$63,599 to \$80728.54 when moving from OLS to GWRF models. Predicted HDB prices that were initially close to \$0 predicted worse moving from OLS to GWRF models.
+
+Takeaway points:
+
+1.  There are a more instances of underprediction or extreme underprediction of HDB resale prices moving from OLS to GWRF models
+2.  GWRF could have worsened the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values. We cannot conslucively tell and conclude what factors made the GWRF model predict worse than the OLS model.
+
+# Conclusion
 
 Accesbility metrics may be useful instead of distance to regions - less acccurate prediction vs network
 
