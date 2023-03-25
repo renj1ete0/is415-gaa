@@ -17,9 +17,11 @@ execute:
 
 ## Setting the Scene
 
-\<add context\>
+Singapore's Housing Development Board (HDB) flats are quite ubiquitous, being the most common housing type Singaporeans live in.
 
-bal bla we are lookign at 5 storey HDB bla bla
+In recent months, questions about [HDB affordability](https://www.channelnewsasia.com/singapore/bto-flats-hdb-affordable-prices-development-costs-3127281) has been raised, which led to PM Lee's assurance on affordability housing for all in [Budget 2023](https://www.straitstimes.com/singapore/housing/singaporeans-will-not-have-to-worry-about-having-an-affordable-home-to-call-their-own-pm-lee). Yet, in the past year, [more million dollar HDBs](https://www.reuters.com/markets/asia/singapore-sees-rise-million-dollar-public-housing-2022-08-31/)were resold.
+
+So how could we understand and predict HDB resale prices? Are they due to the location and proximity to points of interest? Or are they due to the type and size of HDB? Could there also be unknown increased demand in certain geographical araes in Singapore that leads to many of these million dollar HDBs?
 
 ## Tasks
 
@@ -34,7 +36,7 @@ The training data will consist of 5-room HDB resale data between January 2021 to
 Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and funModeling.
 
 ```{r}
-pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite, onemapsgapi, rvest, ggpubr, olsrr, GWmodel, SpatialML, Metrics, ggplot2, plotly, spdep)
+pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, rvest, httr, jsonlite, onemapsgapi, ggpubr, olsrr, GWmodel, SpatialML, Metrics, ggplot2, plotly, spdep)
 ```
 
 The following packages assists us to accomplish the following:
@@ -47,9 +49,17 @@ The following packages assists us to accomplish the following:
 
 -   *tmap* provides functions to allow us to plot high quality static or interactive maps using leaflet API
 
--   *gifski* helps us to handle the GIF animation for tmap
+-   *rvest, httr*, *jsonlite*, *onemapsgapi* helps us to handle requests, convert json data and load datasets directly from onemap
 
-## 
+-   *ggpubr*, *ggplot2, plotly* helps us with plotting the interactive and beautiful graphs
+
+-   *olsrr* helps with Ordinary Least Squares Linear Regression
+
+-   *Gwmodel* and *SpatialML* helps with the creation and prediction of Geographically Weighted Random Forest Machine Learning model
+
+-   *Metrics* helps to calculate the RMSE (Root Means Squared Error) metrics for the prediction
+
+-   *spdep* helps with calculation with nearest neighbours to provide data to calculate the Moran I's statistics to determine clustering effects
 
 ## Data Acquisition
 
@@ -1308,25 +1318,16 @@ At any step if there are issues, we will detail steps to fix or recover from it.
 
     Here, using *filter()* and *is.na()*, we find out which records do not have a valid location assigned to it. Now, let us manually check through the records and fix the issue.
 
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | CHAS Clinic Address                                                     | Issue                                                                        |
-    +=========================================================================+==============================================================================+
+    |-------------------------------------------------------------------------|------------------------------------------------------------------------------|
     | 189, Selegie Road, Selegie Centre, #01- 05, Singapore 188332            | No longer exists based on Onemap and Google Map, we will remove it           |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 140, Corporation Drive, #01- 03                                         | Postal Code number **610140** according to OneMap, we will amend accordingly |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 6, Gemmill Lane                                                         | Postal Code number **069249** according to OneMap, we will amend accordingly |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 102, Yishun Avenue 5, #01- 133, Singapore\\r\\n760102                   | No longer exists based on Onemap and Google Map, we will remove it           |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 34, Craig Road, Chinatown Plaza, #01- 04,\\r\\nSingapore 089673         | No longer exists based on Onemap and Google Map, we will remove it           |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 1, Rochor Road, Rochor Centre, #03- 516,\\r\\nSingapore 180001          | No longer exists based on Onemap and Google Map, we will remove it           |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 51, TAMPINES AVENUE 4, OUR TAMPINES\\r\\nHUB, #B1- 04/05                | Records are appended as **528523** on OneMap, we will amend accordingly      |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
     | 50, Market Street, Golden Shoe Car Park,\\r\\n#01- 30, Singapore 048940 | No longer exists based on OneMap and Google Map, we will remove it           |
-    +-------------------------------------------------------------------------+------------------------------------------------------------------------------+
 
     Now, let us update:
 
@@ -1740,23 +1741,15 @@ geo_hdb_resale <- read_rds("Take-Home_Ex03/rds/geo_hdb_resale.rds")
 
 Looking at the list of structural factors, there are some factors that requires further processing. These strucutral factors are listed in the table below.
 
-+----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
 | dName of Structural Factor             | Data Type   | Remarks                                                                                                                         |
-+========================================+=============+=================================================================================================================================+
+|----------------------------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------|
 | Area of Unit                           | Numerical   |                                                                                                                                 |
-+----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
 | Floor Level                            | Categorical | Requires recoding of values                                                                                                     |
-+----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
 | Remaining Lease                        | Numerical   | Data has been processed to numerical readable values in months in [Transforming Aspatial Data - Create New Columns with Values] |
-+----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
 | Age of the unit                        | Numerical   |                                                                                                                                 |
-+----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
 | Main Upgrading Program (MUP) Completed | Categorical | Requires one-hot encoding                                                                                                       |
-+----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
 | Apartment Model                        | Categorical | This data has to be derived and standardised from `flat_model`                                                                  |
-+----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
 | Apartment Multi-story                  | Categorical | This data has to be derived and standardised from `flat_model`                                                                  |
-+----------------------------------------+-------------+---------------------------------------------------------------------------------------------------------------------------------+
 
 Now, let us first look at the floor levels.
 
@@ -1814,31 +1807,19 @@ Let us recode them so that the model can generalise better.
 ::: panel-tabset
 ## Recode Values
 
-+------------------------+---------------------------------------+------------------------------+
 | Original Values        | Recoded Values (model\_\<valuename\>) | Recoded Values (multistorey) |
-+========================+=======================================+==============================+
+|------------------------|---------------------------------------|------------------------------|
 | Improved               | Standard = 1                          | 0                            |
-+------------------------+---------------------------------------+------------------------------+
 | Standard               | Standard = 1                          | 0                            |
-+------------------------+---------------------------------------+------------------------------+
 | DBSS                   | DBSS = 1                              | 0                            |
-+------------------------+---------------------------------------+------------------------------+
 | Model A                | Standard = 1                          | 0                            |
-+------------------------+---------------------------------------+------------------------------+
 | Adjoined flat          | Adjoined = 1                          | 0                            |
-+------------------------+---------------------------------------+------------------------------+
 | Premium Apartment      | Premium = 1                           | 0                            |
-+------------------------+---------------------------------------+------------------------------+
 | Type S2                | S2 = 1                                | 0                            |
-+------------------------+---------------------------------------+------------------------------+
 | Model A-Maisonette     | Standard = 1                          | 1                            |
-+------------------------+---------------------------------------+------------------------------+
 | Premium Apartment Loft | Premium = 1                           | 1                            |
-+------------------------+---------------------------------------+------------------------------+
 | Improved - Maisonette  | Standard = 1                          | 1                            |
-+------------------------+---------------------------------------+------------------------------+
 | 3Gen                   | 3Gen = 1                              | 0                            |
-+------------------------+---------------------------------------+------------------------------+
 
 \## Create Multistorey Columns
 
@@ -2164,6 +2145,7 @@ resale.test <- final_resale %>% filter(month %in% c("2023-01", "2023-02"))
 ## Building the OLS Model using olsrr
 
 ```{r}
+#| code-fold: true
 resale.mlr <- lm(formula = resale_price ~ floor_area_sqm + remaining_lease_mths + PROX_CBD + PROX_ELDER + PROX_HAWKER + PROX_MRT_E + PROX_PARK + PROX_TOP_SCH + PROX_MALL + PROX_SUPMKT + PROX_TRK_MRT + PROX_TRK_LRT + NUM_350_CHILD + NUM_350_BUS + NUM_1000_SCH + NUM_800_MRT_F + NUM_350_LRT + storey_order + multistorey + model_standard + model_dbss + model_adjoined + model_3gen + model_s2 + hip + mup,
                  data = resale.model)
 ols_regress(resale.mlr)
@@ -2172,6 +2154,7 @@ ols_regress(resale.mlr)
 Based on the results above, we can see that the P-Value for all except `model_adjoined` and `model_3gen` are statistically significant, meaning that it's P-value (`Sig`) is more than or equal to 0.05. Hence, we cannot statistically conclude that the predictor is significant in contributing towards the model and we can safely remove them.
 
 ```{r}
+#| code-fold: true
 resale.mlr <- lm(formula = resale_price ~ floor_area_sqm + remaining_lease_mths + PROX_CBD + PROX_ELDER + PROX_HAWKER + PROX_MRT_E + PROX_PARK + PROX_TOP_SCH + PROX_MALL + PROX_SUPMKT + PROX_TRK_MRT + PROX_TRK_LRT + NUM_350_CHILD + NUM_350_BUS + NUM_1000_SCH + NUM_800_MRT_F + NUM_350_LRT + storey_order + multistorey + model_standard + model_dbss + model_s2 + hip + mup,
                  data = resale.model)
 ols_regress(resale.mlr)
@@ -2250,18 +2233,26 @@ From the results in the code chunk above:
 From here, since the points resemble cluster distribution, it might be a good idea to explore Geographically Weighted methods that takes into account the neighbouring points and clustering effect which may obtain a better result.
 :::
 
-Predicting OLS Multiple Linear Regression Model
+## Predicting OLS Multiple Linear Regression Model
+
+Using the code chunk below, we will first seperate out the test Dataframe to one that is specifically for Multiple Linear Regression before we merge the predicted results into the Data Frame.
 
 ```{r}
 resale.mlrtest <- resale.test
 resale.mlrtest$predict  <- predict(object = resale.mlr, newdata = resale.mlrtest)
 ```
 
+Next, we calculate the error in prediction for all rows using the formula `predict` - `resale_price`. A negative value means a precition that is below the actual resale price.
+
 ```{r}
 resale.mlrtest <- resale.mlrtest %>% mutate(error = resale.mlrtest$predict - resale.mlrtest$resale_price)
 ```
 
+Next, we can plot a interactive tmap of errors using quantile style to explore the errors.
+
 ```{r}
+#| column: screen-inset-shaded
+#| code-fold: true
 tmap_mode("view")
 tm_shape(mpsz) +
   tm_polygons("REGION_N",
@@ -2272,13 +2263,11 @@ tm_shape(resale.mlrtest) +
           style = "quantile")
 ```
 
+Lastly, using the rmse() function, we can obtain the rmse score of the test data for Jan and Feb 2023 resale data for future comparison later.
+
 ```{r}
 rmse(resale.mlrtest$resale_price, 
      resale.mlrtest$predict)
-```
-
-```{r}
-ols_pred_rsq(resale.mlr)
 ```
 
 # Geographical Random Forest Model
@@ -2411,26 +2400,42 @@ test_data_p <- read_rds("Take-Home_Ex03/model/test_data_p.rds")
 
 ### Caculating RMSE
 
+The code chunk below calculates the error using the predicted value - the actual resale pricing and merges it to another column with geometry so that we can plot it on a tmap later.
+
 ```{r}
 test_data_p <-  mutate(test_data_p, error = GRF_pred - resale_price)
 resale.rftest.tmap <- cbind(resale.test, test_data_p$error)
 names(resale.rftest.tmap)[names(resale.rftest.tmap) == 'test_data_p.error'] <- "error"
-
 ```
+
+Using the rmse() function, we can find out what the rmse score for the model so that we can compare it later.
 
 ```{r}
 rmse(test_data_p$resale_price, 
      test_data_p$GRF_pred)
 ```
 
+## Visualising the Predicted Values
+
+Using the code below, we can plot a scatterplot of the predicted values.
+
 ```{r}
-ggplot(data = test_data_p,
+gwrf.plot <- ggplot(data = test_data_p,
        aes(x = GRF_pred,
            y = resale_price)) +
   geom_point()
+ggplotly(gwrf.plot)
 ```
 
+As you can see, thepredicted values are mostly scattered along an imaginary line, which is good as this shows that the model is a good predictive model. We can also mouseover to see the outlier points that do not confirm close to the imaginary line.
+
+## Visualisation of Errors
+
+Using the interactive tmap beloow, we can plot a map of errors to explore how the Geographically Weighted Random Forest model has improved the prediction of housing prices.
+
 ```{r}
+#| column: screen-inset-shaded
+#| code-fold: true
 tmap_mode("view")
 tm_shape(mpsz) +
   tm_polygons("REGION_N",
@@ -2442,11 +2447,7 @@ tm_shape(resale.rftest.tmap) +
           style = "quantile")
 ```
 
-```{r}
-ggplot(data = resale.rftest.tmap,
-       aes(x = error, y = "")) +
-  geom_boxplot()
-```
+We will go further into the comparative analysis of OLS Multiple Linear Regression Model and Geographically Weighted Random Forest models in the next section below.
 
 # Comparative Analysis
 
@@ -2458,61 +2459,34 @@ As a recap, we will include predictors used in each model. Both models predict t
 
 OLS Multiple Linear Regression does not contain `model_3Gen` and `model_adjoined` parameters as based on analysis by the model, the two parameters are not statistically significant to the model and are removed.
 
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | OLS Multiple Linear Regression                               | Geographically Weighted Random Forest                        |
-+==============================================================+==============================================================+
+|--------------------------------------------------------------|--------------------------------------------------------------|
 | Floor Area SQM                                               | Floor Area SQM                                               |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Remaining Lease (Months)                                     | Remaining Lease (Months)                                     |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Proximity to CBD (Downtown Core Boundary - Linestring) in km | Proximity to CBD (Downtown Core Boundary - Linestring) in km |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Proximity to Eldercare in km                                 | Proximity to Eldercare in km                                 |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Proximity to Hawker Centre in km                             | Proximity to Hawker Centre in km                             |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Proximity to Existing MRT Station in km                      | Proximity to Existing MRT Station in km                      |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Proximity to Park (Boundary - Linestring) in km              | Proximity to Park (Boundary - Linestring) in km              |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Proximity to Good Primary School in km                       | Proximity to Good Primary School in km                       |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Proximity to Mall in km                                      | Proximity to Mall in km                                      |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Proximity to Supermarket in km                               | Proximity to Supermarket in km                               |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Proximity to MRT Overground Track in km                      | Proximity to MRT Overground Track in km                      |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Proximity to LRT Overground Track in km                      | Proximity to LRT Overground Track in km                      |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Number of Childcare in 350m Radius                           | Number of Childcare in 350m Radius                           |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Number of Bus Stops in 350m Radius                           | Number of Bus Stops in 350m Radius                           |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Number of Primary Schools in 1km                             | Number of Primary Schools in 1km                             |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Number of Future MRT stations in 800m                        | Number of Future MRT stations in 800m                        |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Number of LRT stations in 350m                               | Number of LRT stations in 350m                               |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | HDB Storey Level - Recoded Values (+1 = +3 stories)          | HDB Storey Level - Recoded Values (+1 = +3 stories)          |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Multistorey Apartment (1 - True, 0 - False)                  | Multistorey Apartment (1 - True, 0 - False)                  |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Standard Type Apartment (1 - True, 0 - False)                | Standard Type Apartment (1 - True, 0 - False)                |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | DBSS Type Apartment (1 - True, 0 - False)                    | DBSS Type Apartment (1 - True, 0 - False)                    |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | S2 Type Apartment (1 - True, 0 - False)                      | Adjoined Type Apartment (1 - True, 0 - False)                |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Home Improvement Programme (1 - True, 0 - False)             | 3Gen Type Apartment (1 - True, 0 - False)                    |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 | Main Upgrading Programme (1 - True, 0 - False)               | S2 Type Apartment (1 - True, 0 - False)                      |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 |                                                              | Home Improvement Programme (1 - True, 0 - False)             |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 |                                                              | Main Upgrading Programme (1 - True, 0 - False)               |
-+--------------------------------------------------------------+--------------------------------------------------------------+
 
 ## General Statistics
 
@@ -2522,11 +2496,9 @@ To compare across different models, we typically use the `RMSE` value generated 
 
 The RMSE value can be derived by `sqrt((y actual - y predicted)^2)`.
 
-+---------------+--------------------------------+---------------------------------------+
-|               | OLS Multiple Linear Regression | Geographically Weighted Random Forest |
-+===============+================================+=======================================+
-| **RMSE**      | 84198.8                        | 55089.5                               |
-+---------------+--------------------------------+---------------------------------------+
+|          | OLS Multiple Linear Regression | Geographically Weighted Random Forest |
+|----------|--------------------------------|---------------------------------------|
+| **RMSE** | 84198.8                        | 55089.5                               |
 
 The OLS Multiple Linear Regression has a RMSE error of 84198.8, meaning, the mean error for the HDB resale prices prediction is +/- \$84198.80. Similarly for Geographically Weighted Random Forest, the mean error for HDB resale prices prediction is +/- \$55089.50.
 
@@ -2733,9 +2705,13 @@ There are lesser extreme errors in the Geographically Weighted Random Forest mod
 Takeaway points:
 
 1.  Most HDB predictions improved from -\$200,000 to -\$100,000 errors from Predicted to Actual resale values to \$-25,000 to \$0 error, going from OLS MLR model to GWRF model. This means that the GWRF model can more accurately in most instances, predict housing prices closer to its actual values.
-2.  GWRF could have improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values.\
+
+2.  GWRF has improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values.\
     \
     As we see, most resale housing in Punggol were closer to the actual predicted values, meaning that there is a general possibility of increased popularity of Punggol HDB resale units that could not be captured or interpreted using a Linear Regression model without context of Geographic clustering or with the predictors.\
+
+    We can also understand this from [Statistical Point Map] if we zoom into Punggol area where the apartment units in Waterway Eastand Matilda estates are mostly in the very high outlier region. Hence, normal Linear Regression models cannot generalise this effect which may not be very well explained by the variables in put and be better understood by understanding the effects of clustering.
+
     \
     In this scenerio, we can see the importance of Geographic Weighted methods if clustering is observed between points as there might be unknown correlation that cannot be seen or interpreted without the knowledge of geospatial data.
 
@@ -2809,14 +2785,36 @@ The Root Mean Squared Error (RMSE) for Bedok rose from \$63,599 to \$80728.54 wh
 Takeaway points:
 
 1.  There are a more instances of underprediction or extreme underprediction of HDB resale prices moving from OLS to GWRF models
-2.  GWRF could have worsened the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values. We cannot conslucively tell and conclude what factors made the GWRF model predict worse than the OLS model.
+2.  GWRF could have worsened the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values. We cannot conclusively tell and conclude what factors made the GWRF model predict worse than the OLS model.
 
 # Conclusion
 
-Accesbility metrics may be useful instead of distance to regions - less acccurate prediction vs network
+We would like to conclude off with some insights and lessons learnt from this exercise.
+
+There are some predictors that may have no worked according to how we intended it to be. For example, by including the proximity data about Elevated MRT track in SIngapore, we want to see the impacts of noise to HDB units located closer to the track. However, based on our OLS Multiple Linear Regression model, this may not be the case. For every 1km away from the Elevated MRT track, housing prices drop by \$11756.273 (+/- \$553.079) from [Building the OLS Model using olsrr] earlier.
+
+Next, from our analysis in selected towns ([Punggol - North East]), we learnt that in Punggol, the 4th most improved town in terms of RMSE , we know that factoring geographical clustering effects is very important as predictor values may not be sufficient in understanding resale prices in the area, there might be other factors such as supply demand or preference for resale apartments in the area.\
+\
+In the case of Punggol, the large amounts of outlier resale apartments in Punggol could not inform the Linear Regression model adequately. Geographically Weighted Random Forest model could understanding the effects of clustering and adjust the resale prices in the area.
+
+Another reason for that failure could be the Parks data set. As seen from [Transform Parks Dataset], the way Punggol Waterway' Park's extents was highlighted only included the park region near Punggol Town Centre. However, it could be possible the housing prices along the entire Punggol Waterway stretch and the proximity of those housing cause housing prices to be increased. We could explore in future to include datasets such as Water Bodies or PCN data to improve the prediction.
+
+On the other hand, Geographically Weighted Random Forest model could make predictions worse as seen in Hougang and Bedok ([Bedok - East]) where the generated results and its RMSE scores are worse off than using Multiple Linear Regression models. However, the results are inexplicable as ultimately, Random Forest models are black boxes and we cannot backtrack to understand which part of the algorithm or variables contributed to this bad prediction.
+
+Additionally, the drawback of GWRF over OLS MLR is that GWRF takes very long to run and generates a model that is very large in size, making quick predictions impossible. However, given a longer term use case for more accurate predictions, GWRF can be considered with proper trial and error, tuning and exploration.
+
+To end off, accessibility metrics could also be explored instead of distance to regions. Proximity distances may not be the most accurate measure, especially distances to faraway places such as the CBD or town centre as the same 5 kiloemtres can mean 10 minutes by train if its near a train station vs 30 minutes by bus or even 60mins if more walking is required. Accessibility metrics using network could be utilised to better measure buyer's willingness to buy a flat based on time taken or convenience to certain key Points of Interests and locations.
 
 # Credits
 
-https://stackoverflow.com/questions/50775357/how-to-read-in-kml-file-properly-in-r-or-separate-out-lumped-variables-into-col
+[Prof Kam Tin Seong - Lesson Materials](https://is415-ay2022-23t2.netlify.app)
 
-https://www.teoalida.com/singapore/hdbflattypes/
+[Nor Aisyah - Take Home Exercise 3](https://aisyahajit2018-is415.netlify.app/posts/2021-11-07-take-home-exercise-3/?panelset26=code-chunk27#test-for-spatial-autocorrelation)
+
+[Megan Sim - Take Home Exercise 3](https://is415-msty.netlify.app/posts/2021-10-25-take-home-exercise-3/)
+
+<https://stackoverflow.com/questions/50775357/how-to-read-in-kml-file-properly-in-r-or-separate-out-lumped-variables-into-col>
+
+<https://www.teoalida.com/singapore/hdbflattypes/>
+
+Relevant documentations of R Libraries
