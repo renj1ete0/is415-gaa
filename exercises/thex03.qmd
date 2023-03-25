@@ -2395,11 +2395,11 @@ To compare across different models, we typically use the `RMSE` value generated 
 
 The RMSE value can be derived by `sqrt((y actual - y predicted)^2)`.
 
-+--------------+--------------------------------+---------------------------------------+
-|              | OLS Multiple Linear Regression | Geographically Weighted Random Forest |
-+==============+================================+=======================================+
-| **RMSE**     | 84198.8                        | 55089.5                               |
-+--------------+--------------------------------+---------------------------------------+
++---------------+--------------------------------+---------------------------------------+
+|               | OLS Multiple Linear Regression | Geographically Weighted Random Forest |
++===============+================================+=======================================+
+| **RMSE**      | 84198.8                        | 55089.5                               |
++---------------+--------------------------------+---------------------------------------+
 
 The OLS Multiple Linear Regression has a RMSE error of 84198.8, meaning, the mean error for the HDB resale prices prediction is +/- \$84198.80. Similarly for Geographically Weighted Random Forest, the mean error for HDB resale prices prediction is +/- \$55089.50.
 
@@ -2410,20 +2410,28 @@ As we can see, OLS Multiple Linear Regression has a higher RMSE score than Geogr
 Now, we will plot a boxplot to see the distribution of errors and its outliers.
 
 ```{r}
+#| code-fold: true
 boxplot <- plot_ly(x = resale.mlrtest$error, type = "box", name = "OLS MLR")
 boxplot <- boxplot %>% add_trace(x = resale.rftest.tmap$error, name = "GWRF")
 
 boxplot 
 ```
 
-From our box plot, we can see that
+*The boxplot is interactive, you may tap the plot to inspect the points and statistics of each boxplot.*
+
+From our box plot, we can see that the GWRF model is better in OLS MLR model in all aspects:
+
+1.  GWR has a less most extreme (negative and positive) outlier as compared to OLS MLR model
+2.  GWR a smaller range of error between the 0th Quartile and 4th Quartile, meaning that the range of errors is lesser than OLS MLR model
+3.  GWR's range of errors are closer to zero, meaning predictions are closer to actual resale price of HDBs than OLS MLR model
 
 ## Map Comparison
 
 ### Plot of Errors
 
 ```{r}
-#| column: screen-left
+#| column: screen-inset-shaded
+#| code-fold: true
 tmap_mode("view")
 t1 <- tm_shape(mpsz) +
   tm_polygons("REGION_N",
@@ -2487,40 +2495,106 @@ generate_error_town <- function(geo1, geo2, AREA) {
 }
 ```
 
+```{r}
+generate_rmse_town <- function(geo1, geo2, AREA) {
+  plot_map_t1 <- filter(geo1, town == AREA)
+  plot_map_t2 <- filter(geo2, town == AREA)
+  t1r <- rmse(plot_map_t1$resale_price, plot_map_t1$predict)
+  t2r <- rmse(plot_map_t2$resale_price, plot_map_t2$GRF_pred)
+  print("RMSE FOR: ")
+  print(AREA)
+  print("==============")
+  print("RMSE OLS:")
+  print(t1r)
+  print("RMSE GWRF:")
+  print(t2r)
+}
+```
+
 ### Jurong West - West
 
 ```{r}
 #| column: screen-inset-shaded
+#| code-fold: true
 generate_error_town(resale.mlrtest, resale.rftest.tmap, "JURONG WEST")
 ```
+
+*(left): OLS Multiple Linear Regression \| (right): Geographically Weighted Random Forest*
+
+```{r}
+#| code-fold: true
+generate_rmse_town(resale.mlrtest, test_data_p, "JURONG WEST")
+```
+
+There are lesser extreme errors
 
 ### Woodlands - North
 
 ```{r}
 #| column: screen-inset-shaded
+#| code-fold: true
 generate_error_town(resale.mlrtest, resale.rftest.tmap, "WOODLANDS")
 ```
+
+*(left): OLS Multiple Linear Regression \| (right): Geographically Weighted Random Forest*
+
+```{r}
+#| code-fold: true
+generate_rmse_town(resale.mlrtest, test_data_p, "WOODLANDS")
+```
+
+There are lesser extreme errors
 
 ### Punggol - North East
 
 ```{r}
 #| column: screen-inset-shaded
+#| code-fold: true
 generate_error_town(resale.mlrtest, resale.rftest.tmap, "PUNGGOL")
 ```
+
+*(left): OLS Multiple Linear Regression \| (right): Geographically Weighted Random Forest*
+
+```{r}
+#| code-fold: true
+generate_rmse_town(resale.mlrtest, test_data_p, "PUNGGOL")
+```
+
+There are lesser extreme errors
 
 ### Tampines - East
 
 ```{r}
 #| column: screen-inset-shaded
+#| code-fold: true
 generate_error_town(resale.mlrtest, resale.rftest.tmap, "TAMPINES")
 ```
+
+*(left): OLS Multiple Linear Regression \| (right): Geographically Weighted Random Forest*
+
+```{r}
+#| code-fold: true
+generate_rmse_town(resale.mlrtest, test_data_p, "TAMPINES")
+```
+
+There are lesser extreme errors
 
 ### Bukit Merah - Central
 
 ```{r}
 #| column: screen-inset-shaded
+#| code-fold: true
 generate_error_town(resale.mlrtest, resale.rftest.tmap, "BUKIT MERAH")
 ```
+
+*(left): OLS Multiple Linear Regression \| (right): Geographically Weighted Random Forest*
+
+```{r}
+#| code-fold: true
+generate_rmse_town(resale.mlrtest, test_data_p, "BUKIT MERAH")
+```
+
+There are lesser extreme errors
 
 ## Conclusion
 
