@@ -34,7 +34,7 @@ The training data will consist of 5-room HDB resale data between January 2021 to
 Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and funModeling.
 
 ```{r}
-pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite, onemapsgapi, rvest, ggpubr, olsrr, GWmodel, SpatialML, Metrics, ggplot2, plotly)
+pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite, onemapsgapi, rvest, ggpubr, olsrr, GWmodel, SpatialML, Metrics, ggplot2, plotly, spdep)
 ```
 
 The following packages assists us to accomplish the following:
@@ -1961,10 +1961,16 @@ In this scenerio, while we can take log of `resale_price`, we will not perform t
 
 ## Understanding Structural Factors
 
+To understand more about the structural factors regarding 5-room HDB resale units of our prepared datasets, we can plot the graphs below.
+
+Using the code chunk below, we prepare the variables to plot according to numerical (`s_factor`) and categorical data (`s_factor_cat`).
+
 ```{r}
 s_factor <- c("floor_area_sqm", "storey_order", "remaining_lease_mths", "age_of_unit_mths")
 s_factor_cat <- c("mup", "hip", "model_standard", "model_premium", "model_dbss", "model_adjoined", "model_3gen", "model_s2", "multistorey")
 ```
+
+The code chunk below also defines the methods to plot each graph, numerical and categorical data. It will iterate the list data in `s_factor` and `s_factor_cat` respectively to seperate plots. The graph data is saved into lists `s_factor_hist_list` and `s_factor_hist_list_cat`.
 
 ```{r}
 s_factor_hist_list <- c()
@@ -1990,22 +1996,52 @@ for (i in 1:length(s_factor_cat)) {
 }
 ```
 
+Lastly with the list data, we can plot them using *ggarrange()* with our desired row and columns below.
+
+**Numerical Data:**
+
 ```{r}
 ggarrange(plotlist = s_factor_hist_list,
           ncol = 2,
           nrow = 2)
+```
 
+From the numerical plots above we can see that:
+
+-   `floor_area_sqm` is right skewed, most units has a floor area of aprox. 110sqm to 120sqm. There are outlier 5-room units with sizes of about 150sqm.
+
+-   `store_order` is right skewed. This shows that most units sold are mostly low floor units of with the most at about `storey_order` = 3, meaning 3\*3 = 9 to 11 storeys. This is so as many older HDBs are shorter in height and only newer HDBs exceed 16 storeys. Some estates like Punggol and Sengkang also has height restrictions that mostly cap new HDBs at about 16 storeys.
+
+-   `remaining_lease_mths` is left skewed, topping at at the rightmost part of the chart. It could be seen as most homeowners trying to sell their houses after the 5-year Minimum Occupation Period. As the house is older in length, the amount of apartment sales reduces. The next peak in sales after the minimum 5-year Minimum Occupation Period is approximately 20-Years.
+
+-   `age_of_unit_mths` is right skewed and a inverse relationship to `remaining_lease_mths`
+
+**Categorical Data:**
+
+```{r}
 ggarrange(plotlist = s_factor_hist_list_cat,
           ncol = 3,
           nrow = 3)
 ```
 
+-   Very little flats received the Main Upgrading Programme
+
+-   About 2000 flats received the Home Improvement Porgramme (successor to the Main Upgrading Programme)
+
+-   Standard Flat Models are approximately the inverse of Premium Flat Models
+
+-   There is very little DBSS Model Units
+
+-   Adjoined, S2 (Painnacle at Duxton), 3 Generation and Multistorey resale units are extremely rare
+
 ## Understanding Locational Factors
+
+Similarly to structural factors, we will plot the locational factors to see its trends.
 
 ```{r}
 l_factor <- c("PROX_CBD", "PROX_ELDER", "PROX_HAWKER", "PROX_MRT_E",
               "PROX_PARK", "PROX_TOP_SCH", "PROX_MALL", "PROX_SUPMKT",
-              "PROX_TRK_MRT", "PROX_TRK_LRT")
+              "PROX_TRK_MRT", "PROX_TRK_LRT", "NUM_350_CHILD", "NUM_350_BUS", "NUM_1000_SCH", "NUM_800_MRT_F", "NUM_350_LRT")
 
 l_factor_hist_list <- c()
 for (i in 1:length(l_factor)) {
@@ -2152,11 +2188,15 @@ After removing the `model_adjoined` and `model_3Gen` columns, the rest of the P-
 ols_vif_tol(resale.mlr)
 ```
 
+From the code chunk above, we can see that there is no high Multicolinearity between the variables (VIF above 5). Hence, the Multicolinearity assumption is valid.
+
 ## Non-Linearity
 
 ```{r}
 ols_plot_resid_fit(resale.mlr)
 ```
+
+Next, by viewing the plot above, we can see that most values are somewhat clustered along the 0 line and are somewhat linear. Hence, we can say that the Non-Linearity assumption is valid.
 
 ## Normality
 
@@ -2164,7 +2204,11 @@ ols_plot_resid_fit(resale.mlr)
 ols_plot_resid_hist(resale.mlr)
 ```
 
+The graph above plots the residuals, we can see that the residuals are normallly distributed hence, the normality assumption is valid.
+
 ## Spatial Autocorrelation
+
+Firstly, we will convert the residual plots to Spatial Points Data Frame for further analysis later.
 
 ```{r}
 resale.mlr.residuals <- as.data.frame(resale.mlr$residuals)
@@ -2173,6 +2217,8 @@ final_resale.mlr.residuals <- cbind(resale.model, resale.mlr.residuals) %>%
 final_resale.mlr.sp <- as_Spatial(final_resale.mlr.residuals)
 final_resale.mlr.sp
 ```
+
+Next, we plot a tmap to see the residual plots of resale units.
 
 ```{r}
 tmap_mode("view")
@@ -2183,11 +2229,28 @@ tm_shape(final_resale.mlr.sp) +
   tm_dots("MLR_RES",
           size = 0.05)
 ```
-:::
+
+From our plot above, we can see that there are signs of spatial autocorrelation. To confirm our observation is statistically true, we can perofrm the Moran's I Test. Using the code chunk below, we will calculate in sequence:
+
+1.  Obtain the distance-based weight matrixusing *dnearneigh()* using spdep
+2.  Convert neighbour lists (nb) into spatial weights
+3.  Perofrm the Moran's I Test
 
 ```{r}
-summary(final_resale)
+nb <- dnearneigh(coordinates(final_resale.mlr.sp), 0, 1500, longlat = FALSE)
+nb_lw <- nb2listw(nb, style = 'W')
+lm.morantest(resale.mlr, nb_lw)
 ```
+
+From the results in the code chunk above:
+
+1.  Since the P-value is \< 0.05, we will reject the null hypothesis that the spatial points are randomly distributed.
+2.  Since the Observed Moran I value is \> 0, we can conclude that the spatial points resemble cluster distribution
+
+From here, since the points resemble cluster distribution, it might be a good idea to explore Geographically Weighted methods that takes into account the neighbouring points and clustering effect which may obtain a better result.
+:::
+
+Predicting OLS Multiple Linear Regression Model
 
 ```{r}
 resale.mlrtest <- resale.test
@@ -2312,6 +2375,8 @@ From the above code, we can see which predictors are most important towards cont
 
 ## Predicting Test Data
 
+We can use the *predict.grf()* function to predict our test dataset of 5-room HDB resale units between Jan to Feb 2023 as prepared earlier.
+
 ```{r eval=FALSE}
 gwRF_pred <- predict.grf(gwRF_adaptive, 
                            resale.rftest, 
@@ -2320,6 +2385,8 @@ gwRF_pred <- predict.grf(gwRF_adaptive,
                            local.w=1,
                            global.w=0)
 ```
+
+Similarly as above, we save the predicted results as RDS to prevent rerunning the predictive model. The few code chunks below will also reload the dataset and combine the predicted results into the test dataset `resale.rftest` using *cbind()*. We will also save the data as RDS to prevent having to reload and reprocess the data.
 
 ```{r eval=FALSE}
 GRF_pred <- write_rds(gwRF_pred, "Take-Home_Ex03/model/GRF_pred.rds")
