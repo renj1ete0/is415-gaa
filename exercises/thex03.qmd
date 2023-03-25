@@ -2028,18 +2028,52 @@ ggarrange(plotlist = l_factor_hist_list,
 
 ## Statistical Point Map
 
-Let
+Let us explore more about the 5-room HDB resale dataset with its parameters.
+
+With the code chunk below, we will generate external HTML Interactive Map pages which are appended with the proximity and within locational factors details in the popup bar in separate interactive maps.
 
 ```{r eval=FALSE}
+#| code-fold: true
+tmap_options("view")
+statpt_tmap1 <- tm_shape(mpsz) +
+  tm_polygons("REGION_N",
+              alpha = 0.2) +
+tm_shape(final_resale) +
+  tm_dots("resale_price",
+          popup.vars= c("month" = "month", "town" = "town", "block" = "block", "street_name" = "street_name", "floor_area_sqm" = "floor_area_sqm", "resale_price" = "resale_price", "remaining_lease_mths" = "remaining_lease_mths", "PROX_CBD" = "PROX_CBD", "PROX_ELDER" = "PROX_ELDER", "PROX_HAWKER" = "PROX_HAWKER", "PROX_MRT_E" = "PROX_MRT_E", "PROX_PARK" = "PROX_PARK", "PROX_TOP_SCH" = "PROX_TOP_SCH", "PROX_MALL" = "PROX_MALL", "PROX_SUPMKT" = "PROX_SUPMKT", "PROX_TRK_MRT" = "PROX_TRK_MRT", "PROX_TRK_LRT" = "PROX_TRK_LRT", "NUM_350_CHILD"),
+          size = 0.05,
+          style = "quantile")
+
+statpt_tmap2 <- tm_shape(mpsz) +
+  tm_polygons("REGION_N",
+              alpha = 0.2) +
+tm_shape(final_resale) +
+  tm_dots("resale_price",
+          popup.vars= c("month" = "month", "town" = "town", "block" = "block", "street_name" = "street_name", "floor_area_sqm" = "floor_area_sqm", "resale_price" = "resale_price", "remaining_lease_mths" = "remaining_lease_mths", "NUM_350_CHILD" = "NUM_350_CHILD", "NUM_350_KINDER" = "NUM_350_KINDER", "NUM_350_BUS" = "NUM_350_BUS", "NUM_1000_SCH" = "NUM_1000_SCH", "NUM_800_MRT_F" = "NUM_800_MRT_F", "NUM_350_LRT" = "NUM_350_LRT", "storey_order" = "storey_order", "multistorey" = "multistorey", "model_standard" = "model_standard", "model_dbss" = "model_dbss", "model_adjoined" = "model_adjoined", "model_3gen" = "model_3gen", "model_s2" = "model_s2", "hip" = "hip", "mup" = "mup"),
+          size = 0.05,
+          style = "quantile")
+
+    tmap_save(statpt_tmap1, "thex03_statpt_tmap1.html")
+    tmap_save(statpt_tmap2, "thex03_statpt_tmap2.html")
+```
+
+[View Interactive Version of Map with Proximity Locational Factors Here!](thex03_statpt_tmap1.html){target="_blank"} *\[39+mb\]*
+
+[View Interactive Version of Map with Within Locational Factors Here!](thex03_statpt_tmap2.html){target="_blank"} *\[44+mb\]*
+
+Using the code chunk below, we will generate the interactive map of resale prices using quantile style. The difference compared to the above maps are that the popup variables are not generated.
+
+```{r}
+#| column: screen-inset-shaded
+#| code-fold: true
 tmap_options("view")
 tm_shape(mpsz) +
   tm_polygons("REGION_N",
-              alpha = 0.5) +
+              alpha = 0.2) +
 tm_shape(final_resale) +
   tm_dots("resale_price",
-          popup.vars= TRUE,
           size = 0.05,
-          palette = "Set2")
+          style = "quantile")
 ```
 
 ## Computing Correlation Matrix
@@ -2188,14 +2222,20 @@ ols_pred_rsq(resale.mlr)
 
 ## Preparing Data
 
+To obtain the bandwidth using *bw.gwr()* method, we need to pass the data in as a Spatial Points Data Frame. First, we will conver the resale training data (`resale.model`) as `resale.rf.sp`
+
 ```{r}
 resale.rf.sp <- as_Spatial(resale.model)
 ```
+
+Next, the Geographical Random Forest Model building and predictive method requires data to be formatted in a certain way. Building the model requires coordinate data and model data to be seperated.
 
 ```{r}
 resale.rf.coords <- st_coordinates(resale.model)
 resale.rf <- resale.model %>% st_drop_geometry()
 ```
+
+Laslt,y test data requires geometry information not as a sf DataFrame but tibble Data Frame with X Y columns. The code chunk below will format it into the necessary format.
 
 ```{r}
 resale.rftest.coords <- st_coordinates(resale.test)
@@ -2203,6 +2243,10 @@ resale.rftest <- cbind(resale.test,resale.rftest.coords) %>% st_drop_geometry()
 ```
 
 ## Locating Optimum Bandwidth Selection
+
+Next, we need to obtain the optimum bandwidth to be used for building our Geographically Weighted Random Forest model. Using the code chunk below, we can obtain it.
+
+The code takes very long to run, hence it is not evaluated but the end result is a value that can be used in the `bw` parameter when building the model.
 
 ```{r eval=FALSE}
 bw_adaptive <- bw.gwr(formula = resale_price ~ floor_area_sqm + remaining_lease_mths + PROX_CBD + PROX_ELDER + PROX_HAWKER + PROX_MRT_E + PROX_PARK + PROX_TOP_SCH + PROX_MALL + PROX_SUPMKT + PROX_TRK_MRT + PROX_TRK_LRT + NUM_350_CHILD + NUM_350_BUS + NUM_1000_SCH + NUM_800_MRT_F + NUM_350_LRT + storey_order + multistorey + model_standard + model_dbss + model_adjoined + model_3gen + model_s2 + hip + mup,
@@ -2212,6 +2256,8 @@ bw_adaptive <- bw.gwr(formula = resale_price ~ floor_area_sqm + remaining_lease_
                   adaptive=TRUE,
                   longlat=FALSE)
 ```
+
+Similarly as above, we save the bandwidth to an rds file so that we do not need to run the code everytime on render. The data will be loaded using `read_rds` from the respective directory.
 
 ```{r eval=FALSE}
 write_rds(bw_adaptive, "Take-Home_Ex03/model/bw_adaptive.rds")
@@ -2223,6 +2269,8 @@ bw_adaptive <- read_rds("Take-Home_Ex03/model/bw_adaptive.rds")
 
 ## Building Random Forest Model
 
+Utilising *grf()* of SpatialML, we can build a Geographically Weighted Random Forest model by inputting the paramter to be predicted, its predictors, dataframe (without coordinates), bandwidth, type of kernel and coordinates as a seperate dataframe.
+
 ```{r eval=FALSE}
 set.seed(1234)
 gwRF_adaptive <- grf(formula = resale_price ~ floor_area_sqm + remaining_lease_mths + PROX_CBD + PROX_ELDER + PROX_HAWKER + PROX_MRT_E + PROX_PARK + PROX_TOP_SCH + PROX_MALL + PROX_SUPMKT + PROX_TRK_MRT + PROX_TRK_LRT + NUM_350_CHILD + NUM_350_BUS + NUM_1000_SCH + NUM_800_MRT_F + NUM_350_LRT + storey_order + multistorey + model_standard + model_dbss + model_adjoined + model_3gen + model_s2 + hip + mup,
@@ -2232,6 +2280,8 @@ gwRF_adaptive <- grf(formula = resale_price ~ floor_area_sqm + remaining_lease_m
                      coords = resale.rf.coords)
 ```
 
+Similarly, since the model takes 2 hours to run and model size is about 50GB, we will save it as and RDS file to prevent rerunning it everytime on render. We also save the results into another seperate file called gwRF_results so prevent loading the entire 50GB model when we just need to view the results and importance of variables.
+
 ```{r eval=FALSE}
 write_rds(gwRF_adaptive, "Take-Home_Ex03/model/gwRF_adaptive.rds")
 gwRF_results <- gwRF_adaptive[["Global.Model"]]
@@ -2239,14 +2289,26 @@ write_rds(gwRF_results, "Take-Home_Ex03/model/gwRF_results.rds")
 gwRF_adaptive <- read_rds("Take-Home_Ex03/model/gwRF_adaptive.rds")
 ```
 
+This code chunk below shows the results from the building of the GWRF model.
+
 ```{r}
 gwRF_results <- read_rds("Take-Home_Ex03/model/gwRF_results.rds")
 gwRF_results
 ```
 
+We can also understand the importance of each parameter to the Geographically Weighted Random Forest Model.
+
 ```{r}
 gwRF_results[["variable.importance"]]
 ```
+
+From the above code, we can see which predictors are most important towards contributing to the final predicted resale results. The top five most important parameters are:
+
+1.  Whether unit is 3 Generation Unit (`model_3gen`)
+2.  Whether unit is adjoined unit (`model_adjoined`)
+3.  Number of LRT stations in 350m (`NUM_350_LRT`)
+4.  Whether unit is multistorey (`multistorey)`
+5.  Number of Future MRT stations in 800m (`NUM_800_MRT_F`)
 
 ## Predicting Test Data
 
@@ -2425,7 +2487,9 @@ From our box plot, we can see that the GWRF model is better in OLS MLR model in 
 
 ### Understanding RMSE by Town
 
-To understand the RMSE
+To understand the RMSE improvements at town levels from the OLS MLR model to the GWRF model, we can calculate the RMSE scores at HDB town level by filter and calculating the RMSE scores using each model's predicted resale price and the actual resale price.
+
+The code chunk below extracts unique HDB towns, loops through the town names to create a dataframe containing the HDB town name, OLS RMSE score, GWRF RMSE score and the change in RMSE score from OLS to GWR. A positive score means an improvement from OLS to GWRF (ie. the errors reduced from OLS to GWRF).
 
 ```{r}
 TOWN <- unique(resale.mlrtest$town)
@@ -2444,8 +2508,6 @@ for (t in TOWN){
 }
 
 RMSE_TOWN <- RMSE_TOWN %>% mutate(change_rmse = RMSE_TOWN$olsrmse - RMSE_TOWN$gwrfrmse)
-RMSE_TOWN
-
 RMSE_TOWN[order(-RMSE_TOWN$change_rmse),]
 ```
 
@@ -2512,14 +2574,14 @@ generate_error_town <- function(geo1, geo2, AREA) {
             size = 0.05,
             alpha = 0.7,
             breaks = c(-Inf, -200000, -100000, -75000, -50000, -25000, 0, 25000, 50000, 75000, Inf)) +
-    tm_view(set.zoom.limits = c(13, 16))
+    tm_view(set.zoom.limits = c(14, 16))
   t2 <- 
     tm_shape(plot_map_t2) +
       tm_dots("error",
             size = 0.05,
             alpha = 0.7,
             breaks = c(-Inf, -200000, -100000, -75000, -50000, -25000, 0, 25000, 50000, 75000, Inf)) +
-    tm_view(set.zoom.limits = c(13, 16))
+    tm_view(set.zoom.limits = c(14, 16))
   
   tmap_arrange(t1, t2, ncol = 2, sync = TRUE)
 }
@@ -2604,9 +2666,9 @@ There are lesser extreme errors in the Geographically Weighted Random Forest mod
 Takeaway points:
 
 1.  Most HDB predictions improved from -\$200,000 to -\$100,000 errors from Predicted to Actual resale values to \$-25,000 to \$0 error, going from OLS MLR model to GWRF model. This means that the GWRF model can more accurately in most instances, predict housing prices closer to its actual values.
-2.  GWRF could have improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values. \
+2.  GWRF could have improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values.\
     \
-    As we see, most resale housing in Punggol were closer to the actual predicted values, meaning that there is a general possibility of increased popularity of Punggol HDB resale units that could not be captured or interpreted using a Linear Regression model without context of Geographic clustering or with the predictors. \
+    As we see, most resale housing in Punggol were closer to the actual predicted values, meaning that there is a general possibility of increased popularity of Punggol HDB resale units that could not be captured or interpreted using a Linear Regression model without context of Geographic clustering or with the predictors.\
     \
     In this scenerio, we can see the importance of Geographic Weighted methods if clustering is observed between points as there might be unknown correlation that cannot be seen or interpreted without the knowledge of geospatial data.
 
@@ -2656,7 +2718,7 @@ Takeaway points:
 
 1.  Most HDB predictions improved from the extreme less than \$-200,000 errors errors from Predicted to Actual resale values to \$-25,000 to \$0 error, going from OLS MLR model to GWRF model. This means that the GWRF model can more accurately in most instances, predict housing prices closer to its actual values.
 2.  There are a few more instances of overprediction in the GWRF model though, between \$25,000 to \$75,000 to its actual resale value.
-3.  GWRF could have improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values. \
+3.  GWRF could have improved the model as it learns and weighs points differently based on its Geographical locations and neighbours. It acknowledges clustering effects and adjusts the weights based on its parameter values, hence, better generalising and predicting resale pricing values.\
     \
     In this case, Bukit Merah which is nearer to the Central Business District could have its pricing corrected more since the linear regression predictors cannot estimate the effects of proximity to CBD well enough, or, there could be unknown geographical effects seen in Punggol town where resale housing in the town could be seen as more attractive to buyers.
 
