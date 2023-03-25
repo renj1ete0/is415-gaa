@@ -2490,35 +2490,35 @@ generate_error_town <- function(geo1, geo2, AREA) {
 ### Jurong West - West
 
 ```{r}
-#| column: screen-left
+#| column: screen-inset-shaded
 generate_error_town(resale.mlrtest, resale.rftest.tmap, "JURONG WEST")
 ```
 
 ### Woodlands - North
 
 ```{r}
-#| column: screen-left
+#| column: screen-inset-shaded
 generate_error_town(resale.mlrtest, resale.rftest.tmap, "WOODLANDS")
 ```
 
 ### Punggol - North East
 
 ```{r}
-#| column: screen-left
+#| column: screen-inset-shaded
 generate_error_town(resale.mlrtest, resale.rftest.tmap, "PUNGGOL")
 ```
 
 ### Tampines - East
 
 ```{r}
-#| column: screen-left
+#| column: screen-inset-shaded
 generate_error_town(resale.mlrtest, resale.rftest.tmap, "TAMPINES")
 ```
 
 ### Bukit Merah - Central
 
 ```{r}
-#| column: screen-left
+#| column: screen-inset-shaded
 generate_error_town(resale.mlrtest, resale.rftest.tmap, "BUKIT MERAH")
 ```
 
