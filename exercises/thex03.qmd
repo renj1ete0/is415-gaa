@@ -21,13 +21,11 @@ execute:
 
 bal bla we are lookign at 5 storey HDB bla bla
 
-## Objectives
-
-ABC
-
 ## Tasks
 
-In this take-home exercise, you are tasked to predict HDB resale prices at the sub-market level (i.e. HDB 3-room, HDB 4-room and HDB 5-room) for the month of January and February 2023 in Singapore. The predictive models must be built by using by using conventional OLS method and GWR methods. You are also required to compare the performance of the conventional OLS method versus the geographical weighted methods.
+We will work on constructing and comparing an OLS Multiple Linear Regression Model and Geographic Weighted Random Forest Model to predict 5-room HDB prices for the month of January and February 2023 in Singpaore.
+
+The training data will consist of 5-room HDB resale data between January 2021 to December 2022.
 
 # Getting Started
 
@@ -36,7 +34,7 @@ In this take-home exercise, you are tasked to predict HDB resale prices at the s
 Next, pacman assists us by helping us load R packages that we require, `sf`, `tidyverse` and funModeling.
 
 ```{r}
-pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite, onemapsgapi, rvest, ggpubr, olsrr)
+pacman::p_load(readxl, sf, tidyverse, tmap, sfdep, gifski, httr, jsonlite, onemapsgapi, rvest, ggpubr, olsrr, GWmodel, SpatialML, Metrics, ggplot2, plotly)
 ```
 
 The following packages assists us to accomplish the following:
@@ -2051,7 +2049,6 @@ Before we create the OLS and Machine Learning Models to predict housing prices, 
 The code chunk below exports the correlation plot into a png so that the text is more readable and image is higher in resolution.
 
 ```{r}
-#| column: screen-left
 
 final_resale_nogeom <- final_resale %>% st_drop_geometry()
 
@@ -2101,6 +2098,16 @@ resale.mlr <- lm(formula = resale_price ~ floor_area_sqm + remaining_lease_mths 
                  data = resale.model)
 ols_regress(resale.mlr)
 ```
+
+Based on the results above, we can see that the P-Value for all except `model_adjoined` and `model_3gen` are statistically significant, meaning that it's P-value (`Sig`) is more than or equal to 0.05. Hence, we cannot statistically conclude that the predictor is significant in contributing towards the model and we can safely remove them.
+
+```{r}
+resale.mlr <- lm(formula = resale_price ~ floor_area_sqm + remaining_lease_mths + PROX_CBD + PROX_ELDER + PROX_HAWKER + PROX_MRT_E + PROX_PARK + PROX_TOP_SCH + PROX_MALL + PROX_SUPMKT + PROX_TRK_MRT + PROX_TRK_LRT + NUM_350_CHILD + NUM_350_BUS + NUM_1000_SCH + NUM_800_MRT_F + NUM_350_LRT + storey_order + multistorey + model_standard + model_dbss + model_s2 + hip + mup,
+                 data = resale.model)
+ols_regress(resale.mlr)
+```
+
+After removing the `model_adjoined` and `model_3Gen` columns, the rest of the P-values are \< 0.05, which means all variables statistically explain the OLS Multiple Linear Regression model. Also note that the Adj. R-Squred value did not change and RMSE had only a minor change in value.
 
 ## Testing for Linear Regression Assumptions
 
@@ -2159,7 +2166,6 @@ resale.mlrtest <- resale.mlrtest %>% mutate(error = resale.mlrtest$predict - res
 
 ```{r}
 tmap_mode("view")
-tmap_mode("view")
 tm_shape(mpsz) +
   tm_polygons("REGION_N",
               alpha = 0.2) +
@@ -2170,7 +2176,8 @@ tm_shape(resale.mlrtest) +
 ```
 
 ```{r}
-MSE <- mean((resale.mlrtest$error)^2)
+rmse(resale.mlrtest$resale_price, 
+     resale.mlrtest$predict)
 ```
 
 ```{r}
@@ -2178,6 +2185,270 @@ ols_pred_rsq(resale.mlr)
 ```
 
 # Geographical Random Forest Model
+
+## Preparing Data
+
+```{r}
+resale.rf.sp <- as_Spatial(resale.model)
+```
+
+```{r}
+resale.rf.coords <- st_coordinates(resale.model)
+resale.rf <- resale.model %>% st_drop_geometry()
+```
+
+```{r}
+resale.rftest.coords <- st_coordinates(resale.test)
+resale.rftest <- cbind(resale.test,resale.rftest.coords) %>% st_drop_geometry()
+```
+
+## Locating Optimum Bandwidth Selection
+
+```{r eval=FALSE}
+bw_adaptive <- bw.gwr(formula = resale_price ~ floor_area_sqm + remaining_lease_mths + PROX_CBD + PROX_ELDER + PROX_HAWKER + PROX_MRT_E + PROX_PARK + PROX_TOP_SCH + PROX_MALL + PROX_SUPMKT + PROX_TRK_MRT + PROX_TRK_LRT + NUM_350_CHILD + NUM_350_BUS + NUM_1000_SCH + NUM_800_MRT_F + NUM_350_LRT + storey_order + multistorey + model_standard + model_dbss + model_adjoined + model_3gen + model_s2 + hip + mup,
+                 data = resale.rf.sp,
+                  approach="CV",
+                  kernel="gaussian",
+                  adaptive=TRUE,
+                  longlat=FALSE)
+```
+
+```{r eval=FALSE}
+write_rds(bw_adaptive, "Take-Home_Ex03/model/bw_adaptive.rds")
+```
+
+```{r}
+bw_adaptive <- read_rds("Take-Home_Ex03/model/bw_adaptive.rds")
+```
+
+## Building Random Forest Model
+
+```{r eval=FALSE}
+set.seed(1234)
+gwRF_adaptive <- grf(formula = resale_price ~ floor_area_sqm + remaining_lease_mths + PROX_CBD + PROX_ELDER + PROX_HAWKER + PROX_MRT_E + PROX_PARK + PROX_TOP_SCH + PROX_MALL + PROX_SUPMKT + PROX_TRK_MRT + PROX_TRK_LRT + NUM_350_CHILD + NUM_350_BUS + NUM_1000_SCH + NUM_800_MRT_F + NUM_350_LRT + storey_order + multistorey + model_standard + model_dbss + model_adjoined + model_3gen + model_s2 + hip + mup,
+                     dframe = resale.rf,
+                     bw = bw_adaptive,
+                     kernel = "adaptive",
+                     coords = resale.rf.coords)
+```
+
+```{r eval=FALSE}
+write_rds(gwRF_adaptive, "Take-Home_Ex03/model/gwRF_adaptive.rds")
+gwRF_results <- gwRF_adaptive[["Global.Model"]]
+write_rds(gwRF_results, "Take-Home_Ex03/model/gwRF_results.rds")
+gwRF_adaptive <- read_rds("Take-Home_Ex03/model/gwRF_adaptive.rds")
+```
+
+```{r}
+gwRF_results <- read_rds("Take-Home_Ex03/model/gwRF_results.rds")
+gwRF_results
+```
+
+```{r}
+gwRF_results[["variable.importance"]]
+```
+
+## Predicting Test Data
+
+```{r eval=FALSE}
+gwRF_pred <- predict.grf(gwRF_adaptive, 
+                           resale.rftest, 
+                           x.var.name="X",
+                           y.var.name="Y", 
+                           local.w=1,
+                           global.w=0)
+```
+
+```{r eval=FALSE}
+GRF_pred <- write_rds(gwRF_pred, "Take-Home_Ex03/model/GRF_pred.rds")
+```
+
+```{r eval=FALSE}
+GRF_pred <- read_rds("Take-Home_Ex03/model/GRF_pred.rds")
+GRF_pred_df <- as.data.frame(GRF_pred)
+```
+
+```{r eval=FALSE}
+test_data_p <- cbind(resale.rftest, GRF_pred_df)
+```
+
+```{r eval=FALSE}
+write_rds(test_data_p, "Take-Home_Ex03/model/test_data_p.rds")
+```
+
+```{r}
+test_data_p <- read_rds("Take-Home_Ex03/model/test_data_p.rds")
+```
+
+### Caculating RMSE
+
+```{r}
+test_data_p <-  mutate(test_data_p, error = GRF_pred - resale_price)
+resale.rftest.tmap <- cbind(resale.test, test_data_p$error)
+names(resale.rftest.tmap)[names(resale.rftest.tmap) == 'test_data_p.error'] <- "error"
+
+```
+
+```{r}
+rmse(test_data_p$resale_price, 
+     test_data_p$GRF_pred)
+```
+
+```{r}
+ggplot(data = test_data_p,
+       aes(x = GRF_pred,
+           y = resale_price)) +
+  geom_point()
+```
+
+```{r}
+tmap_mode("view")
+tm_shape(mpsz) +
+  tm_polygons("REGION_N",
+              alpha = 0.1) +
+tm_shape(resale.rftest.tmap) +
+  tm_dots("error",
+          size = 0.05,
+          alpha = 0.7,
+          style = "quantile")
+```
+
+```{r}
+ggplot(data = resale.rftest.tmap,
+       aes(x = error, y = "")) +
+  geom_boxplot()
+```
+
+## 
+
+# Comparative Analysis
+
+Now that we have completed building and predicting the the OLS Linear Regression and SpatialML's Geographically Weighted Random Forest model performance, let us do a side-by-side comparison of both model's performance.
+
+## Parameters for Each Model
+
+As a recap, we will include predictors used in each model. Both models predict the HDB resale prices between Jan and Feb 2023 and are trained on HDB resale data between Jan 2021 to Dec 2022.
+
+OLS Multiple Linear Regression does not contain `model_3Gen` and `model_adjoined` parameters as based on analysis by the model, the two parameters are not statistically significant to the model and are removed.
+
++--------------------------------------------------------------+--------------------------------------------------------------+
+| OLS Multiple Linear Regression                               | Geographically Weighted Random Forest                        |
++==============================================================+==============================================================+
+| Floor Area SQM                                               | Floor Area SQM                                               |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Remaining Lease (Months)                                     | Remaining Lease (Months)                                     |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Proximity to CBD (Downtown Core Boundary - Linestring) in km | Proximity to CBD (Downtown Core Boundary - Linestring) in km |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Proximity to Eldercare in km                                 | Proximity to Eldercare in km                                 |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Proximity to Hawker Centre in km                             | Proximity to Hawker Centre in km                             |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Proximity to Existing MRT Station in km                      | Proximity to Existing MRT Station in km                      |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Proximity to Park (Boundary - Linestring) in km              | Proximity to Park (Boundary - Linestring) in km              |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Proximity to Good Primary School in km                       | Proximity to Good Primary School in km                       |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Proximity to Mall in km                                      | Proximity to Mall in km                                      |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Proximity to Supermarket in km                               | Proximity to Supermarket in km                               |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Proximity to MRT Overground Track in km                      | Proximity to MRT Overground Track in km                      |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Proximity to LRT Overground Track in km                      | Proximity to LRT Overground Track in km                      |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Number of Childcare in 350m Radius                           | Number of Childcare in 350m Radius                           |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Number of Bus Stops in 350m Radius                           | Number of Bus Stops in 350m Radius                           |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Number of Primary Schools in 1km                             | Number of Primary Schools in 1km                             |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Number of Future MRT stations in 800m                        | Number of Future MRT stations in 800m                        |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Number of LRT stations in 350m                               | Number of LRT stations in 350m                               |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| HDB Storey Level - Recoded Values (+1 = +3 stories)          | HDB Storey Level - Recoded Values (+1 = +3 stories)          |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Multistorey Apartment (1 - True, 0 - False)                  | Multistorey Apartment (1 - True, 0 - False)                  |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Standard Type Apartment (1 - True, 0 - False)                | Standard Type Apartment (1 - True, 0 - False)                |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| DBSS Type Apartment (1 - True, 0 - False)                    | DBSS Type Apartment (1 - True, 0 - False)                    |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| S2 Type Apartment (1 - True, 0 - False)                      | Adjoined Type Apartment (1 - True, 0 - False)                |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Home Improvement Programme (1 - True, 0 - False)             | 3Gen Type Apartment (1 - True, 0 - False)                    |
++--------------------------------------------------------------+--------------------------------------------------------------+
+| Main Upgrading Programme (1 - True, 0 - False)               | S2 Type Apartment (1 - True, 0 - False)                      |
++--------------------------------------------------------------+--------------------------------------------------------------+
+|                                                              | Home Improvement Programme (1 - True, 0 - False)             |
++--------------------------------------------------------------+--------------------------------------------------------------+
+|                                                              | Main Upgrading Programme (1 - True, 0 - False)               |
++--------------------------------------------------------------+--------------------------------------------------------------+
+
+## General Statistics
+
+### Root Mean Squared Error (RMSE)
+
+To compare across different models, we typically use the `RMSE` value generated from predicting the test values using the trained data to find out how does the model perform on data it has never seen before.
+
+The RMSE value can be derived by `sqrt((y actual - y predicted)^2)`.
+
++--------------+--------------------------------+---------------------------------------+
+|              | OLS Multiple Linear Regression | Geographically Weighted Random Forest |
++==============+================================+=======================================+
+| **RMSE**     | 84198.8                        | 55089.5                               |
++--------------+--------------------------------+---------------------------------------+
+
+The OLS Multiple Linear Regression has a RMSE error of 84198.8, meaning, the mean error for the HDB resale prices prediction is +/- \$84198.80. Similarly for Geographically Weighted Random Forest, the mean error for HDB resale prices prediction is +/- \$55089.50.
+
+As we can see, OLS Multiple Linear Regression has a higher RMSE score than Geographically Weighted Random Forest. Hence, the Geographically Weighted Random Forest is a better model as there are lesser deviations in error
+
+### Box Plot
+
+Now, we will plot a boxplot to see the distribution of errors and its outliers.
+
+```{r}
+
+boxplot <- plot_ly(x = resale.mlrtest$error, type = "box", name = "OLS MLR")
+boxplot <- boxplot %>% add_trace(x = resale.rftest.tmap$error, name = "GWRF")
+
+boxplot 
+```
+
+## Map Comparison
+
+### Plot of Errors
+
+```{r}
+#| column: screen-left
+tmap_mode("view")
+t1 <- tm_shape(mpsz) +
+  tm_polygons("REGION_N",
+              alpha = 0.1) +
+tm_shape(resale.mlrtest) +
+  tm_dots("error",
+          size = 0.05,
+          alpha = 0.7,
+          breaks = c(-Inf, -200000, -100000, -75000, -50000, -25000, 0, 25000, 50000, 75000, Inf))
+t2 <- tm_shape(mpsz) +
+tm_polygons("REGION_N",
+              alpha = 0.1) +
+tm_shape(resale.rftest.tmap) +
+  tm_dots("error",
+          size = 0.05,
+          alpha = 0.7,
+          breaks = c(-Inf, -200000, -100000, -75000, -50000, -25000, 0, 25000, 50000, 75000, Inf))
+
+tmap_arrange(t1, t2, ncol = 2, sync = TRUE)
+```
+
+### Plot of R Squared Values
+
+## Specific Areas
+
+## Conclusion
 
 # Credits
 
