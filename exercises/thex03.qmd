@@ -2410,12 +2410,13 @@ As we can see, OLS Multiple Linear Regression has a higher RMSE score than Geogr
 Now, we will plot a boxplot to see the distribution of errors and its outliers.
 
 ```{r}
-
 boxplot <- plot_ly(x = resale.mlrtest$error, type = "box", name = "OLS MLR")
 boxplot <- boxplot %>% add_trace(x = resale.rftest.tmap$error, name = "GWRF")
 
 boxplot 
 ```
+
+From our box plot, we can see that
 
 ## Map Comparison
 
@@ -2444,11 +2445,86 @@ tm_shape(resale.rftest.tmap) +
 tmap_arrange(t1, t2, ncol = 2, sync = TRUE)
 ```
 
-### Plot of R Squared Values
+## Comparative Analysis of Errors by Towns
 
-## Specific Areas
+Let us zoom into the specific HDB towns and compare the predicted errors between OLS Multiple Linear Regression and Geographically Weighted Random Forest models.
+
+For reference, the interactive map on the left is the results from OLS Multiple Linear Regression Model and the right is from the Goegraphically Weighted Random Forest.
+
+We have chosen a list of towns from different regions of Singapore that was designed with different planning principles and built in different time periods:
+
+1.  Jurong West - West
+2.  Woodlands - North
+3.  Punggol - North East
+4.  Tampines - East
+5.  Bukit Merah - Central
+
+### Generate Error Town Function
+
+Using the function below, we can plot interactive tmaps of errors in different HDB towns by calling the `generate_error_town` with 2 spatial dataframes and the HDB Town (`AREA)` to be filtered. A side-byside tmap will be generated and movement will be synced across both maps.
+
+```{r}
+generate_error_town <- function(geo1, geo2, AREA) {
+  tmap_mode("view")
+  plot_map_t1 <- filter(geo1, town == AREA)
+  plot_map_t2 <- filter(geo2, town == AREA)
+  t1 <- 
+    tm_shape(plot_map_t1) +
+      tm_dots("error",
+            size = 0.05,
+            alpha = 0.7,
+            breaks = c(-Inf, -200000, -100000, -75000, -50000, -25000, 0, 25000, 50000, 75000, Inf)) +
+    tm_view(set.zoom.limits = c(13, 15))
+  t2 <- 
+    tm_shape(plot_map_t2) +
+      tm_dots("error",
+            size = 0.05,
+            alpha = 0.7,
+            breaks = c(-Inf, -200000, -100000, -75000, -50000, -25000, 0, 25000, 50000, 75000, Inf)) +
+    tm_view(set.zoom.limits = c(13, 15))
+  
+  tmap_arrange(t1, t2, ncol = 2, sync = TRUE)
+}
+```
+
+### Jurong West - West
+
+```{r}
+#| column: screen-left
+generate_error_town(resale.mlrtest, resale.rftest.tmap, "JURONG WEST")
+```
+
+### Woodlands - North
+
+```{r}
+#| column: screen-left
+generate_error_town(resale.mlrtest, resale.rftest.tmap, "WOODLANDS")
+```
+
+### Punggol - North East
+
+```{r}
+#| column: screen-left
+generate_error_town(resale.mlrtest, resale.rftest.tmap, "PUNGGOL")
+```
+
+### Tampines - East
+
+```{r}
+#| column: screen-left
+generate_error_town(resale.mlrtest, resale.rftest.tmap, "TAMPINES")
+```
+
+### Bukit Merah - Central
+
+```{r}
+#| column: screen-left
+generate_error_town(resale.mlrtest, resale.rftest.tmap, "BUKIT MERAH")
+```
 
 ## Conclusion
+
+Accesbility metrics may be useful instead of distance to regions - less acccurate prediction vs network
 
 # Credits
 
