@@ -1,0 +1,73 @@
+---
+title: "In-Class Exercise 11: Calibrating Spatial Interaction Models (SIM)"
+description: "Modelling Geographical Accessibility"
+author: "Teo Ren Jie"
+date: "03/27/2023"
+number-sections: true
+categories: ["In-Class Exercise", "sf", "sfdep", "tidyverse", "tmap"]
+title-block-banner: true
+image: In-Class_Ex11/preview.png
+execute:
+  message: true
+  warning: true
+---
+
+# Getting Started
+
+## Installing and Loading Packages
+
+Pacman assists us by helping us load R packages that we require.
+
+```{r}
+pacman::p_load(tmap, sf, sp, caret, stplanr, reshape2, broom, tidyverse)
+```
+
+## Data Acquisition
+
+The following datasets are used:
+
+| Dataset Name                          | Source                     |
+|---------------------------------------|----------------------------|
+| URA Master Plan 2014 Subzone Boundary | [data.gov.sg](data.gov.sg) |
+| 250m Hexagon GIS Data                 | Prof Kam                   |
+| Eldercare                             | Prof Kam                   |
+| OD Matrix                             | Prof Kam                   |
+
+# Preparing the Flow Data
+
+## Importing the OD Data
+
+Firstly, we will import the Passenger Volume by Origin Destination Bus Stops data set downlaoded from LTA DataMall using *read_csv().*
+
+```{r}
+odbus <- read_csv("In-Class_Ex11/data/aspatial/origin_destination_bus_202210.csv")
+```
+
+A quick check of the ORIGIN_PT_CODE and DESTINATION_PT_CODE columns found that they are in numerical values instead of character. The issue is the data will be taken as nominal data instead of categorical data. The code chunk below will convert the data.
+
+```{r}
+odbus$ORIGIN_PT_CODE <- as.factor(odbus$ORIGIN_PT_CODE)
+odbus$DESTINATION_PT_CODE <- as.factor(odbus$DESTINATION_PT_CODE)
+```
+
+As we are only interested in the peak hour (7 to 9am) weekday commuting flows, we will extract the commuting flow data between 7am and 9am on weekdays using the code chunk below.
+
+```{r}
+odbus7_9 <- odbus %>% filter(DAY_TYPE == "WEEKDAY") %>%
+  filter(TIME_PER_HOUR >= 7 & TIME_PER_HOUR <= 9) %>%
+  group_by(ORIGIN_PT_CODE, DESTINATION_PT_CODE) %>% 
+  summarise(TRIPS = sum(TOTAL_TRIPS))
+```
+
+```{r}
+busstop <- st_read(dsn = "In-Class_Ex11/data/geospatial", 
+                   layer = "BusStop") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+busstop <- st_read(dsn = "In-Class_Ex11/data/geospatial", 
+                   layer = "MPSZ-2019") %>%
+  st_transform(crs = 3414)
+mpsz
+```
