@@ -1,7 +1,18 @@
 ---
 title: "Ren Jie's IS415 Journal"
 listing:
-  contents: "exercises/*.qmd"
+  contents: 
+    - "exercises/thex*.qmd"
+    - "exercises/hoex*.qmd"
+    - "exercises/icex02.qmd"
+    - "exercises/icex03.qmd"
+    - "exercises/icex04.qmd"
+    - "exercises/icex05.qmd"
+    - "exercises/icex06.qmd"
+    - "exercises/icex07.qmd"
+    - "exercises/icex08.qmd"
+    - "exercises/icex10.qmd"
+    - "exercises/icex11.qmd"
   type: default
   categories: cloud
   sort-ui: [title, date]

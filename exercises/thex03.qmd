@@ -3,7 +3,7 @@ title: "Take-Home Exercise 03: Predicting HDB Public Housing Resale Prices Using
 description: "Predicting HDB Public Housing Resale Prices Using Geographically Weighted Methods trained using Jan 2021 to Dec 2022 and tested with Jan to Feb 2023"
 author: "Teo Ren Jie"
 date: "3/12/2023"
-date-modified: "3/25/2023"
+date-modified: "4/13/2023"
 number-sections: true
 categories: ["Take-Home Exercise"]
 title-block-banner: true
@@ -2437,11 +2437,11 @@ gwRF_results[["variable.importance"]]
 
 From the above code, we can see which predictors are most important towards contributing to the final predicted resale results. The top five most important parameters are:
 
-1.  Whether unit is 3 Generation Unit (`model_3gen`)
-2.  Whether unit is adjoined unit (`model_adjoined`)
-3.  Number of LRT stations in 350m (`NUM_350_LRT`)
-4.  Whether unit is multistorey (`multistorey)`
-5.  Number of Future MRT stations in 800m (`NUM_800_MRT_F`)
+1.  Proximity to LRT Track (`PROX_TRK_LRT`)
+2.  Floor Area in SQM (`floor_area_sqm`)
+3.  Proximity to Elevated MRT Track (`PROX_MRT_E`)
+4.  Proximity to Top School (`PROX_TOP_SCH`)
+5.  Which storey is it (`storey_order)`
 
 ## Predicting Test Data
 
