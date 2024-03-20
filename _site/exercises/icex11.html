@@ -244,6 +244,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../exercises/thex03.html">
  <span class="dropdown-text">Take-home Exercise 3</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="https://spatialbros.netlify.app/">
+ <span class="dropdown-text">SpatialBros (Project)</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item compact">
@@ -253,6 +257,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://www.linkedin.com/in/renjieteo/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.renjieteo.com"><i class="bi bi-journal-album" role="img">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
@@ -540,18 +549,20 @@ all geometries</code></pre>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">ORIGIN_SZ =</span> SUBZONE_C,</span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">DESTIN_BS =</span> DESTINATION_PT_CODE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning in left_join(odbus7_9, busstop_mpsz, by = c(ORIGIN_PT_CODE = "BUS_STOP_N")): Each row in `x` is expected to match at most 1 row in `y`.
-ℹ Row 53226 of `x` matches multiple rows.
-ℹ If multiple matches are expected, set `multiple = "all"` to silence this
-  warning.</code></pre>
+<pre><code>Warning in left_join(odbus7_9, busstop_mpsz, by = c(ORIGIN_PT_CODE = "BUS_STOP_N")): Detected an unexpected many-to-many relationship between `x` and `y`.
+ℹ Row 53226 of `x` matches multiple rows in `y`.
+ℹ Row 161 of `y` matches multiple rows in `x`.
+ℹ If a many-to-many relationship is expected, set `relationship =
+  "many-to-many"` to silence this warning.</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>od_data <span class="ot">&lt;-</span> <span class="fu">left_join</span>(od_data, busstop_mpsz,</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"DESTIN_BS"</span> <span class="ot">=</span> <span class="st">"BUS_STOP_N"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning in left_join(od_data, busstop_mpsz, by = c(DESTIN_BS = "BUS_STOP_N")): Each row in `x` is expected to match at most 1 row in `y`.
-ℹ Row 69 of `x` matches multiple rows.
-ℹ If multiple matches are expected, set `multiple = "all"` to silence this
-  warning.</code></pre>
+<pre><code>Warning in left_join(od_data, busstop_mpsz, by = c(DESTIN_BS = "BUS_STOP_N")): Detected an unexpected many-to-many relationship between `x` and `y`.
+ℹ Row 69 of `x` matches multiple rows in `y`.
+ℹ Row 1379 of `y` matches multiple rows in `x`.
+ℹ If a many-to-many relationship is expected, set `relationship =
+  "many-to-many"` to silence this warning.</code></pre>
 </div>
 </div>
 <p>Before continuing, it is a good practice to check for duplicating records.</p>
@@ -18526,7 +18537,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/renjie-teo">
+    <a class="nav-link" href="https://github.com/renj1ete0">
       <i class="bi bi-github" role="img">
 </i> 
     </a>
@@ -18534,6 +18545,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <li class="nav-item compact">
     <a class="nav-link" href="https://www.linkedin.com/in/renjieteo/">
       <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.renjieteo.com">
+      <i class="bi bi-journal-album" role="img">
 </i> 
     </a>
   </li>  

@@ -244,6 +244,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../exercises/thex03.html">
  <span class="dropdown-text">Take-home Exercise 3</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="https://spatialbros.netlify.app/">
+ <span class="dropdown-text">SpatialBros (Project)</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item compact">
@@ -253,6 +257,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://www.linkedin.com/in/renjieteo/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.renjieteo.com"><i class="bi bi-journal-album" role="img">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
@@ -477,78 +486,554 @@ dbl (27): avg_wage, deposite, FAI, Gov_Rev, Gov_Exp, GDP, GDPPC, GIO, Loan, ...
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(nb_queen)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Neighbour list object:
-Number of regions: 88 
-Number of nonzero links: 448 
-Percentage nonzero weights: 5.785124 
-Average number of links: 5.090909 
-Link number distribution:
-
- 1  2  3  4  5  6  7  8  9 11 
- 2  2 12 16 24 14 11  4  2  1 
-2 least connected regions:
-30 65 with 1 link
-1 most connected region:
-85 with 11 links</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>    nb          NAME_2               ID_3          NAME_3         
- NULL:NULL   Length:88          Min.   :21098   Length:88         
-             Class :character   1st Qu.:21125   Class :character  
-             Mode  :character   Median :21150   Mode  :character  
-                                Mean   :21150                     
-                                3rd Qu.:21174                     
-                                Max.   :21201                     
-  ENGTYPE_3            County              GDPPC                geometry 
- Length:88          Length:88          Min.   : 8497   POLYGON      :88  
- Class :character   Class :character   1st Qu.:14566   epsg:4326    : 0  
- Mode  :character   Mode  :character   Median :20433   +proj=long...: 0  
-                                       Mean   :24405                     
-                                       3rd Qu.:27224                     
-                                       Max.   :88656                     </code></pre>
+<pre><code>    nb                                           NAME_2         
+ NULL:2, 3, 4, 57, 85                         Length:88         
+ NULL:1, 57, 58, 78, 85                       Class :character  
+ NULL:1, 4, 5, 85                             Mode  :character  
+ NULL:1, 3, 5, 6                                                
+ NULL:3, 4, 6, 85                                               
+ NULL:4, 5, 69, 75, 85                                          
+ NULL:67, 71, 74, 84                                            
+ NULL:9, 46, 47, 56, 78, 80, 86                                 
+ NULL:8, 66, 68, 78, 84, 86                                     
+ NULL:16, 17, 19, 20, 22, 70, 72, 73                            
+ NULL:14, 17, 72                                                
+ NULL:13, 60, 61, 63, 83                                        
+ NULL:12, 15, 60, 83                                            
+ NULL:11, 15, 17                                                
+ NULL:13, 14, 17, 83                                            
+ NULL:10, 17, 22, 72, 83                                        
+ NULL:10, 11, 14, 15, 16, 72, 83                                
+ NULL:20, 22, 23, 77, 83                                        
+ NULL:10, 20, 21, 73, 74, 86                                    
+ NULL:10, 18, 19, 21, 22, 23, 82                                
+ NULL:19, 20, 35, 82, 86                                        
+ NULL:10, 16, 18, 20, 83                                        
+ NULL:18, 20, 38, 41, 77, 79, 82                                
+ NULL:25, 28, 31, 32, 54                                        
+ NULL:24, 28, 31, 33, 81                                        
+ NULL:27, 33, 42, 81                                            
+ NULL:26, 29, 42                                                
+ NULL:24, 25, 33, 49, 54                                        
+ NULL:27, 37, 42                                                
+ NULL:33                                                        
+ NULL:24, 25, 32, 36, 39, 40, 56, 81                            
+ NULL:24, 31, 50, 54, 55, 56, 75, 85                            
+ NULL:25, 26, 28, 30, 81                                        
+ NULL:36, 45, 80                                                
+ NULL:21, 41, 47, 80, 82, 86                                    
+ NULL:31, 34, 40, 45, 56, 80                                    
+ NULL:29, 42, 43, 44                                            
+ NULL:23, 44, 77, 79                                            
+ NULL:31, 40, 42, 43, 81                                        
+ NULL:31, 36, 39, 43, 45, 79                                    
+ NULL:23, 35, 45, 79, 80, 82                                    
+ NULL:26, 27, 29, 37, 39, 43, 81                                
+ NULL:37, 39, 40, 42, 44, 79                                    
+ NULL:37, 38, 43, 79                                            
+ NULL:34, 36, 40, 41, 79, 80                                    
+ NULL:8, 47, 86                                                 
+ NULL:8, 35, 46, 80, 86                                         
+ NULL:50, 51, 52, 53, 55                                        
+ NULL:28, 51, 52, 54                                            
+ NULL:32, 48, 52, 54, 55                                        
+ NULL:48, 49, 52                                                
+ NULL:48, 49, 50, 51, 54                                        
+ NULL:48, 55, 75                                                
+ NULL:24, 28, 32, 49, 50, 52                                    
+ NULL:32, 48, 50, 53, 75                                        
+ NULL:8, 31, 32, 36, 78, 80, 85                                 
+ NULL:1, 2, 58, 64, 76, 85                                      
+ NULL:2, 57, 68, 76, 78                                         
+ NULL:60, 61, 87, 88                                            
+ NULL:12, 13, 59, 61                                            
+ NULL:12, 59, 60, 62, 63, 77, 87                                
+ NULL:61, 77, 87                                                
+ NULL:12, 61, 77, 83                                            
+ NULL:57, 76                                                    
+ NULL:76                                                        
+ NULL:9, 67, 68, 76, 84                                         
+ NULL:7, 66, 76, 84                                             
+ NULL:9, 58, 66, 76, 78                                         
+ NULL:6, 75, 85                                                 
+ NULL:10, 72, 73                                                
+ NULL:7, 73, 74                                                 
+ NULL:10, 11, 16, 17, 70                                        
+ NULL:10, 19, 70, 71, 74                                        
+ NULL:7, 19, 71, 73, 84, 86                                     
+ NULL:6, 32, 53, 55, 69, 85                                     
+ NULL:57, 58, 64, 65, 66, 67, 68                                
+ NULL:18, 23, 38, 61, 62, 63, 83                                
+ NULL:2, 8, 9, 56, 58, 68, 85                                   
+ NULL:23, 38, 40, 41, 43, 44, 45                                
+ NULL:8, 34, 35, 36, 41, 45, 47, 56                             
+ NULL:25, 26, 31, 33, 39, 42                                    
+ NULL:20, 21, 23, 35, 41                                        
+ NULL:12, 13, 15, 16, 17, 18, 22, 63, 77                        
+ NULL:7, 9, 66, 67, 74, 86                                      
+ NULL:1, 2, 3, 5, 6, 32, 56, 57, 69, 75, 78                     
+ NULL:8, 9, 19, 21, 35, 46, 47, 74, 84                          
+ NULL:59, 61, 62, 88                                            
+ NULL:59, 87                                                    
+      ID_3          NAME_3           ENGTYPE_3            County         
+ Min.   :21098   Length:88          Length:88          Length:88         
+ 1st Qu.:21125   Class :character   Class :character   Class :character  
+ Median :21150   Mode  :character   Mode  :character   Mode  :character  
+ Mean   :21150                                                           
+ 3rd Qu.:21174                                                           
+ Max.   :21201                                                           
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+     GDPPC                geometry 
+ Min.   : 8497   POLYGON      :88  
+ 1st Qu.:14566   epsg:4326    : 0  
+ Median :20433   +proj=long...: 0  
+ Mean   :24405                     
+ 3rd Qu.:27224                     
+ Max.   :88656                     
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   
+                                   </code></pre>
 </div>
 </div>
 </section>
 <section id="rooks-method" class="level3" data-number="4.1.2">
 <h3 data-number="4.1.2" class="anchored" data-anchor-id="rooks-method"><span class="header-section-number">4.1.2</span> Rook’s Method</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>nb_rook <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry, <span class="at">queen =</span> <span class="cn">FALSE</span>),</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>nb_rook <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry, <span class="at">queen =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The code chunk below prints the neighbours found using the Rook’s method:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(nb_rook)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(nb_rook)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Neighbour list object:
-Number of regions: 88 
-Number of nonzero links: 440 
-Percentage nonzero weights: 5.681818 
-Average number of links: 5 
-Link number distribution:
-
- 1  2  3  4  5  6  7  8  9 10 
- 2  2 12 20 21 14 11  3  2  1 
-2 least connected regions:
-30 65 with 1 link
-1 most connected region:
-85 with 10 links</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>    nb          NAME_2               ID_3          NAME_3         
- NULL:NULL   Length:88          Min.   :21098   Length:88         
-             Class :character   1st Qu.:21125   Class :character  
-             Mode  :character   Median :21150   Mode  :character  
-                                Mean   :21150                     
-                                3rd Qu.:21174                     
-                                Max.   :21201                     
-  ENGTYPE_3            County              GDPPC                geometry 
- Length:88          Length:88          Min.   : 8497   POLYGON      :88  
- Class :character   Class :character   1st Qu.:14566   epsg:4326    : 0  
- Mode  :character   Mode  :character   Median :20433   +proj=long...: 0  
-                                       Mean   :24405                     
-                                       3rd Qu.:27224                     
-                                       Max.   :88656                     </code></pre>
+<pre><code>    nb                                        NAME_2               ID_3      
+ NULL:3, 4, 57, 85                         Length:88          Min.   :21098  
+ NULL:57, 58, 78, 85                       Class :character   1st Qu.:21125  
+ NULL:1, 4, 5, 85                          Mode  :character   Median :21150  
+ NULL:1, 3, 5, 6                                              Mean   :21150  
+ NULL:3, 4, 6, 85                                             3rd Qu.:21174  
+ NULL:4, 5, 69, 75, 85                                        Max.   :21201  
+ NULL:67, 71, 74, 84                                                         
+ NULL:9, 46, 47, 56, 78, 80, 86                                              
+ NULL:8, 66, 68, 78, 84, 86                                                  
+ NULL:16, 19, 20, 22, 70, 72, 73                                             
+ NULL:14, 17, 72                                                             
+ NULL:13, 60, 61, 63, 83                                                     
+ NULL:12, 15, 60, 83                                                         
+ NULL:11, 15, 17                                                             
+ NULL:13, 14, 17, 83                                                         
+ NULL:10, 17, 22, 83                                                         
+ NULL:11, 14, 15, 16, 72, 83                                                 
+ NULL:20, 22, 23, 77, 83                                                     
+ NULL:10, 20, 21, 73, 74, 86                                                 
+ NULL:10, 18, 19, 21, 22, 23, 82                                             
+ NULL:19, 20, 35, 82, 86                                                     
+ NULL:10, 16, 18, 20, 83                                                     
+ NULL:18, 20, 38, 41, 77, 79, 82                                             
+ NULL:25, 28, 31, 32, 54                                                     
+ NULL:24, 28, 31, 33, 81                                                     
+ NULL:27, 33, 42, 81                                                         
+ NULL:26, 29, 42                                                             
+ NULL:24, 25, 33, 49, 54                                                     
+ NULL:27, 37, 42                                                             
+ NULL:33                                                                     
+ NULL:24, 25, 32, 36, 39, 40, 56, 81                                         
+ NULL:24, 31, 50, 54, 55, 56, 75, 85                                         
+ NULL:25, 26, 28, 30, 81                                                     
+ NULL:36, 45, 80                                                             
+ NULL:21, 41, 47, 80, 82, 86                                                 
+ NULL:31, 34, 40, 45, 56, 80                                                 
+ NULL:29, 42, 43, 44                                                         
+ NULL:23, 44, 77, 79                                                         
+ NULL:31, 40, 42, 43, 81                                                     
+ NULL:31, 36, 39, 43, 45, 79                                                 
+ NULL:23, 35, 45, 79, 80, 82                                                 
+ NULL:26, 27, 29, 37, 39, 43, 81                                             
+ NULL:37, 39, 40, 42, 44, 79                                                 
+ NULL:37, 38, 43, 79                                                         
+ NULL:34, 36, 40, 41, 79, 80                                                 
+ NULL:8, 47, 86                                                              
+ NULL:8, 35, 46, 80, 86                                                      
+ NULL:50, 51, 52, 53, 55                                                     
+ NULL:28, 51, 52, 54                                                         
+ NULL:32, 48, 52, 54, 55                                                     
+ NULL:48, 49, 52                                                             
+ NULL:48, 49, 50, 51, 54                                                     
+ NULL:48, 55, 75                                                             
+ NULL:24, 28, 32, 49, 50, 52                                                 
+ NULL:32, 48, 50, 53, 75                                                     
+ NULL:8, 31, 32, 36, 78, 80, 85                                              
+ NULL:1, 2, 58, 64, 76                                                       
+ NULL:2, 57, 68, 76, 78                                                      
+ NULL:60, 61, 87, 88                                                         
+ NULL:12, 13, 59, 61                                                         
+ NULL:12, 59, 60, 62, 63, 77, 87                                             
+ NULL:61, 77, 87                                                             
+ NULL:12, 61, 77, 83                                                         
+ NULL:57, 76                                                                 
+ NULL:76                                                                     
+ NULL:9, 67, 68, 76, 84                                                      
+ NULL:7, 66, 76, 84                                                          
+ NULL:9, 58, 66, 76, 78                                                      
+ NULL:6, 75, 85                                                              
+ NULL:10, 72, 73                                                             
+ NULL:7, 73, 74                                                              
+ NULL:10, 11, 17, 70                                                         
+ NULL:10, 19, 70, 71, 74                                                     
+ NULL:7, 19, 71, 73, 84, 86                                                  
+ NULL:6, 32, 53, 55, 69, 85                                                  
+ NULL:57, 58, 64, 65, 66, 67, 68                                             
+ NULL:18, 23, 38, 61, 62, 63, 83                                             
+ NULL:2, 8, 9, 56, 58, 68, 85                                                
+ NULL:23, 38, 40, 41, 43, 44, 45                                             
+ NULL:8, 34, 35, 36, 41, 45, 47, 56                                          
+ NULL:25, 26, 31, 33, 39, 42                                                 
+ NULL:20, 21, 23, 35, 41                                                     
+ NULL:12, 13, 15, 16, 17, 18, 22, 63, 77                                     
+ NULL:7, 9, 66, 67, 74, 86                                                   
+ NULL:1, 2, 3, 5, 6, 32, 56, 69, 75, 78                                      
+ NULL:8, 9, 19, 21, 35, 46, 47, 74, 84                                       
+ NULL:59, 61, 62, 88                                                         
+ NULL:59, 87                                                                 
+    NAME_3           ENGTYPE_3            County              GDPPC      
+ Length:88          Length:88          Length:88          Min.   : 8497  
+ Class :character   Class :character   Class :character   1st Qu.:14566  
+ Mode  :character   Mode  :character   Mode  :character   Median :20433  
+                                                          Mean   :24405  
+                                                          3rd Qu.:27224  
+                                                          Max.   :88656  
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+          geometry 
+ POLYGON      :88  
+ epsg:4326    : 0  
+ +proj=long...: 0  
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   </code></pre>
 </div>
 </div>
 </section>
@@ -559,13 +1044,13 @@ Link number distribution:
 <section id="contiguity-weights-queens-method" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="contiguity-weights-queens-method"><span class="header-section-number">5.1</span> Contiguity Weights: Queen’s Method</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>wm_q <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry),</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_weights</span>(nb),</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>wm_q <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_weights</span>(nb),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>wm_q</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>wm_q</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 88 features and 8 fields
 Geometry type: POLYGON
@@ -623,13 +1108,13 @@ First 10 features:
 <section id="contiguity-weights-rooks-method" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="contiguity-weights-rooks-method"><span class="header-section-number">5.2</span> Contiguity Weights: Rook’s Method</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>wm_r <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry, <span class="at">queen =</span> <span class="cn">FALSE</span>),</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_weights</span>(nb),</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>wm_r <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry, <span class="at">queen =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_weights</span>(nb),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>wm_r</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>wm_r</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 88 features and 8 fields
 Geometry type: POLYGON
@@ -697,8 +1182,8 @@ First 10 features:
 <h2 data-number="6.1" class="anchored" data-anchor-id="deriving-fixed-distance-weights"><span class="header-section-number">6.1</span> Deriving Fixed Distance Weights</h2>
 <p>Before we can derive the fixed distance weights, we need to determine the upper limit for distance band using the code chunk below</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>geo <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_geometry</span>((hunan_GDPPC))</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>nb <span class="ot">&lt;-</span> <span class="fu">st_knn</span>(geo, <span class="at">longlat =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>geo <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_geometry</span>((hunan_GDPPC))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>nb <span class="ot">&lt;-</span> <span class="fu">st_knn</span>(geo, <span class="at">longlat =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>! Polygon provided. Using point on surface.</code></pre>
 </div>
@@ -706,7 +1191,7 @@ First 10 features:
 <pre><code>Warning in st_point_on_surface.sfc(geometry): st_point_on_surface may not give
 correct results for longitude/latitude data</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dists <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">st_nb_dists</span>(geo, nb))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dists <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">st_nb_dists</span>(geo, nb))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>! Polygon provided. Using point on surface.</code></pre>
 </div>
@@ -720,7 +1205,7 @@ correct results for longitude/latitude data</code></pre>
 <p><code>unlist()</code> of <em>Base R</em> is used to return output as vector so the summary statistics of nearest neighbour distances can be derived</p>
 <p>Now, let’s derived the summary statistics of nearest neighbour distances vector (ie. dists) by using the code chunk below:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dists)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(dists)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   21.56   29.11   36.89   37.34   43.21   65.80 </code></pre>
@@ -729,10 +1214,10 @@ correct results for longitude/latitude data</code></pre>
 <p>From the code chunk above, we know that the maximum nearest neighbour distance is <code>65.80km</code>. By using a threshold value of 66km, we can ensure that each area has at least one neighbour.</p>
 <p>Now, we will go ahead to compute the fixed distance weights using the code chunk below.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>wm_fd <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span> </span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_dist_band</span>(geometry, <span class="at">upper =</span> <span class="dv">66</span>),</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_weights</span>(nb),</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>wm_fd <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_dist_band</span>(geometry, <span class="at">upper =</span> <span class="dv">66</span>),</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_weights</span>(nb),</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>! Polygon provided. Using point on surface.</code></pre>
 </div>
@@ -752,7 +1237,7 @@ Caused by warning in `st_point_on_surface.sfc()`:
 </ul>
 <p>Let us examine the dataframe of the fixed distance weights</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>wm_fd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>wm_fd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 88 features and 8 fields
 Geometry type: POLYGON
@@ -799,11 +1284,11 @@ First 10 features:
 <section id="deriving-adaptive-distance-weights" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="deriving-adaptive-distance-weights"><span class="header-section-number">6.2</span> Deriving Adaptive Distance Weights</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>wm_ad <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_knn</span>(geometry,</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">k =</span> <span class="dv">8</span>),</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_weights</span>(nb),</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>wm_ad <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_knn</span>(geometry,</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">k =</span> <span class="dv">8</span>),</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_weights</span>(nb),</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>! Polygon provided. Using point on surface.</code></pre>
 </div>
@@ -822,7 +1307,7 @@ Caused by warning in `st_point_on_surface.sfc()`:
 <li><p>the default <em>allow_zero</em> is set to TRUE, assigns zero as lagged value to zone without neighbours</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>wm_ad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>wm_ad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 88 features and 8 fields
 Geometry type: POLYGON
@@ -869,12 +1354,12 @@ First 10 features:
 <section id="deriving-inverse-distance-weights" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="deriving-inverse-distance-weights"><span class="header-section-number">6.3</span> Deriving Inverse Distance Weights</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>wm_idw <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry),</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">wts =</span> <span class="fu">st_inverse_distance</span>(nb, geometry,</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">scale =</span> <span class="dv">1</span>,</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha =</span> <span class="dv">1</span>),</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>wm_idw <span class="ot">&lt;-</span> hunan_GDPPC <span class="sc">%&gt;%</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry),</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">wts =</span> <span class="fu">st_inverse_distance</span>(nb, geometry,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">scale =</span> <span class="dv">1</span>,</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">alpha =</span> <span class="dv">1</span>),</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>! Polygon provided. Using point on surface.</code></pre>
 </div>
@@ -894,7 +1379,7 @@ Caused by warning in `st_point_on_surface.sfc()`:
 <li><p>the default <em>allow_zero</em> is set to TRUE, assigns zero as lagged value to zone without neighbours</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>wm_idw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>wm_idw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 88 features and 8 fields
 Geometry type: POLYGON
@@ -1094,7 +1579,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/renjie-teo">
+    <a class="nav-link" href="https://github.com/renj1ete0">
       <i class="bi bi-github" role="img">
 </i> 
     </a>
@@ -1102,6 +1587,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <li class="nav-item compact">
     <a class="nav-link" href="https://www.linkedin.com/in/renjieteo/">
       <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.renjieteo.com">
+      <i class="bi bi-journal-album" role="img">
 </i> 
     </a>
   </li>  
