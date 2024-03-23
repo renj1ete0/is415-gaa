@@ -57,8 +57,11 @@ website:
             text: Take-home Exercise 2
           - href: exercises/thex03.qmd
             text: Take-home Exercise 3
+      - text: Project
+        menu: 
           - href: https://spatialbros.netlify.app/
             text: SpatialBros (Project)
+
       - icon: github
         href: https://github.com/renjie-teo
       - icon: linkedin
@@ -67,7 +70,7 @@ website:
         href: https://www.renjieteo.com
         
   page-footer:
-    background: light
+    background: dark
     left: "Ren Jie's IS415 Geospatial Journal" 
     right: 
       - icon: github
@@ -79,10 +82,13 @@ website:
 
 format:
   html:
-    theme: [flatly, dark.scss]
+    theme:
+      light: [flatly, light.scss]
+      dark: [darkly, dark.scss]
+    fontsize: 0.98em
+    linestretch: 1.7
     css: styles.css
     toc: true
-    backgroundcolor: rgb(245, 245, 245)
 
 editor: visual
 
